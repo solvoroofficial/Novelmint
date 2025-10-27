@@ -3,288 +3,284 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard | NovelMint</title>
-
+  <title>NovelMint — Dashboard</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
-
     body {
-      background: #ffffff;
-      color: #333;
-      display: flex;
-      min-height: 100vh;
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: #0e0e1a;
+      color: white;
     }
 
-    /* Sidebar */
+    .dashboard {
+      display: flex;
+      height: 100vh;
+    }
+
     .sidebar {
-      width: 250px;
-      background: #f5fff5;
-      border-right: 1px solid #d9f5d9;
-      padding: 20px;
+      width: 220px;
+      background: #1b1b2f;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .brand {
-      display: flex;
       align-items: center;
-      gap: 10px;
+      padding-top: 20px;
     }
 
-    .brand img {
-      width: 40px;
-      height: 40px;
+    .sidebar h2 {
+      color: #5f4dee;
     }
 
-    nav {
-      margin-top: 30px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
+    .sidebar button {
+      width: 90%;
+      margin: 10px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #5f4dee;
+      color: white;
+      cursor: pointer;
     }
 
-    nav a {
-      text-decoration: none;
-      color: #333;
-      font-size: 16px;
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    header input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 20px;
+    }
+
+    .profile-section {
+      background: #22223b;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .profile-section p {
+      margin: 8px 0;
+    }
+
+    .work-card {
+      background: #2a2a4b;
+      margin: 10px 0;
       padding: 10px;
       border-radius: 8px;
-      transition: 0.3s;
     }
 
-    nav a.active, nav a:hover {
-      background: #ccffd0;
-      color: #008a20;
-    }
-
-    /* Main content */
-    .main {
-      flex: 1;
-      padding: 30px 40px;
-    }
-
-    .top-header {
-      display: flex;
-      justify-content: space-between;
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 25px;
     }
 
-    .top-header h1 {
-      font-size: 22px;
-      color: #008a20;
-    }
-
-    /* Search bar */
-    .search-bar {
-      display: flex;
-      align-items: center;
-      background: #f5fff5;
-      border: 1px solid #c9f3ca;
+    .modal-content {
+      background: #1b1b2f;
+      padding: 20px;
       border-radius: 10px;
-      padding: 5px 10px;
+      width: 320px;
     }
 
-    .search-bar input {
+    input,
+    select,
+    textarea {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
       border: none;
-      background: transparent;
-      outline: none;
-      padding: 8px;
-      width: 200px;
+      border-radius: 5px;
     }
 
-    .search-bar button {
-      background: #00b341;
+    button {
+      background: #5f4dee;
       color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 8px;
       cursor: pointer;
-      font-size: 16px;
-      transition: 0.3s;
     }
 
-    .search-bar button:hover {
-      background: #009737;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .card {
-      background: #f7fff7;
-      padding: 25px;
-      border-radius: 12px;
-      text-align: center;
-      border: 1px solid #d8f7d8;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .card h2 {
-      font-size: 18px;
-      color: #007a1d;
-    }
-
-    .card p {
-      font-size: 28px;
-      font-weight: bold;
-      color: #333;
-      margin-top: 10px;
-    }
-
-    .actions {
-      text-align: center;
-    }
-
-    button#newPostBtn {
-      background: #00b341;
-      color: white;
-      border: none;
-      padding: 12px 30px;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button#newPostBtn:hover {
-      background: #009737;
-    }
-
-    /* Responsive */
     @media (max-width: 768px) {
-      .container {
+      .dashboard {
         flex-direction: column;
       }
 
       .sidebar {
         width: 100%;
         flex-direction: row;
-        align-items: center;
         justify-content: space-around;
-        border-right: none;
-        border-bottom: 1px solid #d9f5d9;
+        padding: 10px;
       }
 
-      nav {
-        flex-direction: row;
-        gap: 10px;
-      }
-
-      .main {
-        padding: 20px;
-      }
-
-      .search-bar input {
-        width: 130px;
+      .main-content {
+        padding: 10px;
       }
     }
   </style>
 </head>
-
 <body>
-  <div class="container">
-    <!-- Sidebar -->
+  <div class="dashboard">
     <aside class="sidebar">
-      <div class="brand">
-        <img src="logo.png" alt="NovelMint Logo" />
-        <h2>NovelMint</h2>
-      </div>
-      <nav>
-        <a href="home.html" class="active">🏠 Home</a>
-        <a href="publish.html">✍️ Publish</a>
-        <a href="profile.html">👤 Profile</a>
-        <a href="settings.html">⚙️ Settings</a>
-        <a id="logoutBtn">🚪 Logout</a>
-      </nav>
+      <h2>NovelMint</h2>
+      <button id="publishBtn">📖 Publish</button>
+      <button id="logoutBtn">🚪 Logout</button>
     </aside>
 
-    <!-- Main Dashboard -->
-    <main class="main">
-      <header class="top-header">
-        <h1>Welcome, <span id="username">Author</span> 👋</h1>
-        <div class="search-bar">
-          <input type="text" id="searchInput" placeholder="Search authors or content..." />
-          <button id="searchBtn">🔍</button>
-        </div>
+    <main class="main-content">
+      <header>
+        <input type="text" id="searchBar" placeholder="Search your works..." />
       </header>
 
-      <section class="stats">
-        <div class="card">
-          <h2>Total Readers</h2>
-          <p id="totalReaders">0</p>
-        </div>
-        <div class="card">
-          <h2>Total Content</h2>
-          <p id="totalContent">0</p>
-        </div>
-        <div class="card">
-          <h2>Appreciations</h2>
-          <p id="totalLikes">0</p>
-        </div>
+      <section class="profile-section">
+        <h3 id="authorName">Author Name</h3>
+        <p>📚 Total Content: <span id="totalContent">0</span></p>
+        <p>👥 Readers: <span id="readers">0</span></p>
+        <p>💚 Appreciations: <span id="appreciations">0</span></p>
+        <p>🕓 Member Since: <span id="memberSince"></span></p>
       </section>
 
-      <section class="actions">
-        <button id="newPostBtn">➕ Create New Post</button>
+      <section id="contentList">
+        <h4>Your Works</h4>
+        <div id="worksContainer"></div>
       </section>
     </main>
   </div>
 
+  <!-- Publish Modal -->
+  <div id="publishModal" class="modal">
+    <div class="modal-content">
+      <h3>Publish New Work</h3>
+      <input type="text" id="title" placeholder="Title" />
+      <select id="type">
+        <option>Story</option>
+        <option>Poem</option>
+        <option>Book</option>
+        <option>Thought</option>
+      </select>
+      <textarea id="content" placeholder="Write your content..."></textarea>
+      <input type="file" id="cover" />
+      <button id="submitPublish">Publish</button>
+      <button id="closeModal">Cancel</button>
+    </div>
+  </div>
+
   <script type="module">
-    import { auth, db } from "./app.js";
-    import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { auth, db, storage } from "./app.js";
+    import {
+      signOut,
+      onAuthStateChanged,
+    } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+    import {
+      collection,
+      addDoc,
+      getDocs,
+      query,
+      where,
+      doc,
+      setDoc,
+      getDoc,
+    } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
+    import {
+      ref,
+      uploadBytes,
+      getDownloadURL,
+    } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-storage.js";
 
-    const usernameEl = document.getElementById("username");
     const logoutBtn = document.getElementById("logoutBtn");
-    const totalReadersEl = document.getElementById("totalReaders");
-    const totalContentEl = document.getElementById("totalContent");
-    const totalLikesEl = document.getElementById("totalLikes");
+    const publishBtn = document.getElementById("publishBtn");
+    const modal = document.getElementById("publishModal");
+    const closeModal = document.getElementById("closeModal");
+    const submitPublish = document.getElementById("submitPublish");
 
-    // Track Auth State
+    const userName = document.getElementById("authorName");
+    const totalContent = document.getElementById("totalContent");
+    const readers = document.getElementById("readers");
+    const appreciations = document.getElementById("appreciations");
+    const memberSince = document.getElementById("memberSince");
+    const worksContainer = document.getElementById("worksContainer");
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "login.html";
       } else {
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
+        userName.textContent = user.email.split("@")[0];
 
-        if (userSnap.exists()) {
-          usernameEl.textContent = userSnap.data().name || "Author";
+        // Load member info or create if not exist
+        const userRef = doc(db, "authors", user.uid);
+        const docSnap = await getDoc(userRef);
 
-          // Fetch live stats
-          const postsRef = collection(db, "posts");
-          const postsSnap = await getDocs(postsRef);
-
-          let userPosts = 0, totalReaders = 0, totalLikes = 0;
-          postsSnap.forEach((doc) => {
-            const data = doc.data();
-            if (data.authorId === user.uid) {
-              userPosts++;
-              totalReaders += data.readers || 0;
-              totalLikes += data.likes || 0;
-            }
+        if (!docSnap.exists()) {
+          await setDoc(userRef, {
+            readers: 0,
+            appreciations: 0,
+            joinDate: new Date().toISOString(),
           });
-
-          totalContentEl.textContent = userPosts;
-          totalReadersEl.textContent = totalReaders;
-          totalLikesEl.textContent = totalLikes;
+          memberSince.textContent = new Date().toLocaleDateString();
+        } else {
+          const data = docSnap.data();
+          readers.textContent = data.readers;
+          appreciations.textContent = data.appreciations;
+          memberSince.textContent = new Date(data.joinDate).toLocaleDateString();
         }
+
+        // Load user’s contents
+        const q = query(
+          collection(db, "contents"),
+          where("authorId", "==", user.uid)
+        );
+        const snapshot = await getDocs(q);
+        totalContent.textContent = snapshot.size;
+        worksContainer.innerHTML = "";
+        snapshot.forEach((docu) => {
+          const d = docu.data();
+          worksContainer.innerHTML += `<div class="work-card"><h5>${d.title}</h5><p>${d.type}</p></div>`;
+        });
       }
     });
 
+    // Publish new work
+    publishBtn.addEventListener("click", () => (modal.style.display = "flex"));
+    closeModal.addEventListener("click", () => (modal.style.display = "none"));
+
+    submitPublish.addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const title = document.getElementById("title").value;
+      const type = document.getElementById("type").value;
+      const content = document.getElementById("content").value;
+      const cover = document.getElementById("cover").files[0];
+
+      let coverUrl = "";
+      if (cover) {
+        const coverRef = ref(storage, `covers/${user.uid}_${Date.now()}`);
+        await uploadBytes(coverRef, cover);
+        coverUrl = await getDownloadURL(coverRef);
+      }
+
+      await addDoc(collection(db, "contents"), {
+        title,
+        type,
+        content,
+        coverUrl,
+        authorId: user.uid,
+        createdAt: new Date().toISOString(),
+      });
+
+      alert("Published successfully!");
+      modal.style.display = "none";
+      location.reload();
+    });
+
+    // Logout
     logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
       window.location.href = "login.html";
