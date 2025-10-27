@@ -1,7 +1,131 @@
-<script type="module">
-  import { auth, db, storage } from "./app.js";
-  console.log("Firebase connected ✅");
-  console.log("Auth:", auth);
-  console.log("Database:", db);
-  console.log("Storage:", storage);
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovelMint — Authors</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: #0e0e1a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #5f4dee;
+      margin-bottom: 20px;
+    }
+
+    .authors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .author-card {
+      background: #1b1b2f;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      transition: 0.3s;
+    }
+
+    .author-card:hover {
+      background: #24244b;
+      transform: translateY(-3px);
+    }
+
+    .author-card h3 {
+      margin: 10px 0;
+      color: #ffffff;
+    }
+
+    .author-card p {
+      margin: 5px 0;
+      color: #cfcfcf;
+      font-size: 0.95rem;
+    }
+
+    footer {
+      margin-top: 40px;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>NovelMint Authors 🌿</h1>
+  <div class="authors-grid" id="authorsGrid">
+    <p>Loading authors...</p>
+  </div>
+
+  <footer>© 2025 NovelMint | Crafted with 💚</footer>
+
+  <script type="module">
+    import { db } from "./app.js";
+    import {
+      collection,
+      getDocs,
+      orderBy,
+      query
+    } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
+
+    const authorsGrid = document.getElementById("authorsGrid");
+
+    async function loadAuthors() {
+      authorsGrid.innerHTML = "<p>Loading authors...</p>";
+
+      try {
+        const q = query(collection(db, "authors"), orderBy("joinDate", "desc"));
+        const snapshot = await getDocs(q);
+        if (snapshot.empty) {
+          authorsGrid.innerHTML = "<p>No authors found yet!</p>";
+          return;
+        }
+
+        authorsGrid.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const authorName = data.username
+            ? data.username
+            : doc.id.slice(0, 6); // fallback
+          const joinDate = data.joinDate
+            ? new Date(data.joinDate).toLocaleDateString()
+            : "Unknown";
+
+          const card = `
+            <div class="author-card">
+              <h3>${authorName}</h3>
+              <p>👥 Readers: ${data.readers ?? 0}</p>
+              <p>💚 Appreciations: ${data.appreciations ?? 0}</p>
+              <p>🕓 Joined: ${joinDate}</p>
+            </div>
+          `;
+          authorsGrid.innerHTML += card;
+        });
+      } catch (error) {
+        authorsGrid.innerHTML = "<p>Error loading authors.</p>";
+        console.error(error);
+      }
+    }
+
+    loadAuthors();
+  </script>
+</body>
+</html>
+
