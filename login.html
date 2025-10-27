@@ -3,205 +3,76 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Novelmint — Login or Signup</title>
+  <title>NovelMint — Login</title>
   <style>
-    :root {
-      --light-green: #66cc99;
-      --green-hover: #5cbf8a;
-    }
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .container {
-      background: #fdfdfd;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-      width: 100%;
-      max-width: 360px;
-      padding: 25px;
-      text-align: center;
-      transition: 0.3s ease;
-    }
-
-    h2 {
-      color: #222;
-      margin-bottom: 20px;
-      font-size: 1.6rem;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      outline: none;
-      font-size: 0.95rem;
-      transition: 0.2s;
-    }
-
-    input:focus {
-      border-color: var(--light-green);
-      box-shadow: 0 0 5px rgba(102, 204, 153, 0.3);
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: var(--light-green);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: background 0.2s;
-      margin-top: 5px;
-    }
-
-    button:hover {
-      background-color: var(--green-hover);
-    }
-
-    .toggle {
-      color: var(--light-green);
-      cursor: pointer;
-      font-weight: 500;
-      margin-left: 5px;
-    }
-
-    .toggle:hover {
-      text-decoration: underline;
-    }
-
-    #message {
-      margin-top: 12px;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    @media (max-width: 480px) {
-      .container {
-        padding: 20px;
-        box-shadow: none;
-      }
-      h2 {
-        font-size: 1.4rem;
-      }
-    }
+    *{box-sizing:border-box;font-family:Poppins,sans-serif;}
+    body{background:#fff;color:#222;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;}
+    .card{width:90%;max-width:400px;padding:30px;border-radius:16px;box-shadow:0 4px 15px rgba(0,0,0,0.1);text-align:center;}
+    h2{color:#333;margin-bottom:20px;}
+    input{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:10px;}
+    button{width:100%;padding:12px;background:#2ecc71;color:white;border:none;border-radius:10px;font-weight:600;cursor:pointer;}
+    button:hover{background:#27ae60;}
+    .switch{margin-top:10px;color:#555;cursor:pointer;}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2 id="formTitle">Create Account</h2>
-
-    <form id="signupForm">
-      <input type="text" id="name" placeholder="Full Name" required />
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Sign Up</button>
-    </form>
-
-    <form id="loginForm" style="display:none;">
-      <input type="email" id="loginEmail" placeholder="Email" required />
-      <input type="password" id="loginPassword" placeholder="Password" required />
-      <button type="submit">Log In</button>
-    </form>
-
-    <p style="margin-top:15px;">
-      <span id="toggleText">Already have an account?</span>
-      <span class="toggle" id="toggleForm">Log in</span>
-    </p>
-
-    <div id="message"></div>
+  <div class="card">
+    <h2 id="formTitle">Login</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="authButton">Login</button>
+    <div class="switch" id="switchMode">Don't have an account? <b>Sign Up</b></div>
   </div>
 
   <script type="module">
     import { auth, db } from "./app.js";
-    import {
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+    import { doc, setDoc } from "firebase/firestore";
 
-    const signupForm = document.getElementById("signupForm");
-    const loginForm = document.getElementById("loginForm");
-    const toggleForm = document.getElementById("toggleForm");
+    const emailEl = document.getElementById("email");
+    const passwordEl = document.getElementById("password");
+    const authButton = document.getElementById("authButton");
+    const switchMode = document.getElementById("switchMode");
     const formTitle = document.getElementById("formTitle");
-    const toggleText = document.getElementById("toggleText");
-    const messageBox = document.getElementById("message");
 
-    // 🔄 Toggle between forms
-    toggleForm.addEventListener("click", () => {
-      if (signupForm.style.display === "none") {
-        signupForm.style.display = "block";
-        loginForm.style.display = "none";
-        formTitle.textContent = "Create Account";
-        toggleForm.textContent = "Log in";
-        toggleText.textContent = "Already have an account?";
-      } else {
-        signupForm.style.display = "none";
-        loginForm.style.display = "block";
-        formTitle.textContent = "Welcome Back";
-        toggleForm.textContent = "Sign up";
-        toggleText.textContent = "Don't have an account?";
-      }
-      messageBox.textContent = "";
+    let isLogin = true;
+
+    switchMode.addEventListener("click", () => {
+      isLogin = !isLogin;
+      formTitle.textContent = isLogin ? "Login" : "Sign Up";
+      authButton.textContent = isLogin ? "Login" : "Sign Up";
+      switchMode.innerHTML = isLogin ? `Don't have an account? <b>Sign Up</b>` : `Already have an account? <b>Login</b>`;
     });
 
-    // 🟢 Signup with Email
-    signupForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
+    authButton.addEventListener("click", async () => {
+      const email = emailEl.value.trim();
+      const password = passwordEl.value.trim();
+      if (!email || !password) return alert("Please fill all fields!");
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        await setDoc(doc(db, "users", user.uid), {
-          name,
-          email,
-          readers: 0,
-          totalContent: 0,
-          joinedAt: new Date().toISOString(),
-        });
-
-        messageBox.textContent = "✅ Account created successfully! Redirecting...";
-        messageBox.style.color = "green";
-        setTimeout(() => window.location.href = "dashboard.html", 1500);
-      } catch (error) {
-        messageBox.textContent = `❌ ${error.message}`;
-        messageBox.style.color = "red";
+        if (isLogin) {
+          await signInWithEmailAndPassword(auth, email, password);
+          window.location.href = "dashboard.html";
+        } else {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          await setDoc(doc(db, "users", userCredential.user.uid), {
+            email,
+            readers: 0,
+            appreciations: 0,
+            totalContent: 0,
+            createdAt: new Date()
+          });
+          alert("Signup successful!");
+          window.location.href = "dashboard.html";
+        }
+      } catch (err) {
+        alert(err.message);
       }
     });
 
-    // 🟢 Login with Email
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value;
-
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        messageBox.textContent = "✅ Login successful! Redirecting...";
-        messageBox.style.color = "green";
-        setTimeout(() => window.location.href = "dashboard.html", 1500);
-      } catch (error) {
-        messageBox.textContent = `❌ ${error.message}`;
-        messageBox.style.color = "red";
-      }
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.href = "dashboard.html";
     });
   </script>
 </body>
 </html>
+
