@@ -5,74 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Novelmint — Login or Signup</title>
   <style>
+    :root {
+      --light-green: #66cc99;
+      --green-hover: #5cbf8a;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
       background-color: #ffffff;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
+      padding: 20px;
     }
 
     .container {
-      background: #f9f9f9;
+      background: #fdfdfd;
       border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 350px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      width: 100%;
+      max-width: 360px;
       padding: 25px;
       text-align: center;
+      transition: 0.3s ease;
     }
 
     h2 {
-      color: #333;
+      color: #222;
       margin-bottom: 20px;
+      font-size: 1.6rem;
     }
 
     input {
-      width: 90%;
-      padding: 10px;
+      width: 100%;
+      padding: 12px;
       margin: 8px 0;
       border: 1px solid #ddd;
-      border-radius: 8px;
+      border-radius: 10px;
       outline: none;
+      font-size: 0.95rem;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--light-green);
+      box-shadow: 0 0 5px rgba(102, 204, 153, 0.3);
     }
 
     button {
-      width: 95%;
-      padding: 10px;
-      background-color: #4CAF50;
+      width: 100%;
+      padding: 12px;
+      background-color: var(--light-green);
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
+      font-size: 1rem;
       font-weight: 600;
+      transition: background 0.2s;
+      margin-top: 5px;
     }
 
     button:hover {
-      background-color: #45a049;
+      background-color: var(--green-hover);
     }
 
     .toggle {
-      color: #4CAF50;
+      color: var(--light-green);
       cursor: pointer;
       font-weight: 500;
+      margin-left: 5px;
     }
 
-    .google-btn {
-      margin-top: 10px;
-      background: #fff;
-      color: #333;
-      border: 1px solid #ccc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+    .toggle:hover {
+      text-decoration: underline;
     }
 
     #message {
-      margin-top: 10px;
+      margin-top: 12px;
       font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+        box-shadow: none;
+      }
+      h2 {
+        font-size: 1.4rem;
+      }
     }
   </style>
 </head>
@@ -93,11 +117,6 @@
       <button type="submit">Log In</button>
     </form>
 
-    <div class="google-btn" id="googleSignIn">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google icon">
-      <span>Continue with Google</span>
-    </div>
-
     <p style="margin-top:15px;">
       <span id="toggleText">Already have an account?</span>
       <span class="toggle" id="toggleForm">Log in</span>
@@ -110,12 +129,9 @@
     import { auth, db } from "./app.js";
     import {
       createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      GoogleAuthProvider,
-      signInWithPopup
+      signInWithEmailAndPassword
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-    import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const signupForm = document.getElementById("signupForm");
     const loginForm = document.getElementById("loginForm");
@@ -123,9 +139,8 @@
     const formTitle = document.getElementById("formTitle");
     const toggleText = document.getElementById("toggleText");
     const messageBox = document.getElementById("message");
-    const googleSignIn = document.getElementById("googleSignIn");
 
-    // 🟢 Toggle between Login and Signup
+    // 🔄 Toggle between forms
     toggleForm.addEventListener("click", () => {
       if (signupForm.style.display === "none") {
         signupForm.style.display = "block";
@@ -146,8 +161,8 @@
     // 🟢 Signup with Email
     signupForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
 
       try {
@@ -174,40 +189,12 @@
     // 🟢 Login with Email
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const email = document.getElementById("loginEmail").value;
+      const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
 
       try {
         await signInWithEmailAndPassword(auth, email, password);
         messageBox.textContent = "✅ Login successful! Redirecting...";
-        messageBox.style.color = "green";
-        setTimeout(() => window.location.href = "dashboard.html", 1500);
-      } catch (error) {
-        messageBox.textContent = `❌ ${error.message}`;
-        messageBox.style.color = "red";
-      }
-    });
-
-    // 🟢 Google Sign-in
-    const provider = new GoogleAuthProvider();
-
-    googleSignIn.addEventListener("click", async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (!userDoc.exists()) {
-          await setDoc(doc(db, "users", user.uid), {
-            name: user.displayName || "Anonymous Author",
-            email: user.email,
-            readers: 0,
-            totalContent: 0,
-            joinedAt: new Date().toISOString(),
-          });
-        }
-
-        messageBox.textContent = "✅ Signed in with Google! Redirecting...";
         messageBox.style.color = "green";
         setTimeout(() => window.location.href = "dashboard.html", 1500);
       } catch (error) {
