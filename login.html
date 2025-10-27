@@ -4,75 +4,41 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NovelMint — Login</title>
-  <style>
-    *{box-sizing:border-box;font-family:Poppins,sans-serif;}
-    body{background:#fff;color:#222;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;}
-    .card{width:90%;max-width:400px;padding:30px;border-radius:16px;box-shadow:0 4px 15px rgba(0,0,0,0.1);text-align:center;}
-    h2{color:#333;margin-bottom:20px;}
-    input{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:10px;}
-    button{width:100%;padding:12px;background:#2ecc71;color:white;border:none;border-radius:10px;font-weight:600;cursor:pointer;}
-    button:hover{background:#27ae60;}
-    .switch{margin-top:10px;color:#555;cursor:pointer;}
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="card">
-    <h2 id="formTitle">Login</h2>
+  <div class="login-container">
+    <h2>NovelMint Login</h2>
     <input type="email" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Password" />
-    <button id="authButton">Login</button>
-    <div class="switch" id="switchMode">Don't have an account? <b>Sign Up</b></div>
+    <button id="loginBtn">Login</button>
+    <p id="error"></p>
   </div>
 
   <script type="module">
-    import { auth, db } from "./app.js";
-    import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-    import { doc, setDoc } from "firebase/firestore";
+    import { auth } from "./app.js";
+    import { signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
 
-    const emailEl = document.getElementById("email");
-    const passwordEl = document.getElementById("password");
-    const authButton = document.getElementById("authButton");
-    const switchMode = document.getElementById("switchMode");
-    const formTitle = document.getElementById("formTitle");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const error = document.getElementById("error");
 
-    let isLogin = true;
-
-    switchMode.addEventListener("click", () => {
-      isLogin = !isLogin;
-      formTitle.textContent = isLogin ? "Login" : "Sign Up";
-      authButton.textContent = isLogin ? "Login" : "Sign Up";
-      switchMode.innerHTML = isLogin ? `Don't have an account? <b>Sign Up</b>` : `Already have an account? <b>Login</b>`;
-    });
-
-    authButton.addEventListener("click", async () => {
-      const email = emailEl.value.trim();
-      const password = passwordEl.value.trim();
-      if (!email || !password) return alert("Please fill all fields!");
+    loginBtn.addEventListener("click", async () => {
       try {
-        if (isLogin) {
-          await signInWithEmailAndPassword(auth, email, password);
-          window.location.href = "dashboard.html";
-        } else {
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          await setDoc(doc(db, "users", userCredential.user.uid), {
-            email,
-            readers: 0,
-            appreciations: 0,
-            totalContent: 0,
-            createdAt: new Date()
-          });
-          alert("Signup successful!");
-          window.location.href = "dashboard.html";
-        }
+        await signInWithEmailAndPassword(auth, email.value, password.value);
+        window.location.href = "dashboard.html";
       } catch (err) {
-        alert(err.message);
+        error.textContent = err.message;
       }
     });
 
+    // Redirect if already logged in
     onAuthStateChanged(auth, (user) => {
-      if (user) window.location.href = "dashboard.html";
+      if (user) {
+        window.location.href = "dashboard.html";
+      }
     });
   </script>
 </body>
 </html>
-
