@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — NovelMint</title>
+  <link rel="stylesheet" href="./assets/css/style.css" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #fdfdfd;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .auth-container {
+      width: 350px;
+      padding: 30px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+    }
+    button {
+      background-color: #40c57d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #36b06e;
+    }
+    .toggle-link {
+      margin-top: 10px;
+      display: block;
+      color: #40c57d;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-container">
+    <h2 id="authTitle">Create Account</h2>
+
+    <input id="nameField" type="text" placeholder="Full Name" />
+    <input id="emailField" type="email" placeholder="Email" />
+    <input id="passwordField" type="password" placeholder="Password" />
+
+    <button id="actionBtn">Sign Up</button>
+
+    <span class="toggle-link" id="toggleLink">Already have an account? Login</span>
+  </div>
+
+  <script type="module">
+    import { auth, db } from "./app.js";
+    import {
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+    let isLogin = false;
+
+    const nameField = document.getElementById("nameField");
+    const emailField = document.getElementById("emailField");
+    const passwordField = document.getElementById("passwordField");
+    const actionBtn = document.getElementById("actionBtn");
+    const toggleLink = document.getElementById("toggleLink");
+    const authTitle = document.getElementById("authTitle");
+
+    toggleLink.addEventListener("click", () => {
+      isLogin = !isLogin;
+      if (isLogin) {
+        nameField.style.display = "none";
+        authTitle.innerText = "Login";
+        actionBtn.innerText = "Login";
+        toggleLink.innerText = "Don't have an account? Sign Up";
+      } else {
+        nameField.style.display = "block";
+        authTitle.innerText = "Create Account";
+        actionBtn.innerText = "Sign Up";
+        toggleLink.innerText = "Already have an account? Login";
+      }
+    });
+
+    actionBtn.addEventListener("click", async () => {
+      const email = emailField.value.trim();
+      const password = passwordField.value.trim();
+      const name = nameField.value.trim();
+
+      if (!email || !password || (!isLogin && !name)) {
+        alert("Please fill all fields");
+        return;
+      }
+
+      try {
+        if (isLogin) {
+          await signInWithEmailAndPassword(auth, email, password);
+          alert("Login successful!");
+          window.location.href = "dashboard.html";
+        } else {
+          const userCred = await createUserWithEmailAndPassword(auth, email, password);
+          await setDoc(doc(db, "users", userCred.user.uid), {
+            name,
+            email,
+            joinedAt: new Date().toISOString(),
+            readers: 0,
+            totalContent: 0,
+            appreciations: 0
+          });
+          alert("Account created successfully!");
+          window.location.href = "dashboard.html";
+        }
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+  </script>
+</body>
+</html>
