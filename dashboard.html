@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | NovelMint</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: #ffffff;
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: #f5fff5;
+      border-right: 1px solid #d9f5d9;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand img {
+      width: 40px;
+      height: 40px;
+    }
+
+    nav {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #333;
+      font-size: 16px;
+      padding: 10px;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    nav a.active, nav a:hover {
+      background: #ccffd0;
+      color: #008a20;
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      padding: 30px 40px;
+    }
+
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .top-header h1 {
+      font-size: 22px;
+      color: #008a20;
+    }
+
+    /* Search bar */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: #f5fff5;
+      border: 1px solid #c9f3ca;
+      border-radius: 10px;
+      padding: 5px 10px;
+    }
+
+    .search-bar input {
+      border: none;
+      background: transparent;
+      outline: none;
+      padding: 8px;
+      width: 200px;
+    }
+
+    .search-bar button {
+      background: #00b341;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    .search-bar button:hover {
+      background: #009737;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: #f7fff7;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid #d8f7d8;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      color: #007a1d;
+    }
+
+    .card p {
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      margin-top: 10px;
+    }
+
+    .actions {
+      text-align: center;
+    }
+
+    button#newPostBtn {
+      background: #00b341;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button#newPostBtn:hover {
+      background: #009737;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+        border-right: none;
+        border-bottom: 1px solid #d9f5d9;
+      }
+
+      nav {
+        flex-direction: row;
+        gap: 10px;
+      }
+
+      .main {
+        padding: 20px;
+      }
+
+      .search-bar input {
+        width: 130px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="logo.png" alt="NovelMint Logo" />
+        <h2>NovelMint</h2>
+      </div>
+      <nav>
+        <a href="home.html" class="active">🏠 Home</a>
+        <a href="publish.html">✍️ Publish</a>
+        <a href="profile.html">👤 Profile</a>
+        <a href="settings.html">⚙️ Settings</a>
+        <a id="logoutBtn">🚪 Logout</a>
+      </nav>
+    </aside>
+
+    <!-- Main Dashboard -->
+    <main class="main">
+      <header class="top-header">
+        <h1>Welcome, <span id="username">Author</span> 👋</h1>
+        <div class="search-bar">
+          <input type="text" id="searchInput" placeholder="Search authors or content..." />
+          <button id="searchBtn">🔍</button>
+        </div>
+      </header>
+
+      <section class="stats">
+        <div class="card">
+          <h2>Total Readers</h2>
+          <p id="totalReaders">0</p>
+        </div>
+        <div class="card">
+          <h2>Total Content</h2>
+          <p id="totalContent">0</p>
+        </div>
+        <div class="card">
+          <h2>Appreciations</h2>
+          <p id="totalLikes">0</p>
+        </div>
+      </section>
+
+      <section class="actions">
+        <button id="newPostBtn">➕ Create New Post</button>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { auth, db } from "./app.js";
+    import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const usernameEl = document.getElementById("username");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const totalReadersEl = document.getElementById("totalReaders");
+    const totalContentEl = document.getElementById("totalContent");
+    const totalLikesEl = document.getElementById("totalLikes");
+
+    // Track Auth State
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+          usernameEl.textContent = userSnap.data().name || "Author";
+
+          // Fetch live stats
+          const postsRef = collection(db, "posts");
+          const postsSnap = await getDocs(postsRef);
+
+          let userPosts = 0, totalReaders = 0, totalLikes = 0;
+          postsSnap.forEach((doc) => {
+            const data = doc.data();
+            if (data.authorId === user.uid) {
+              userPosts++;
+              totalReaders += data.readers || 0;
+              totalLikes += data.likes || 0;
+            }
+          });
+
+          totalContentEl.textContent = userPosts;
+          totalReadersEl.textContent = totalReaders;
+          totalLikesEl.textContent = totalLikes;
+        }
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>
