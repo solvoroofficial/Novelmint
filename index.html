@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NovelMint — Public Authors</title>
+  <title>NovelMint — Read Stories</title>
   <link rel="icon" href="favicon.png" />
   <style>
     body {
@@ -23,9 +23,9 @@
       color: #38bdf8;
     }
 
-    .container {
+    .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
       padding: 20px;
     }
@@ -33,85 +33,98 @@
     .card {
       background: #1e293b;
       border-radius: 12px;
-      padding: 20px;
-      text-align: center;
+      overflow: hidden;
       transition: 0.3s;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
 
     .card:hover {
-      transform: scale(1.03);
+      transform: scale(1.02);
       background: #334155;
     }
 
-    .name {
+    .cover {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: #334155;
+    }
+
+    .content {
+      padding: 15px;
+    }
+
+    .title {
       font-size: 1.2em;
       color: #93c5fd;
       margin-bottom: 8px;
     }
 
-    .email {
+    .meta {
       font-size: 0.9em;
-      color: #cbd5e1;
-      margin-bottom: 5px;
-    }
-
-    .date {
-      font-size: 0.8em;
       color: #94a3b8;
+      margin-bottom: 10px;
     }
 
-    .footer {
+    .preview {
+      font-size: 0.95em;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+
+    footer {
+      background: #1e293b;
       text-align: center;
       padding: 15px;
       font-size: 0.9em;
-      background: #1e293b;
       color: #94a3b8;
     }
   </style>
 </head>
 <body>
-  <header>🌿 NovelMint Authors</header>
-
-  <div class="container" id="authorsList">
-    <p style="text-align:center; width:100%; color:#94a3b8;">Loading authors...</p>
+  <header>📚 NovelMint Library</header>
+  <div class="grid" id="contentGrid">
+    <p style="text-align:center; width:100%; color:#94a3b8;">Loading content...</p>
   </div>
-
-  <div class="footer">© 2025 NovelMint Platform</div>
+  <footer>© 2025 NovelMint | Read. Write. Inspire.</footer>
 
   <script type="module">
     import { db } from "./app.js";
-    import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-    const authorsList = document.getElementById("authorsList");
+    const grid = document.getElementById("contentGrid");
 
-    async function fetchAuthors() {
+    async function fetchContents() {
       try {
-        const querySnapshot = await getDocs(collection(db, "publicUsers"));
-        authorsList.innerHTML = ""; // clear loading text
-        querySnapshot.forEach((doc) => {
+        const q = query(collection(db, "contents"));
+        const snapshot = await getDocs(q);
+        grid.innerHTML = "";
+
+        snapshot.forEach((doc) => {
           const data = doc.data();
           const card = document.createElement("div");
           card.classList.add("card");
           card.innerHTML = `
-            <div class="name">${data.name || "Unknown Author"}</div>
-            <div class="email">${data.email || ""}</div>
-            <div class="date">🌱 Joined: ${data.joinDate || "N/A"}</div>
+            <img src="${data.coverUrl || 'https://via.placeholder.com/300x180?text=No+Cover'}" class="cover">
+            <div class="content">
+              <div class="title">${data.title || "Untitled"}</div>
+              <div class="meta">✍️ ${data.author || "Unknown"} • ${data.publishDate || ""}</div>
+              <div class="preview">${data.content ? data.content.slice(0, 120) + '...' : ''}</div>
+            </div>
           `;
-          authorsList.appendChild(card);
+          grid.appendChild(card);
         });
 
-        if (querySnapshot.empty) {
-          authorsList.innerHTML = `<p style="text-align:center; color:#94a3b8;">No authors found yet.</p>`;
+        if (snapshot.empty) {
+          grid.innerHTML = `<p style="text-align:center; color:#94a3b8;">No content published yet.</p>`;
         }
-
-      } catch (error) {
-        console.error("Error fetching authors:", error);
-        authorsList.innerHTML = `<p style="color:red; text-align:center;">⚠️ Unable to load public users. Please check your Firestore Rules.</p>`;
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = `<p style="color:red; text-align:center;">⚠️ Unable to load content.</p>`;
       }
     }
 
-    fetchAuthors();
+    fetchContents();
   </script>
 </body>
 </html>
