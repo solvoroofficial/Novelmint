@@ -1,380 +1,398 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>NovelMint — Dashboard</title>
   <style>
-    :root{
-      --bg:#0f172a; --panel:#1e293b; --muted:#94a3b8; --accent:#38bdf8;
-    }
+    :root{--bg:#0f172a;--card:#1e293b;--accent:#38bdf8;--muted:#94a3b8}
     *{box-sizing:border-box}
-    body{margin:0;font-family:Poppins,system-ui;background:var(--bg);color:#fff;min-height:100vh;display:flex}
-    /* sidebar */
-    .sidebar{width:220px;background:var(--panel);padding:18px;display:flex;flex-direction:column;gap:12px}
-    .brand{color:var(--accent);font-weight:700;font-size:20px;text-align:center}
-    .btn{background:var(--accent);border:none;padding:10px;border-radius:8px;color:#001;cursor:pointer}
-    .btn.danger{background:#ef4444;color:#fff}
-    /* main */
-    main{flex:1;padding:20px}
-    .row{display:flex;gap:16px;align-items:flex-start}
-    .card{background:rgba(255,255,255,0.03);padding:14px;border-radius:10px}
-    .profile-overview{max-width:720px;margin-bottom:18px}
-    .profile-meta p{margin:6px 0;color:var(--muted)}
-    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:none;background:#0b1220;color:#fff;margin:8px 0}
-    .small{max-width:320px}
-    .note{color:var(--muted);font-size:14px;margin-top:8px}
-    /* modal */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;padding:20px;z-index:60}
-    .modal.hidden{display:none}
-    .modal-card{background:var(--panel);padding:18px;border-radius:12px;width:100%;max-width:520px}
-    .modal-card h3{color:var(--accent);margin:0 0 8px}
-    .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
-    @media(max-width:760px){.sidebar{width:100%;flex-direction:row;justify-content:space-between}.row{flex-direction:column}}
+    body{margin:0;font-family:Poppins,system-ui,Arial;background:var(--bg);color:#fff;min-height:100vh;display:flex}
+    /* left sidebar like Instagram (compact) */
+    .sidebar{width:220px;background:var(--card);display:flex;flex-direction:column;align-items:center;padding:20px;gap:12px}
+    .brand{color:var(--accent);font-weight:700;font-size:20px}
+    .btn{width:100%;padding:8px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+    .btn.secondary{background:#ef4444}
+    main{flex:1;padding:20px;overflow:auto}
+    .card{background:linear-gradient(180deg,#121426,#182033);padding:18px;border-radius:12px;max-width:900px;margin:0 auto}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:none;background:#334155;color:#fff;margin:8px 0}
+    label{font-size:13px;color:var(--muted);display:block;margin-top:6px}
+    .row{display:flex;gap:12px}
+    .row .col{flex:1}
+    .small{font-size:13px;color:var(--muted)}
+    .profile-preview{display:flex;gap:12px;align-items:center}
+    .avatar{width:72px;height:72px;border-radius:12px;background:#223044;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+    .hidden{display:none}
+    .status{margin-top:8px;color:var(--accent)}
+    @media(max-width:720px){.sidebar{width:100%;flex-direction:row;justify-content:space-around}.card{margin:12px}}
   </style>
 </head>
 <body>
   <aside class="sidebar">
-    <div class="brand">🌿 NovelMint</div>
+    <div class="brand">NovelMint</div>
     <button id="editProfileBtn" class="btn">Edit Profile</button>
-    <button id="publishToggle" class="btn">Publish</button>
-    <button id="logoutBtn" class="btn danger">Logout</button>
+    <button id="showPublishBtn" class="btn">Publish</button>
+    <button id="logoutBtn" class="btn secondary">Logout</button>
   </aside>
 
   <main>
-    <section class="profile-overview card">
-      <h2 id="displayName">Author</h2>
-      <div class="profile-meta">
-        <p id="bio">—</p>
-        <p>📧 <span id="emailView"></span></p>
-        <p>🕓 Member since: <span id="memberSince">—</span></p>
-        <p>📚 Total Content: <span id="totalContent">0</span></p>
-        <p>👥 Readers: <span id="readers">0</span>  •  💚 Appreciations: <span id="appreciations">0</span></p>
+    <!-- Profile / Profile form -->
+    <section id="profileCard" class="card">
+      <h3 id="profileHeading">Your profile</h3>
+
+      <!-- preview -->
+      <div id="profilePreview" class="profile-preview">
+        <div class="avatar" id="avatarPreview">U</div>
+        <div>
+          <div id="displayNamePreview" style="font-weight:700">Your name</div>
+          <div class="small" id="usernamePreview">@username</div>
+          <div class="small" id="bioPreview">Short bio...</div>
+          <div class="small" id="instaPreview">Instagram: -</div>
+          <div class="small" id="memberSincePreview">Member since: -</div>
+        </div>
       </div>
-      <div class="note">Profile is required to create your public author id. You can edit it anytime.</div>
+
+      <!-- profile form (shown on first login or edit) -->
+      <div id="profileForm" class="hidden" style="margin-top:12px">
+        <label>Display name</label>
+        <input id="displayName" placeholder="Your full name or pen name" />
+
+        <label>Username</label>
+        <input id="username" placeholder="unique username (like instagram handle)" />
+
+        <label>Short bio</label>
+        <textarea id="bio" rows="3" placeholder="One-line bio"></textarea>
+
+        <label>Instagram (optional)</label>
+        <input id="instagram" placeholder="@yourhandle or https://..." />
+
+        <label>Profile photo (optional)</label>
+        <input id="profilePhoto" type="file" accept="image/*" />
+
+        <button id="saveProfileBtn" class="btn">Save profile</button>
+        <div id="profileStatus" class="status"></div>
+      </div>
     </section>
 
-    <section id="publishSection" class="card" style="display:none;max-width:720px">
-      <h3 style="color:var(--accent)">Publish New Work</h3>
-      <input id="title" placeholder="Title" />
-      <select id="type"><option>Story</option><option>Poem</option><option>Book</option><option>Thought</option></select>
+    <!-- Publish area -->
+    <section id="publishCard" class="card hidden" style="margin-top:18px">
+      <h3>Publish new content</h3>
+      <label>Title</label>
+      <input id="title" placeholder="Enter title" />
+
+      <label>Type</label>
+      <select id="type">
+        <option>Story</option>
+        <option>Poem</option>
+        <option>Book</option>
+        <option>Thought</option>
+      </select>
+
+      <label>Content</label>
       <textarea id="content" rows="6" placeholder="Write your content..."></textarea>
-      <input id="cover" type="file" accept="image/*" />
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button id="publishBtn" class="btn">Publish</button>
-        <div id="publishStatus" class="note"></div>
+
+      <div class="row">
+        <div class="col">
+          <label>Cover image (optional)</label>
+          <input id="cover" type="file" accept="image/*" />
+        </div>
+        <div class="col">
+          <label>Visibility note</label>
+          <div class="small">Published content is public and will appear on the homepage.</div>
+        </div>
       </div>
+
+      <button id="publishBtn" class="btn" style="margin-top:12px">Publish</button>
+      <div id="publishStatus" class="status"></div>
+    </section>
+
+    <!-- list of my works (simple) -->
+    <section id="myWorksCard" class="card hidden" style="margin-top:18px">
+      <h3>Your published works</h3>
+      <div id="worksList" class="small">Loading…</div>
     </section>
   </main>
 
-  <!-- Profile Modal (used for create/edit) -->
-  <div id="profileModal" class="modal hidden" aria-hidden="true">
-    <div class="modal-card">
-      <h3>Create Your Author Profile</h3>
-      <p style="color:var(--muted)">This will be shown publicly (name, bio, avatar). Choose a unique username.</p>
-
-      <input id="profileDisplayName" placeholder="Display name (e.g. RiyaWrites)" />
-      <input id="profileUsername" placeholder="Username (unique, no spaces) — will be used in URL" />
-      <textarea id="profileBio" rows="3" placeholder="Short bio (one-liner)"></textarea>
-      <input id="profileAvatar" type="file" accept="image/*" />
-      <div class="actions">
-        <button id="saveProfileBtn" class="btn">Save Profile</button>
-        <button id="cancelProfileBtn" class="btn danger">Cancel</button>
-      </div>
-      <div id="profileStatus" class="note"></div>
-    </div>
-  </div>
-
   <script type="module">
+    // Imports
     import { auth, db, storage } from "./app.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    import { doc, getDoc, setDoc, collection, addDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-    import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+    import {
+      doc, getDoc, setDoc, collection, addDoc, query, where, getDocs, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import {
+      ref as storageRef, uploadBytes, getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
-    // UI elements
-    const editProfileBtn = document.getElementById('editProfileBtn');
-    const publishToggle = document.getElementById('publishToggle');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const displayNameEl = document.getElementById('displayName');
-    const bioEl = document.getElementById('bio');
-    const emailView = document.getElementById('emailView');
-    const memberSinceEl = document.getElementById('memberSince');
-    const totalContentEl = document.getElementById('totalContent');
-    const readersEl = document.getElementById('readers');
-    const apprecEl = document.getElementById('appreciations');
+    // Elements
+    const editProfileBtn = document.getElementById("editProfileBtn");
+    const showPublishBtn = document.getElementById("showPublishBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-    const publishSection = document.getElementById('publishSection');
-    const publishBtn = document.getElementById('publishBtn');
-    const publishStatus = document.getElementById('publishStatus');
+    const profileForm = document.getElementById("profileForm");
+    const profilePreview = document.getElementById("profilePreview");
+    const profileCard = document.getElementById("profileCard");
+    const profileStatus = document.getElementById("profileStatus");
+    const publishCard = document.getElementById("publishCard");
+    const myWorksCard = document.getElementById("myWorksCard");
+    const worksList = document.getElementById("worksList");
+    const publishStatus = document.getElementById("publishStatus");
 
-    const profileModal = document.getElementById('profileModal');
-    const profileDisplayName = document.getElementById('profileDisplayName');
-    const profileUsername = document.getElementById('profileUsername');
-    const profileBio = document.getElementById('profileBio');
-    const profileAvatar = document.getElementById('profileAvatar');
-    const saveProfileBtn = document.getElementById('saveProfileBtn');
-    const cancelProfileBtn = document.getElementById('cancelProfileBtn');
-    const profileStatus = document.getElementById('profileStatus');
+    // Profile preview fields
+    const displayNamePreview = document.getElementById("displayNamePreview");
+    const usernamePreview = document.getElementById("usernamePreview");
+    const bioPreview = document.getElementById("bioPreview");
+    const instaPreview = document.getElementById("instaPreview");
+    const memberSincePreview = document.getElementById("memberSincePreview");
+    const avatarPreview = document.getElementById("avatarPreview");
+
+    // Form inputs
+    const displayNameInput = document.getElementById("displayName");
+    const usernameInput = document.getElementById("username");
+    const bioInput = document.getElementById("bio");
+    const instagramInput = document.getElementById("instagram");
+    const profilePhotoInput = document.getElementById("profilePhoto");
+
+    // Publish form inputs
+    const titleInput = document.getElementById("title");
+    const typeInput = document.getElementById("type");
+    const contentInput = document.getElementById("content");
+    const coverInput = document.getElementById("cover");
+
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    const publishBtn = document.getElementById("publishBtn");
 
     let currentUser = null;
-    let currentUserData = null;
+    let currentUserDoc = null; // data snapshot
 
-    // When auth state changes
+    // Utility: show / hide
+    const show = el => el.classList.remove("hidden");
+    const hide = el => el.classList.add("hidden");
+
+    // Ensure user is logged in and load profile
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        window.location.href = 'login.html';
+        window.location.href = "login.html";
         return;
       }
       currentUser = user;
-      emailView.textContent = user.email;
-      await ensureUserProfile(user.uid, user);
-      await loadUserProfileToUI(user.uid);
-      publishSection.style.display = 'block';
-    });
-
-    // Ensure user doc exists; if not or incomplete open modal
-    async function ensureUserProfile(uid, userObj) {
+      // Load user document from 'users' collection
       try {
-        const uref = doc(db, 'users', uid);
-        const snap = await getDoc(uref);
+        const userDocRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userDocRef);
+
         if (!snap.exists()) {
-          // create minimal private profile
-          await setDoc(uref, {
-            uid,
-            email: userObj.email,
-            displayName: userObj.displayName || '',
-            username: '',
-            bio: '',
-            avatarUrl: '',
-            joinDate: new Date().toISOString(),
-            profileComplete: false
-          });
-          // open profile modal to complete
-          openProfileModal(false);
-          return;
-        }
-        const data = snap.data();
-        currentUserData = data;
-        // if profile not complete, open modal
-        if (!data.profileComplete) {
-          openProfileModal(true, data);
+          // New user — open profile form
+          currentUserDoc = null;
+          openProfileForm(); // user must fill required profile
         } else {
-          // ensure publicUsers doc exists or update
-          const pubRef = doc(db, 'publicUsers', uid);
-          await setDoc(pubRef, {
-            name: data.displayName || (userObj.email.split('@')[0]),
-            email: userObj.email,
-            joinDate: (data.joinDate) ? new Date(data.joinDate).toLocaleDateString() : new Date().toLocaleDateString(),
-            avatarUrl: data.avatarUrl || ''
+          currentUserDoc = snap.data();
+          populateProfilePreview(currentUserDoc);
+          // Ensure publicUsers is also updated (so public listing works)
+          await setDoc(doc(db, "publicUsers", user.uid), {
+            name: currentUserDoc.displayName || user.email.split("@")[0],
+            email: user.email,
+            joinDate: currentUserDoc.joinDate || (new Date()).toLocaleDateString(),
+            photoURL: currentUserDoc.photoURL || ""
           }, { merge: true });
+          showDashboardSections();
+          await loadMyWorks();
         }
-      } catch (e) {
-        console.error('ensureUserProfile error', e);
+      } catch (err) {
+        console.error("Error loading profile:", err);
+        profileStatus.textContent = "Error loading profile: " + err.message;
+        openProfileForm();
       }
-    }
-
-    // Load profile info into UI
-    async function loadUserProfileToUI(uid) {
-      try {
-        const uref = doc(db, 'users', uid);
-        const snap = await getDoc(uref);
-        if (!snap.exists()) return;
-        const data = snap.data();
-        currentUserData = data;
-        displayNameEl.textContent = data.displayName || (currentUser.email.split('@')[0]);
-        bioEl.textContent = data.bio || '—';
-        memberSinceEl.textContent = data.joinDate ? new Date(data.joinDate).toLocaleDateString() : '-';
-        readersEl.textContent = data.readers ?? 0;
-        apprecEl.textContent = data.appreciations ?? 0;
-
-        // count total contents by this user
-        const q = query(collection(db, 'contents'), where('authorId', '==', uid));
-        const snapContents = await getDocs(q);
-        totalContentEl.textContent = snapContents.size;
-      } catch (e) {
-        console.error('loadUserProfileToUI', e);
-      }
-    }
-
-    // Open profile modal (isEdit true if editing existing)
-    function openProfileModal(isEdit=false, data={}) {
-      profileModal.classList.remove('hidden');
-      profileModal.setAttribute('aria-hidden','false');
-      profileDisplayName.value = data.displayName || '';
-      profileUsername.value = data.username || '';
-      profileBio.value = data.bio || '';
-      profileStatus.textContent = isEdit ? 'Edit and save your profile.' : 'Please complete your author profile to continue.';
-    }
-
-    function closeProfileModal() {
-      profileModal.classList.add('hidden');
-      profileModal.setAttribute('aria-hidden','true');
-      profileStatus.textContent = '';
-      profileAvatar.value = '';
-    }
-
-    // Edit Profile button
-    editProfileBtn.addEventListener('click', async () => {
-      if (!currentUser) return;
-      // load current data
-      const snap = await getDoc(doc(db, 'users', currentUser.uid));
-      openProfileModal(true, snap.exists() ? snap.data() : {});
     });
 
-    // Cancel profile modal
-    cancelProfileBtn.addEventListener('click', () => {
-      // If profile not complete, prevent cancelling (force complete) — only allow cancel if profile exists
-      if (currentUserData && currentUserData.profileComplete) {
-        closeProfileModal();
+    // Open profile form (used for first time or editing)
+    function openProfileForm() {
+      show(profileForm);
+      hide(profilePreview);
+      // prefill if we have data
+      if (currentUserDoc) {
+        displayNameInput.value = currentUserDoc.displayName || "";
+        usernameInput.value = currentUserDoc.username || "";
+        bioInput.value = currentUserDoc.bio || "";
+        instagramInput.value = currentUserDoc.instagram || "";
       } else {
-        profileStatus.textContent = 'You must complete your profile to proceed.';
+        displayNameInput.value = currentUser.email ? currentUser.email.split("@")[0] : "";
+      }
+    }
+
+    // Populate preview area
+    function populateProfilePreview(data) {
+      displayNamePreview.textContent = data.displayName || currentUser.email.split("@")[0];
+      usernamePreview.textContent = data.username ? "@" + data.username : "";
+      bioPreview.textContent = data.bio || "";
+      instaPreview.textContent = data.instagram ? "Instagram: " + data.instagram : "Instagram: -";
+      memberSincePreview.textContent = "Member since: " + (data.joinDate || new Date().toLocaleDateString());
+      if (data.photoURL) {
+        avatarPreview.style.background = "transparent";
+        avatarPreview.innerHTML = `<img src="${data.photoURL}" alt="avatar" style="width:72px;height:72px;object-fit:cover;border-radius:12px">`;
+      } else {
+        avatarPreview.style.background = "#223044";
+        avatarPreview.textContent = (data.displayName || currentUser.email.split("@")[0]).slice(0,2).toUpperCase();
+      }
+    }
+
+    // Show main dashboard sections
+    function showDashboardSections() {
+      hide(profileForm);
+      show(profilePreview);
+      show(publishCard);
+      show(myWorksCard);
+      profileStatus.textContent = "";
+    }
+
+    // Buttons
+    editProfileBtn.addEventListener("click", () => {
+      openProfileForm();
+    });
+
+    showPublishBtn.addEventListener("click", () => {
+      // toggle publish card
+      if (publishCard.classList.contains("hidden")) {
+        show(publishCard);
+      } else {
+        hide(publishCard);
       }
     });
 
-    // Save profile (create or update both users and publicUsers)
-    saveProfileBtn.addEventListener('click', async () => {
-      if (!currentUser) return;
-      const displayName = profileDisplayName.value.trim();
-      const username = profileUsername.value.trim();
-      const bio = profileBio.value.trim();
-      const avatarFile = profileAvatar.files[0];
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+
+    // Save profile handler
+    saveProfileBtn.addEventListener("click", async () => {
+      if (!currentUser) return profileStatus.textContent = "No user logged in";
+
+      const displayName = displayNameInput.value.trim();
+      const username = usernameInput.value.trim();
+      const bio = bioInput.value.trim();
+      const instagram = instagramInput.value.trim();
+      const file = profilePhotoInput.files[0];
 
       if (!displayName || !username) {
-        profileStatus.textContent = 'Please enter display name and username.';
+        profileStatus.textContent = "Please provide display name and username.";
         return;
       }
 
-      profileStatus.textContent = 'Saving...';
+      profileStatus.textContent = "Saving profile...";
 
       try {
-        // (Optional) check username uniqueness in publicUsers (simple check)
-        if (username) {
-          const q = query(collection(db, 'publicUsers'), where('username', '==', username));
-          const snaps = await getDocs(q);
-          // allow if same user owns it or no matches
-          const conflict = snaps.docs.some(d => d.id !== currentUser.uid);
-          if (conflict) {
-            profileStatus.textContent = 'Username already taken. Try another.';
-            return;
-          }
+        // upload photo if present
+        let photoURL = (currentUserDoc && currentUserDoc.photoURL) ? currentUserDoc.photoURL : "";
+        if (file) {
+          const pRef = storageRef(storage, `profilePhotos/${currentUser.uid}_${Date.now()}_${file.name}`);
+          await uploadBytes(pRef, file);
+          photoURL = await getDownloadURL(pRef);
         }
 
-        // upload avatar if provided
-        let avatarUrl = (currentUserData && currentUserData.avatarUrl) ? currentUserData.avatarUrl : '';
-        if (avatarFile) {
-          const fp = storageRef(storage, `avatars/${currentUser.uid}_${Date.now()}_${avatarFile.name}`);
-          await uploadBytes(fp, avatarFile);
-          avatarUrl = await getDownloadURL(fp);
-        }
-
-        // update private users collection
-        const uref = doc(db, 'users', currentUser.uid);
-        await setDoc(uref, {
-          uid: currentUser.uid,
-          email: currentUser.email,
+        // Save into users collection (secure)
+        const userData = {
           displayName,
           username,
           bio,
-          avatarUrl,
-          joinDate: (currentUserData && currentUserData.joinDate) ? currentUserData.joinDate : new Date().toISOString(),
-          profileComplete: true,
-          readers: currentUserData?.readers ?? 0,
-          appreciations: currentUserData?.appreciations ?? 0,
-          updatedAt: new Date().toISOString()
-        }, { merge: true });
+          instagram,
+          photoURL,
+          joinDate: (currentUserDoc && currentUserDoc.joinDate) ? currentUserDoc.joinDate : (new Date()).toLocaleDateString()
+        };
 
-        // update publicUsers (publicly readable)
-        const pubRef = doc(db, 'publicUsers', currentUser.uid);
-        await setDoc(pubRef, {
+        await setDoc(doc(db, "users", currentUser.uid), userData, { merge: true });
+
+        // Also save a public-friendly record for listing
+        await setDoc(doc(db, "publicUsers", currentUser.uid), {
           name: displayName,
-          username,
           email: currentUser.email,
-          joinDate: new Date().toLocaleDateString(),
-          avatarUrl
+          joinDate: userData.joinDate,
+          photoURL
         }, { merge: true });
 
-        profileStatus.textContent = 'Saved ✅';
-        // refresh local UI
-        await loadUserProfileToUI(currentUser.uid);
-        closeProfileModal();
+        currentUserDoc = userData;
+        populateProfilePreview(userData);
+        showDashboardSections();
+        profileStatus.textContent = "Profile saved ✓";
+        await loadMyWorks();
       } catch (err) {
-        console.error('saveProfile error', err);
-        profileStatus.textContent = 'Error saving profile: ' + (err.message || err);
+        console.error("Error saving profile:", err);
+        profileStatus.textContent = "Error saving profile: " + err.message;
       }
     });
 
-    // Publish toggle
-    publishToggle.addEventListener('click', () => {
-      publishSection.style.display = publishSection.style.display === 'none' ? 'block' : 'none';
-      window.scrollTo({top:0,behavior:'smooth'});
-    });
-
-    // Publish content handler
-    publishBtn.addEventListener('click', async () => {
-      if (!currentUser) { publishStatus.textContent = 'Login required.'; return; }
-      // Ensure profile complete before publishing
-      if (!currentUserData || !currentUserData.profileComplete) {
-        publishStatus.textContent = 'Complete your profile first.';
-        openProfileModal(false, currentUserData || {});
-        return;
-      }
-
-      const title = document.getElementById('title').value.trim();
-      const type = document.getElementById('type').value;
-      const content = document.getElementById('content').value.trim();
-      const cover = document.getElementById('cover').files[0];
+    // Publish handler
+    publishBtn.addEventListener("click", async () => {
+      if (!currentUser) return publishStatus.textContent = "No user logged in";
+      const title = titleInput.value.trim();
+      const type = typeInput.value;
+      const content = contentInput.value.trim();
+      const file = coverInput.files[0];
 
       if (!title || !content) {
-        publishStatus.textContent = 'Title and content required.';
+        publishStatus.textContent = "Title and content are required.";
         return;
       }
-
-      publishStatus.textContent = 'Publishing...';
+      publishStatus.textContent = "Publishing...";
 
       try {
-        let coverUrl = '';
-        if (cover) {
-          const cref = storageRef(storage, `covers/${currentUser.uid}_${Date.now()}_${cover.name}`);
-          await uploadBytes(cref, cover);
-          coverUrl = await getDownloadURL(cref);
+        // Upload cover if exists
+        let coverUrl = "";
+        if (file) {
+          const cRef = storageRef(storage, `covers/${currentUser.uid}_${Date.now()}_${file.name}`);
+          await uploadBytes(cRef, file);
+          coverUrl = await getDownloadURL(cRef);
         }
 
-        await addDoc(collection(db, 'contents'), {
+        // Create content doc in 'contents' collection (public read per rules)
+        await addDoc(collection(db, "contents"), {
           title,
           type,
           content,
           coverUrl,
-          author: currentUserData.displayName || currentUser.email.split('@')[0],
+          author: (currentUserDoc && currentUserDoc.displayName) ? currentUserDoc.displayName : currentUser.email.split("@")[0],
           authorId: currentUser.uid,
           publishDate: new Date().toLocaleDateString(),
           createdAt: serverTimestamp()
         });
 
-        publishStatus.textContent = 'Published ✅';
-        // clear fields
-        document.getElementById('title').value = '';
-        document.getElementById('content').value = '';
-        document.getElementById('cover').value = '';
-        // update counts
-        await loadUserProfileToUI(currentUser.uid);
+        publishStatus.textContent = "Published ✓";
+        titleInput.value = ""; contentInput.value = ""; coverInput.value = "";
+        await loadMyWorks(); // refresh list
       } catch (err) {
-        console.error('publish error', err);
-        publishStatus.textContent = 'Publish failed: ' + (err.message || err);
+        console.error("Publish error:", err);
+        publishStatus.textContent = "Publish failed: " + err.message;
       }
     });
 
-    // Logout
-    logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      window.location.href = 'login.html';
-    });
-
-    // Close modal on background click (optional)
-    profileModal.addEventListener('click', (e) => {
-      if (e.target === profileModal) {
-        if (currentUserData && currentUserData.profileComplete) closeProfileModal();
+    // Load my works (contents by this user)
+    async function loadMyWorks() {
+      if (!currentUser) return;
+      worksList.textContent = "Loading works...";
+      try {
+        const q = query(collection(db, "contents"), where("authorId", "==", currentUser.uid));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          worksList.innerHTML = "<div class='small'>You have not published anything yet.</div>";
+          return;
+        }
+        worksList.innerHTML = "";
+        snap.forEach(docu => {
+          const d = docu.data();
+          const line = document.createElement("div");
+          line.style.padding = "8px 0";
+          line.innerHTML = `<strong>${escapeHtml(d.title||'Untitled')}</strong> • <span class="small">${escapeHtml(d.type||'')}</span> • <span class="small">${escapeHtml(d.publishDate||'')}</span>`;
+          worksList.appendChild(line);
+        });
+      } catch (err) {
+        console.error("Load works error:", err);
+        worksList.textContent = "Failed to load works: " + err.message;
       }
-    });
+    }
+
+    // basic escape
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
   </script>
 </body>
 </html>
+
