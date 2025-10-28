@@ -6,19 +6,28 @@
   <title>NovelMint — Dashboard (Publish)</title>
   <link rel="icon" href="favicon.png" />
   <style>
+    :root{
+      --accent: #16a34a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --bg: #ffffff;
+      --card: #f9fafb;
+      --bottom-height: 64px;
+    }
+
     body {
       margin: 0;
       font-family: "Poppins", sans-serif;
-      background: #ffffff;
+      background: var(--bg);
       color: #111;
       display: flex;
       min-height: 100vh;
     }
 
-    /* SIDEBAR / HEADER (desktop) */
+    /* ==== SIDEBAR (desktop) - UNCHANGED ==== */
     header {
       background: #fff;
-      border-right: 1px solid #e5e7eb;
+      border-right: 1px solid var(--border);
       width: 250px;
       padding: 20px 15px;
       display: flex;
@@ -34,141 +43,204 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
-    .logo-section img { width: 38px; height: 38px; border-radius: 50%; }
-    .logo-section span { font-size: 1.2rem; font-weight: 600; color: #16a34a; }
 
-    nav { display:flex; flex-direction:column; gap:12px; margin-top:10px; }
-    nav a { text-decoration: none; color: #111; font-weight: 500; font-size: 1.02em; display:flex; gap:8px; align-items:center; }
-    nav a:hover { color:#16a34a; }
+    .logo-section img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+    }
 
-    footer { text-align:center; font-size:0.85em; color:#6b7280; border-top:1px solid #e5e7eb; padding-top:10px; margin-top:20px; }
+    .logo-section span {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: var(--accent);
+    }
 
-    /* MAIN */
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #111;
+      font-weight: 500;
+      font-size: 1.05em;
+      transition: 0.2s;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--accent);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.85em;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      margin-top: 30px;
+    }
+
+    /* ==== MAIN ==== */
     main {
       flex: 1;
       margin-left: 250px;
       padding: 24px;
       box-sizing: border-box;
+      transition: padding-bottom 0.2s;
     }
 
     .publish {
       max-width: 820px;
       margin: 0 auto;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
+      background: var(--card);
+      border: 1px solid var(--border);
       border-radius: 12px;
       padding: 20px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
-    .publish h3 { color: #16a34a; margin: 0 0 12px 0; }
+    .publish h3 { color: var(--accent); margin: 0 0 12px 0; }
     .row { display:flex; gap:12px; align-items:center; }
     .col { flex:1; }
     label { display:block; font-size:0.9rem; color:#374151; margin-bottom:6px; }
     input[type="text"], input[type="date"], select, textarea {
-      width:100%; padding:10px; border:1px solid #e5e7eb; border-radius:8px; background:#fff; color:#111; font-size:1rem; box-sizing:border-box;
+      width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; background:#fff; color:#111; font-size:1rem; box-sizing:border-box;
     }
     textarea { resize:vertical; min-height:100px; }
 
-    .small { font-size:0.9rem; color:#6b7280; margin-top:6px; }
-    .muted { color:#6b7280; font-size:0.9rem; }
+    .small { font-size:0.9rem; color:var(--muted); margin-top:6px; }
+    .muted { color:var(--muted); }
 
     .actions { display:flex; gap:12px; margin-top:12px; align-items:center; flex-wrap:wrap; }
     button {
-      background: #16a34a; color:#fff; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-size:1rem;
+      background: var(--accent); color:#fff; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-size:1rem;
     }
-    button.secondary { background:#f3f4f6; color:#111; border:1px solid #e5e7eb; }
+    button.secondary { background:#f3f4f6; color:#111; border:1px solid var(--border); }
     button.danger { background:#ef4444; }
 
     .status { margin-top:10px; font-size:0.95rem; }
     .status.success { color: #15803d; }
     .status.error { color: #dc2626; }
     .progress { height:8px; background:#e6f4ea; border-radius:6px; overflow:hidden; margin-top:8px; }
-    .progress > span { display:block; height:100%; width:0%; background:#16a34a; transition:width 0.2s ease; }
+    .progress > span { display:block; height:100%; width:0%; background:var(--accent); transition:width 0.2s ease; }
 
-    /* responsive */
     @media (max-width: 880px) {
       .row { flex-direction:column; align-items:stretch; }
     }
 
-    /* MOBILE header behavior (top) */
+    /* ==== MOBILE BEHAVIOR ==== */
     @media (max-width: 768px) {
       body { flex-direction: column; }
 
+      /* top header becomes slim top bar with logo only */
       header {
-        flex-direction: row; align-items:center; justify-content:space-between; position: sticky; top:0; width:100%;
-        height:auto; border-right:none; border-bottom:1px solid #e5e7eb; padding:10px 16px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        height: auto;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 10px 16px;
+        z-index: 120;
       }
-      nav { display:none; position:absolute; top:60px; right:0; width:100%; background:#fff; border-top:1px solid #e5e7eb; text-align:center; padding:8px 0; }
-      nav.active { display:flex; flex-direction:column; gap:10px; }
-      main { margin-left:0; padding:16px; }
-      footer { display:none; }
-      .menu-toggle { display:flex; gap:4px; flex-direction:column; }
-      .menu-toggle span { width:24px; height:3px; background:#111; border-radius:2px; display:block; }
-    }
-    .menu-toggle { display:none; cursor:pointer; }
 
-    /* ===== Mobile bottom nav (Instagram-style) ===== */
-    .mobile-bottom-nav {
+      /* hide desktop nav on mobile (we'll use bottom nav) */
+      nav { display: none; }
+
+      /* reserve space at bottom for bottom nav to avoid overlap */
+      main {
+        margin-left: 0;
+        padding: 16px;
+        padding-bottom: calc(var(--bottom-height) + env(safe-area-inset-bottom));
+      }
+
+      footer { display: none; }
+    }
+
+    /* ==== BOTTOM MOBILE NAV (only visible on small screens) ==== */
+    .bottom-nav {
       display: none;
     }
+
     @media (max-width: 768px) {
-      .mobile-bottom-nav {
+      .bottom-nav {
         display: flex;
         position: fixed;
         left: 0;
         right: 0;
         bottom: 0;
-        height: 60px;
+        height: var(--bottom-height);
+        padding-bottom: env(safe-area-inset-bottom);
         background: #fff;
-        border-top: 1px solid #e5e7eb;
-        justify-content: space-around;
+        border-top: 1px solid var(--border);
+        box-shadow: 0 -6px 18px rgba(0,0,0,0.06);
         align-items: center;
-        z-index: 200;
+        justify-content: space-around;
+        gap: 6px;
+        z-index: 130;
       }
-      .mobile-bottom-nav a {
+
+      .bottom-nav a {
         text-decoration: none;
-        color: #111;
+        color: #6b7280;
         font-size: 12px;
-        display: flex;
+        display:flex;
         flex-direction: column;
         align-items: center;
-        gap: 4px;
+        justify-content: center;
+        gap:4px;
+        width: 72px;
+        height: 100%;
+        box-sizing: border-box;
+        padding-top:6px;
       }
-      .mobile-bottom-nav svg { width: 22px; height: 22px; fill: none; stroke: #374151; stroke-width: 1.6; }
-      .mobile-bottom-nav a.active svg { stroke: #16a34a; }
-      .mobile-bottom-nav a.active span { color: #16a34a; font-weight: 600; }
-      /* make sure main content isn't covered */
-      main { padding-bottom: 90px; }
+
+      .bottom-nav a .icon {
+        font-size: 20px;
+        line-height: 1;
+      }
+
+      .bottom-nav a.active {
+        color: var(--accent);
+      }
+
+      /* subtle hit-area and alignment fix on mobile */
+      .bottom-nav a:active, .bottom-nav a:focus {
+        background: rgba(22,163,74,0.06);
+        border-radius: 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Header (left on desktop, top on mobile) -->
+  <!-- Header (left on desktop, slim top on mobile) -->
   <header>
     <div style="display:flex; align-items:center; gap:10px;">
-      <div class="logo-section">
+      <div class="logo-section" style="margin:0;">
         <img src="logo.png" alt="NovelMint logo" style="width:38px;height:38px;border-radius:50%;">
         <span>NovelMint</span>
       </div>
-
-      <div class="menu-toggle" id="menuToggle" aria-hidden="true">
-        <span></span><span></span><span></span>
-      </div>
     </div>
 
+    <!-- desktop nav remains (hidden on mobile) -->
     <nav id="navMenu" aria-label="Main navigation">
       <a href="index.html">📚 Library</a>
-      <a href="dashboard.html">📊 Dashboard</a>
+      <a href="dashboard.html" class="active">📊 Dashboard</a>
       <a href="publish.html">✍️ Publish</a>
     </nav>
 
     <footer>© 2025 NovelMint</footer>
   </header>
 
-  <!-- Main: Publish form with extra features -->
+  <!-- Main: Publish form -->
   <main>
     <div class="publish" id="publishForm">
       <h3>📖 Publish New Content</h3>
@@ -249,34 +321,25 @@
     </div>
   </main>
 
-  <!-- Mobile bottom nav (only visible on mobile) -->
-  <nav class="mobile-bottom-nav" role="navigation" aria-label="Mobile bottom navigation" id="mobileBottomNav">
-    <a href="index.html" data-name="library" id="bb-library">
-      <!-- book icon -->
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2V5z"/><path d="M7 7h10" /></svg>
-      <span>Library</span>
+  <!-- Bottom mobile navigation -->
+  <nav class="bottom-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="index.html" id="nav-library" class="">
+      <div class="icon">📚</div>
+      <div class="label">Library</div>
     </a>
 
-    <a href="dashboard.html" data-name="dashboard" id="bb-dashboard">
-      <!-- chart icon -->
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M9 13v6"/><path d="M14 8v11"/><path d="M19 4v15"/></svg>
-      <span>Dashboard</span>
+    <a href="dashboard.html" id="nav-dashboard" class="active">
+      <div class="icon">📊</div>
+      <div class="label">Dashboard</div>
     </a>
 
-    <a href="publish.html" data-name="publish" id="bb-publish">
-      <!-- plus icon -->
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-      <span>Publish</span>
-    </a>
-
-    <a href="profile.html" data-name="profile" id="bb-profile">
-      <!-- user icon -->
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
-      <span>Profile</span>
+    <a href="publish.html" id="nav-publish" class="">
+      <div class="icon">✍️</div>
+      <div class="label">Publish</div>
     </a>
   </nav>
 
-  <!-- Firebase + logic (uses same imports pattern as your app.js setup) -->
+  <!-- Firebase + logic (keeps same imports pattern) -->
   <script type="module">
     import { auth, db, storage } from "./app.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
@@ -312,37 +375,37 @@
 
     // show/hide file section when type changes
     function updateFileSection() {
-      const t = typeEl.value.toLowerCase();
-      // show for book or short book
+      const t = (typeEl.value || "").toLowerCase();
       if (t.includes("book")) {
         fileSection.style.display = "block";
       } else {
         fileSection.style.display = "none";
-        bookFileEl.value = "";
-        fileInfo.textContent = "No file selected.";
+        if (bookFileEl) bookFileEl.value = "";
+        if (fileInfo) fileInfo.textContent = "No file selected.";
       }
     }
 
     typeEl.addEventListener("change", updateFileSection);
 
     // file info & size check
-    bookFileEl.addEventListener("change", () => {
-      const f = bookFileEl.files[0];
-      if (!f) { fileInfo.textContent = "No file selected."; return; }
-      const max = 100 * 1024 * 1024; // 100 MB
-      if (f.size > max) {
-        fileInfo.textContent = `❌ File too large (${(f.size/1024/1024).toFixed(2)} MB). Max 100 MB.`;
-        fileInfo.classList.add("error");
-      } else {
-        fileInfo.textContent = `${f.name} — ${(f.size/1024/1024).toFixed(2)} MB`;
-      }
-    });
+    if (bookFileEl) {
+      bookFileEl.addEventListener("change", () => {
+        const f = bookFileEl.files[0];
+        if (!f) { fileInfo.textContent = "No file selected."; return; }
+        const max = 100 * 1024 * 1024; // 100 MB
+        if (f.size > max) {
+          fileInfo.textContent = `❌ File too large (${(f.size/1024/1024).toFixed(2)} MB). Max 100 MB.`;
+        } else {
+          fileInfo.textContent = `${f.name} — ${(f.size/1024/1024).toFixed(2)} MB`;
+        }
+      });
+    }
 
     // counts
     excerptEl.addEventListener("input", () => {
       const len = excerptEl.value.length;
       excerptCount.textContent = `${len} / 300`;
-      if (len > 300) excerptCount.style.color = "#dc2626"; else excerptCount.style.color = "#6b7280";
+      excerptCount.style.color = len > 300 ? "#dc2626" : "var(--muted)";
     });
 
     contentEl.addEventListener("input", () => {
@@ -361,7 +424,7 @@
       excerptEl.value = "";
       contentEl.value = "";
       coverEl.value = "";
-      bookFileEl.value = "";
+      if (bookFileEl) bookFileEl.value = "";
       tagsEl.value = "";
       publishDateEl.value = "";
       visibilityEl.value = "public";
@@ -371,13 +434,13 @@
       updateFileSection();
     });
 
-    // preview (simple)
+    // preview
     previewBtn.addEventListener("click", () => {
       const previewWindow = window.open("", "_blank", "width=700,height=800");
       const html = `
         <html><head><title>Preview - ${escapeHtml(titleEl.value || "Untitled")}</title></head>
         <body style="font-family:Arial,Helvetica,sans-serif;padding:20px;">
-          <h1 style="color:#16a34a;">${escapeHtml(titleEl.value || "Untitled")}</h1>
+          <h1 style="color:var(--accent);">${escapeHtml(titleEl.value || "Untitled")}</h1>
           <h4 style="color:#6b7280;">${escapeHtml(excerptEl.value || "")}</h4>
           <pre style="white-space:pre-wrap;font-size:1rem;color:#111;">${escapeHtml(contentEl.value || "")}</pre>
         </body></html>`;
@@ -385,7 +448,35 @@
       previewWindow.document.close();
     });
 
-    // Publishing logic (uploads cover + optional book file)
+    // upload helper
+    async function uploadFile(file, folder) {
+      if (!file) return "";
+      const fileName = `${folder}/${Date.now()}-${file.name.replace(/\s+/g,'_')}`;
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      return new Promise((resolve, reject) => {
+        uploadProgress.style.display = "block";
+        uploadTask.on('state_changed',
+          (snapshot) => {
+            const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            progressBar.style.width = percent + '%';
+          },
+          (err) => {
+            uploadProgress.style.display = "none";
+            reject(err);
+          },
+          async () => {
+            const url = await getDownloadURL(uploadTask.snapshot.ref);
+            uploadProgress.style.display = "none";
+            progressBar.style.width = "0%";
+            resolve(url);
+          }
+        );
+      });
+    }
+
+    // publish
     publishBtn.addEventListener("click", async () => {
       if (!currentUser) { statusDiv.textContent = "⚠️ You must be logged in."; statusDiv.className = "status error"; return; }
 
@@ -393,11 +484,11 @@
       const excerpt = excerptEl.value.trim();
       const content = contentEl.value.trim();
       const type = typeEl.value;
-      const tags = tagsEl.value.split(",").map(t => t.trim()).filter(Boolean);
+      const tags = (tagsEl.value || "").split(",").map(t => t.trim()).filter(Boolean);
       const visibility = visibilityEl.value;
       const publishOn = publishDateEl.value || null;
       const coverFile = coverEl.files[0];
-      const bookFile = bookFileEl.files[0];
+      const bookFile = bookFileEl ? bookFileEl.files[0] : null;
 
       if (!title || !content) {
         statusDiv.textContent = "⚠️ Title and content are required.";
@@ -405,7 +496,6 @@
         return;
       }
 
-      // book file size check
       if (bookFile) {
         const max = 100 * 1024 * 1024;
         if (bookFile.size > max) {
@@ -415,4 +505,83 @@
         }
       }
 
-      publish
+      publishBtn.disabled = true;
+      publishBtn.textContent = "Publishing...";
+      statusDiv.textContent = "Uploading resources...";
+      statusDiv.className = "status muted";
+
+      try {
+        // upload cover
+        let coverUrl = "";
+        if (coverFile) {
+          statusDiv.textContent = "Uploading cover image...";
+          coverUrl = await uploadFile(coverFile, "covers");
+        }
+
+        // upload book file
+        let bookFileUrl = "";
+        let bookFileName = "";
+        if (bookFile) {
+          statusDiv.textContent = "Uploading attached file (may take a while)...";
+          bookFileUrl = await uploadFile(bookFile, "books");
+          bookFileName = bookFile.name;
+        }
+
+        // save doc
+        statusDiv.textContent = "Saving content...";
+        const docData = {
+          title,
+          excerpt,
+          content,
+          type,
+          tags,
+          visibility,
+          coverUrl: coverUrl || "",
+          fileUrl: bookFileUrl || "",
+          fileName: bookFileName || "",
+          author: currentUser.email ? currentUser.email.split("@")[0] : "unknown",
+          authorId: currentUser.uid,
+          publishDate: publishOn || new Date().toLocaleDateString(),
+          createdAt: serverTimestamp()
+        };
+
+        await addDoc(collection(db, "contents"), docData);
+
+        statusDiv.textContent = "✅ Published successfully!";
+        statusDiv.className = "status success";
+        publishBtn.textContent = "Publish";
+        publishBtn.disabled = false;
+      } catch (err) {
+        console.error(err);
+        statusDiv.textContent = "❌ " + (err.message || "Upload failed");
+        statusDiv.className = "status error";
+        publishBtn.disabled = false;
+        publishBtn.textContent = "Publish";
+      }
+    });
+
+    // bottom nav active-state handling (for SPA-like highlighting)
+    const bottomLinks = {
+      library: document.getElementById("nav-library"),
+      dashboard: document.getElementById("nav-dashboard"),
+      publish: document.getElementById("nav-publish")
+    };
+    function setActiveBottom(id){
+      Object.values(bottomLinks).forEach(a => a.classList.remove("active"));
+      if (bottomLinks[id]) bottomLinks[id].classList.add("active");
+    }
+    // set current active by pathname
+    if (location.pathname.includes("publish")) setActiveBottom("publish");
+    else if (location.pathname.includes("dashboard")) setActiveBottom("dashboard");
+    else setActiveBottom("library");
+
+    // utility
+    function escapeHtml(s = "") {
+      return String(s).replace(/[&<>"']/g, (m) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[m]));
+    }
+
+    // init
+    updateFileSection();
+  </script>
+</body>
+</html>
