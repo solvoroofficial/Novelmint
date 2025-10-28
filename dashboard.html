@@ -1,210 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NovelMint — Dashboard</title>
-  <link rel="icon" href="favicon.png" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovelMint – Dashboard</title>
   <style>
     body {
-      margin: 0;
-      font-family: "Poppins", sans-serif;
-      background: #0f172a;
-      color: #fff;
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* Sidebar Header */
-    header {
-      width: 220px;
-      background: #1e293b;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-    }
-
-    header h2 {
-      color: #38bdf8;
-      font-size: 1.4em;
-      margin-bottom: 10px;
-    }
-
-    button {
-      background: #38bdf8;
-      border: none;
-      color: white;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #0ea5e9;
-    }
-
-    main {
-      flex: 1;
+      font-family: Poppins, sans-serif;
+      background: #f9fafb;
+      color: #111;
       padding: 20px;
     }
-
-    .publish-section {
-      background: #1e293b;
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
       padding: 20px;
-      border-radius: 10px;
-      max-width: 600px;
-      margin: 0 auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
-    .publish-section h3 {
-      margin-bottom: 10px;
-      color: #93c5fd;
-    }
-
-    input, select, textarea {
+    input, textarea {
       width: 100%;
+      margin: 10px 0;
       padding: 10px;
-      border: none;
+      border: 1px solid #ddd;
       border-radius: 8px;
-      background: #334155;
-      color: #fff;
-      margin-bottom: 15px;
-      font-size: 1em;
     }
-
-    input[type="file"] {
-      background: none;
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
     }
-
     .logout {
       background: #ef4444;
-      margin-top: auto;
-    }
-
-    .logout:hover {
-      background: #dc2626;
-    }
-
-    #status {
-      margin-top: 10px;
-      color: #38bdf8;
-      font-size: 0.9em;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h2>NovelMint</h2>
-    <button id="publishBtn">📖 Publish</button>
-    <button class="logout" id="logoutBtn">Logout</button>
-  </header>
-
-  <main>
-    <div class="publish-section" id="publishFormContainer" style="display:none;">
-      <h3>Publish New Content</h3>
-      <input type="text" id="title" placeholder="Enter title" />
-      <select id="type">
-        <option>Story</option>
-        <option>Poem</option>
-        <option>Book</option>
-        <option>Thought</option>
-      </select>
-      <textarea id="content" rows="6" placeholder="Write your story..."></textarea>
-      <input type="file" id="cover" accept="image/*" />
-      <button id="submitContent">Publish</button>
-      <div id="status"></div>
+  <div class="container">
+    <h2>Your Profile</h2>
+    <div id="profileForm">
+      <input type="text" id="username" placeholder="Choose username" />
+      <textarea id="bio" placeholder="Short bio..."></textarea>
+      <button id="saveProfile">Save</button>
     </div>
-  </main>
+    <div id="profileInfo" style="display:none;">
+      <h3 id="displayName"></h3>
+      <p id="displayBio"></p>
+      <button id="editProfile">Edit</button>
+    </div>
+    <button id="logoutBtn" class="logout">Logout</button>
+    <p id="status"></p>
+  </div>
 
-<script type="module">
-  import { auth, db, storage } from "./app.js";
-  import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-  import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-  import {
-    ref as storageRef,
-    uploadBytes,
-    getDownloadURL
-  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+  <script type="module">
+    import { auth, db } from "./app.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-  const publishBtn = document.getElementById("publishBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const publishFormContainer = document.getElementById("publishFormContainer");
-  const submitContent = document.getElementById("submitContent");
-  const statusDiv = document.getElementById("status");
+    const usernameInput = document.getElementById("username");
+    const bioInput = document.getElementById("bio");
+    const saveBtn = document.getElementById("saveProfile");
+    const editBtn = document.getElementById("editProfile");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const status = document.getElementById("status");
+    const profileForm = document.getElementById("profileForm");
+    const profileInfo = document.getElementById("profileInfo");
+    const displayName = document.getElementById("displayName");
+    const displayBio = document.getElementById("displayBio");
 
-  let currentUser = null;
+    let currentUser;
 
-  // ✅ Ensure user logged in
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return (window.location.href = "login.html");
       currentUser = user;
-    } else {
-      window.location.href = "login.html";
-    }
-  });
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
 
-  // Toggle publish form
-  publishBtn.addEventListener("click", () => {
-    publishFormContainer.style.display =
-      publishFormContainer.style.display === "none" ? "block" : "none";
-  });
-
-  // ✅ Publish Handler
-  submitContent.addEventListener("click", async () => {
-    const title = document.getElementById("title").value.trim();
-    const type = document.getElementById("type").value;
-    const content = document.getElementById("content").value.trim();
-    const file = document.getElementById("cover").files[0];
-
-    if (!title || !content) {
-      statusDiv.textContent = "⚠️ Please enter title and content.";
-      return;
-    }
-
-    statusDiv.textContent = "Uploading... ⏳";
-
-    let coverUrl = "";
-
-    try {
-      if (file) {
-        // ✅ Correct way to create storage reference
-        const fileRef = storageRef(storage, "covers/" + Date.now() + "-" + file.name);
-        await uploadBytes(fileRef, file);
-        coverUrl = await getDownloadURL(fileRef);
+      if (docSnap.exists() && docSnap.data().hasProfile) {
+        const data = docSnap.data();
+        displayName.textContent = "@" + data.username;
+        displayBio.textContent = data.bio || "";
+        profileForm.style.display = "none";
+        profileInfo.style.display = "block";
+      } else {
+        profileForm.style.display = "block";
       }
+    });
 
-      await addDoc(collection(db, "contents"), {
-        title,
-        type,
-        content,
-        coverUrl,
-        author: currentUser.email.split("@")[0],
-        authorId: currentUser.uid,
-        publishDate: new Date().toLocaleDateString(),
-        createdAt: serverTimestamp(),
+    saveBtn.addEventListener("click", async () => {
+      const username = usernameInput.value.trim();
+      const bio = bioInput.value.trim();
+      if (!username) {
+        status.textContent = "⚠️ Enter a username!";
+        return;
+      }
+      await setDoc(doc(db, "users", currentUser.uid), {
+        email: currentUser.email,
+        username,
+        bio,
+        hasProfile: true
       });
+      status.textContent = "✅ Profile saved!";
+      window.location.reload();
+    });
 
-      statusDiv.textContent = "✅ Published successfully!";
-      document.getElementById("title").value = "";
-      document.getElementById("content").value = "";
-      document.getElementById("cover").value = "";
-    } catch (err) {
-      console.error("Publish error:", err);
-      statusDiv.textContent = "❌ Failed to publish: " + err.message;
-    }
-  });
+    editBtn.addEventListener("click", async () => {
+      profileForm.style.display = "block";
+      profileInfo.style.display = "none";
+    });
 
-  // ✅ Logout
-  logoutBtn.addEventListener("click", async () => {
-    await signOut(auth);
-    window.location.href = "login.html";
-  });
-</script>
-
-    // ✅ Logout
     logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
       window.location.href = "login.html";
@@ -212,4 +120,3 @@
   </script>
 </body>
 </html>
-
