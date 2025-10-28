@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writer Profile — NovelMint</title>
+  <link rel="icon" href="favicon.png" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #0f172a;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #1e293b;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.4em;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+
+    .profile {
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #334155;
+      margin: 0 auto 15px;
+      object-fit: cover;
+    }
+
+    .username {
+      font-size: 1.4em;
+      color: #93c5fd;
+    }
+
+    .bio {
+      color: #94a3b8;
+      margin: 10px 0 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    .card-title {
+      color: #93c5fd;
+      font-size: 1.1em;
+      margin-bottom: 6px;
+    }
+
+    .card-content {
+      color: #cbd5e1;
+      font-size: 0.95em;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <header>👤 Writer Profile</header>
+
+  <div class="profile" id="profileSection">
+    <img src="https://via.placeholder.com/100x100?text=User" class="avatar" id="avatar">
+    <div class="username" id="username">Loading...</div>
+    <div class="bio" id="bio"></div>
+  </div>
+
+  <h3 style="text-align:center; color:#38bdf8;">Published Works</h3>
+  <div class="grid" id="contentGrid">
+    <p style="text-align:center; width:100%; color:#94a3b8;">Loading...</p>
+  </div>
+
+  <footer>© 2025 NovelMint</footer>
+
+  <script type="module">
+    import { db } from "./app.js";
+    import { doc, getDoc, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const params = new URLSearchParams(window.location.search);
+    const authorId = params.get("id");
+
+    const profileSection = document.getElementById("profileSection");
+    const usernameEl = document.getElementById("username");
+    const bioEl = document.getElementById("bio");
+    const contentGrid = document.getElementById("contentGrid");
+
+    async function loadProfile() {
+      try {
+        // Get profile info
+        const profileDoc = await getDoc(doc(db, "publicUsers", authorId));
+        if (profileDoc.exists()) {
+          const data = profileDoc.data();
+          usernameEl.textContent = data.displayName || "Unknown Author";
+          bioEl.textContent = data.bio || "No bio available yet.";
+        } else {
+          usernameEl.textContent = "Unknown Author";
+          bioEl.textContent = "No profile found.";
+        }
+
+        // Load their content
+        const q = query(collection(db, "contents"), where("authorId", "==", authorId), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        contentGrid.innerHTML = "";
+
+        if (snapshot.empty) {
+          contentGrid.innerHTML = `<p style="text-align:center; color:#94a3b8;">No posts yet.</p>`;
+          return;
+        }
+
+        snapshot.forEach((doc) => {
+          const d = doc.data();
+          const card = document.createElement("div");
+          card.classList.add("card");
+          card.innerHTML = `
+            <div class="card-title">${d.title}</div>
+            <div class="card-content">${d.content.slice(0, 150)}...</div>
+          `;
+          contentGrid.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+        contentGrid.innerHTML = `<p style="text-align:center; color:red;">⚠️ Error loading profile.</p>`;
+      }
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>
