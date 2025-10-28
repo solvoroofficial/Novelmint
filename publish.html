@@ -1,490 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NovelMint — Publish</title>
-  <link rel="icon" href="favicon.png" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Publish — NovelMint</title>
+  <script type="module" src="app.js"></script>
   <style>
-    :root{
-      --accent:#16a34a;
-      --muted:#6b7280;
-      --border:#e5e7eb;
-      --white:#ffffff;
-      --black:#111;
-      --mobile-bottom-height:70px;
-      --topbar-height:56px;
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #0a0a1a;
+      color: white;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
     }
-    *,*::before,*::after{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:"Poppins",sans-serif;
-      background:var(--white);
-      color:var(--black);
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-      padding-top:var(--topbar-height);
-      padding-bottom:var(--mobile-bottom-height);
+    .card {
+      background: #111c3a;
+      padding: 25px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 600px;
+      margin-top: 60px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
     }
-    body.dark{
-      --white:#111;
-      --black:#f9fafb;
-      --border:#374151;
-      --muted:#9ca3af;
-      background:#111;
-      color:#f9fafb;
+    h2 {
+      text-align: center;
+      color: #9ec9ff;
     }
-
-    /* ---------- COMMON ---------- */
-    label{
-      display:block;
-      margin:16px 0 6px;
-      font-weight:600;
-      font-size:0.95rem;
-      color:#374151;
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      background: #16244a;
+      color: white;
     }
-    body.dark label{color:#d1d5db}
-    input[type=text],input[type=date],select,textarea{
-      width:100%;
-      padding:12px 14px;
-      border:1px solid var(--border);
-      border-radius:10px;
-      background:var(--white);
-      font-size:1rem;
-      outline:none;
-      transition:border .15s;
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #3478ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
     }
-    body.dark input,body.dark select,body.dark textarea{
-      background:#1f2937;
-      border-color:#374151;
-      color:#f3f4f6;
-    }
-    input:focus,select:focus,textarea:focus{
-      border-color:var(--accent);
-      box-shadow:0 0 0 3px rgba(22,164,74,.15);
-    }
-    textarea{min-height:140px;resize:vertical}
-    .muted{color:var(--muted);font-size:0.9rem;margin-top:6px}
-    .row{display:flex;gap:14px;align-items:flex-start;margin-top:8px}
-    .col{flex:1}
-    .col.wide{flex:2}
-    .controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;align-items:center}
-    button{
-      font-family:inherit;
-      font-weight:600;
-      padding:11px 18px;
-      border-radius:10px;
-      cursor:pointer;
-      font-size:0.95rem;
-      min-height:44px;
-      transition:all .15s;
-    }
-    button.primary{background:var(--accent);color:#fff;border:none}
-    button.primary:hover{background:#138843}
-    button.ghost{background:#fff;border:1px solid var(--border);color:var(--black)}
-    body.dark button.ghost{background:#1f2937;border-color:#374151;color:#f3f4f6}
-    button.ghost:hover{background:#f3f4f6}
-    .progress{height:8px;background:#e6f4ea;border-radius:6px;overflow:hidden;margin-top:12px;display:none}
-    .progress>span{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
-    .status{margin-top:12px;font-size:0.95rem;min-height:24px}
-    .hidden{display:none}
-
-    /* ---------- MOBILE TOPBAR ---------- */
-    .topbar{
-      position:fixed;top:0;left:0;right:0;z-index:140;
-      height:var(--topbar-height);
-      background:var(--white);
-      border-bottom:1px solid var(--border);
-      padding:8px 14px;
-      display:flex;align-items:center;justify-content:space-between;
-      box-shadow:0 1px 3px rgba(0,0,0,.08);
-      padding-top:env(safe-area-inset-top);
-    }
-    .topbar .brand{display:flex;gap:8px;align-items:center;font-weight:700;color:var(--accent);font-size:1.1rem}
-    .topbar .brand img{width:34px;height:34px;border-radius:50%}
-    .topbar .menu-btn{
-      width:40px;height:40px;background:transparent;border:none;border-radius:8px;
-      display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--black)
-    }
-    .topbar .menu-btn:hover{background:#f3faf3}
-
-    /* ---------- MOBILE MENU OVERLAY ---------- */
-    .mobile-menu-overlay{
-      position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;
-      opacity:0;pointer-events:none;transition:opacity .2s
-    }
-    .mobile-menu-overlay.show{opacity:1;pointer-events:all}
-    .mobile-menu{
-      position:fixed;top:0;left:0;right:0;background:var(--white);
-      padding:16px;padding-top:calc(var(--topbar-height)+env(safe-area-inset-top));
-      border-radius:0 0 16px 16px;box-shadow:0 10px 20px rgba(0,0,0,.15);
-      transform:translateY(-100%);transition:transform .3s;z-index:200;
-      max-height:80vh;overflow-y:auto
-    }
-    .mobile-menu.show{transform:translateY(0)}
-    .mobile-menu .close-menu{
-      position:absolute;top:12px;right:12px;background:none;border:none;
-      font-size:1.5rem;cursor:pointer;color:var(--muted)
-    }
-    .mobile-menu .nav{display:flex;flex-direction:column;gap:12px;margin-top:20px}
-    .mobile-menu a{
-      display:flex;gap:12px;align-items:center;padding:12px;
-      color:var(--black);text-decoration:none;border-radius:10px;
-      font-weight:500;transition:all .15s
-    }
-    .mobile-menu a:hover{background:#f3faf3;color:var(--accent);transform:translateX(4px)}
-    .mobile-menu svg{width:22px;height:22px;stroke:currentColor;fill:none}
-
-    /* ---------- MAIN CONTENT ---------- */
-    main{flex:1;padding:20px 16px;overflow-y:auto}
-    .publish-card{
-      max-width:900px;margin:0 auto;background:#f9fafb;
-      border:1px solid var(--border);border-radius:14px;
-      padding:20px;box-shadow:0 6px 20px rgba(0,0,0,.05)
-    }
-    .publish-card h1{margin:0 0 16px;font-size:1.35rem;color:var(--accent);font-weight:600}
-
-    /* ---------- MOBILE BOTTOM NAV ---------- */
-    .mobile-bottom-nav{
-      position:fixed;left:0;right:0;bottom:0;height:var(--mobile-bottom-height);
-      background:var(--white);border-top:1px solid var(--border);
-      display:flex;justify-content:space-around;align-items:center;
-      z-index:160;padding-bottom:env(safe-area-inset-bottom);
-      box-shadow:0 -2px 10px rgba(0,0,0,.06)
-    }
-    body.dark .mobile-bottom-nav{background:#111;border-top-color:#374151}
-    .mobile-bottom-nav a{
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:5px;text-decoration:none;color:var(--muted);font-size:11px;font-weight:500;
-      width:25%;padding:8px 0;border-radius:8px;transition:all .15s
-    }
-    .mobile-bottom-nav svg{width:24px;height:24px;stroke:currentColor;fill:none}
-    .mobile-bottom-nav a.active{color:var(--accent);font-weight:600}
-    .mobile-bottom-nav a:active{transform:scale(.93)}
-
-    /* ---------- DESKTOP SIDEBAR (hidden on mobile) ---------- */
-    .sidebar{display:none}
-
-    /* ---------- FOOTER (hidden on mobile) ---------- */
-    footer{display:none}
-
-    /* ==================== DESKTOP / LAPTOP ==================== */
-    @media (min-width:769px){
-      body{
-        padding-top:0;padding-bottom:0;flex-direction:row;
-      }
-      /* hide mobile top-bar, bottom nav & overlay */
-      .topbar,.mobile-bottom-nav,.mobile-menu-overlay,.mobile-menu{display:none !important}
-      /* show sidebar (the only header on laptop) */
-      .sidebar{
-        display:flex;width:250px;background:var(--white);
-        border-right:1px solid var(--border);padding:22px 16px;
-        position:fixed;top:0;bottom:0;left:0;flex-direction:column;
-        justify-content:space-between;gap:12px;z-index:120
-      }
-      body.dark .sidebar{background:#111;border-right-color:#374151}
-      .brand img{width:40px;height:40px}
-      .brand .name{font-size:1.15rem}
-      .nav{margin-top:18px;display:flex;flex-direction:column;gap:12px}
-      .nav a{
-        display:flex;gap:10px;align-items:center;padding:10px 12px;
-        color:var(--black);text-decoration:none;border-radius:10px;
-        font-weight:500;transition:all .15s
-      }
-      .nav a:hover{background:#f3faf3;color:var(--accent);transform:translateX(4px)}
-      .nav svg{width:20px;height:20px;stroke:currentColor;fill:none}
-      .sidebar-footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;text-align:center}
-      main{margin-left:250px;padding:32px}
-      .publish-card{padding:24px}
-      /* ** FOOTER REMOVED ON LAPTOP ** */
-      footer{display:none !important}
-    }
-
-    /* ---------- SMALL MOBILE ---------- */
-    @media (max-width:480px){
-      .publish-card{padding:16px}
-      .row{flex-direction:column}
-      .col.wide{width:100%}
-      .controls{flex-direction:column}
-      button{width:100%}
+    button:hover {
+      background: #1e5ed8;
     }
   </style>
 </head>
 <body>
-
-  <!-- ==== MOBILE TOPBAR ==== -->
-  <header class="topbar" role="banner">
-    <div class="brand">
-      <img src="logo.png" alt="NovelMint logo">
-      <div>NovelMint</div>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button class="menu-btn" id="openMenuBtn" aria-label="Open menu">
-        <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-      </button>
-      <button id="darkToggle" class="menu-btn" aria-label="Toggle dark mode">
-        <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
-    </div>
-  </header>
-
-  <!-- ==== MOBILE MENU OVERLAY ==== -->
-  <div class="mobile-menu-overlay" id="menuOverlay"></div>
-  <div class="mobile-menu" id="mobileMenu">
-    <button class="close-menu" id="closeMenuBtn">×</button>
-    <nav class="nav" aria-label="Mobile menu">
-      <a href="index.html">
-        <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5"></path><path d="M9 22V12h6v10"></path></svg>
-        <span>Library</span>
-      </a>
-      <a href="dashboard.html">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8"></rect><rect x="13" y="3" width="8" height="4"></rect><rect x="13" y="11" width="8" height="10"></rect><rect x="3" y="13" width="8" height="8"></rect></svg>
-        <span>Dashboard</span>
-      </a>
-      <a href="publish.html" class="active">
-        <svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"></path></svg>
-        <span>Publish</span>
-      </a>
-      <a href="profile.html">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
-        <span>Profile</span>
-      </a>
-    </nav>
+  <div class="card">
+    <h2>Publish Story</h2>
+    <form id="publishForm">
+      <input type="text" id="title" required placeholder="Story Title" />
+      <textarea id="description" rows="2" placeholder="Short Description"></textarea>
+      <textarea id="content" rows="8" required placeholder="Write your story here..."></textarea>
+      <button type="submit">Publish</button>
+    </form>
   </div>
 
-  <!-- ==== DESKTOP SIDEBAR (the only header on laptop) ==== -->
-  <aside class="sidebar" role="navigation" aria-label="Sidebar">
-    <div>
-      <div class="brand">
-        <img src="logo.png" alt="NovelMint logo">
-        <div class="name">NovelMint</div>
-      </div>
-      <nav class="nav" aria-label="Main">
-        <a href="index.html" title="Library">
-          <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5"></path><path d="M9 22V12h6v10"></path></svg>
-          <span>Library</span>
-        </a>
-        <a href="dashboard.html" title="Dashboard">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8"></rect><rect x="13" y="3" width="8" height="4"></rect><rect x="13" y="11" width="8" height="10"></rect><rect x="3" y="13" width="8" height="8"></rect></svg>
-          <span>Dashboard</span>
-        </a>
-        <a href="publish.html" title="Publish" class="active">
-          <svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"></path></svg>
-          <span>Publish</span>
-        </a>
-        <a href="profile.html" title="Profile">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
-          <span>Profile</span>
-        </a>
-      </nav>
-    </div>
-    <div class="sidebar-footer">© 2025 NovelMint</div>
-  </aside>
-
-  <!-- ==== MAIN CONTENT ==== -->
-  <main>
-    <div class="publish-card">
-      <h1>Publish New Content</h1>
-
-      <label for="type">Type</label>
-      <select id="type">
-        <option value="">-- Choose type --</option>
-        <option>Story</option><option>Short Story</option><option>Flash Fiction</option>
-        <option>Poem</option><option>Quote</option><option>Article</option>
-        <option>Essay</option><option>Book</option><option>Short Book</option>
-        <option>Thought</option>
-      </select>
-
-      <div class="row">
-        <div class="col wide"><label for="title">Title</label>
-          <input id="title" type="text" placeholder="Enter title (optional for quote)"/>
-        </div>
-        <div class="col" style="min-width:140px"><label for="visibility">Visibility</label>
-          <select id="visibility"><option value="public">Public</option><option value="private">Private</option><option value="draft">Draft</option></select>
-        </div>
-      </div>
-
-      <label for="excerpt">Excerpt (optional)</label>
-      <textarea id="excerpt" placeholder="Short excerpt shown on cards (max 300 chars)"></textarea>
-      <div class="muted" id="excerptCount">0 / 300</div>
-
-      <label for="content">Content</label>
-      <textarea id="content" placeholder="Write your content..."></textarea>
-      <div class="muted" id="contentCount">0 characters</div>
-
-      <div class="row">
-        <div class="col wide"><label for="cover">Cover image (optional)</label>
-          <input id="cover" type="file" accept="image/*"/>
-          <div class="muted">Best: 1200×675 px. Max 10 MB.</div>
-        </div>
-        <div class="col" style="min-width:140px"><label for="publishDate">Publish on (optional)</label>
-          <input id="publishDate" type="date"/>
-        </div>
-      </div>
-
-      <label for="tags">Tags (comma separated)</label>
-      <input id="tags" type="text" placeholder="e.g. romance, short"/>
-
-      <div id="fileSection" style="margin-top:16px;display:none">
-        <label for="bookFile">Attach file (PDF / EPUB / DOCX) — max 100 MB</label>
-        <input id="bookFile" type="file" accept=".pdf,.epub,.doc,.docx"/>
-        <div class="muted" id="fileInfo">No file selected.</div>
-      </div>
-
-      <div class="controls">
-        <button id="publishBtn" class="primary">Publish</button>
-        <button id="previewBtn" class="ghost">Preview</button>
-        <button id="clearBtn" class="ghost">Clear</button>
-      </div>
-
-      <div class="progress" id="uploadProgress"><span></span></div>
-      <div class="status muted" id="status"></div>
-    </div>
-  </main>
-
-  <!-- ==== MOBILE BOTTOM NAV ==== -->
-  <nav class="mobile-bottom-nav" role="navigation" aria-label="Mobile navigation">
-    <a href="index.html" id="mb-home">
-      <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5"></path><path d="M9 22V12h6v10"></path></svg>
-      <span>Library</span>
-    </a>
-    <a href="dashboard.html" id="mb-dashboard">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8"></rect><rect x="13" y="3" width="8" height="4"></rect><rect x="13" y="11" width="8" height="10"></rect><rect x="3" y="13" width="8" height="8"></rect></svg>
-      <span>Dashboard</span>
-    </a>
-    <a href="publish.html" id="mb-publish" class="active">
-      <svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"></path></svg>
-      <span>Publish</span>
-    </a>
-    <a href="profile.html" id="mb-profile">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M6 20v-1a6 6 0 0 1 12 0v1"></path></svg>
-      <span>Profile</span>
-    </a>
-  </nav>
-
-  <!-- ==== FOOTER (removed on laptop, kept in markup for possible future use) ==== -->
-  <footer>© 2025 NovelMint. All rights reserved.</footer>
-
-  <!-- ==== SCRIPT ==== -->
   <script type="module">
-    const typeEl = document.getElementById('type');
-    const fileSection = document.getElementById('fileSection');
-    const bookFileEl = document.getElementById('bookFile');
-    const fileInfo = document.getElementById('fileInfo');
-    const excerptEl = document.getElementById('excerpt');
-    const excerptCount = document.getElementById('excerptCount');
-    const contentEl = document.getElementById('content');
-    const contentCount = document.getElementById('contentCount');
-    const publishBtn = document.getElementById('publishBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const previewBtn = document.getElementById('previewBtn');
-    const uploadProgress = document.getElementById('uploadProgress');
-    const progressBar = uploadProgress.querySelector('span');
-    const statusDiv = document.getElementById('status');
+    import { auth, db } from "./app.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { collection, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-    const openMenuBtn = document.getElementById('openMenuBtn');
-    const closeMenuBtn = document.getElementById('closeMenuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    const menuOverlay = document.getElementById('menuOverlay');
-    const darkToggle = document.getElementById('darkToggle');
+    const form = document.getElementById("publishForm");
+    let currentUser = null;
+    let userData = null;
 
-    function updateFileSection(){
-      const t = (typeEl.value||'').toLowerCase();
-      fileSection.style.display = t.includes('book') ? 'block' : 'none';
-      if(!t.includes('book')){
-        bookFileEl.value = '';
-        fileInfo.textContent = 'No file selected.';
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
       }
-    }
-    typeEl.addEventListener('change',updateFileSection);
+      currentUser = user;
 
-    excerptEl.addEventListener('input',()=>{
-      const len = excerptEl.value.length;
-      excerptCount.textContent = `${len} / 300`;
-      excerptCount.style.color = len>300 ? '#dc2626' : '';
+      // Fetch user data for username
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
+      if (snap.exists()) userData = snap.data();
     });
-    contentEl.addEventListener('input',()=>contentCount.textContent=`${contentEl.value.length} characters`);
 
-    bookFileEl?.addEventListener('change',()=>{
-      const f = bookFileEl.files[0];
-      if(!f){fileInfo.textContent='No file selected.';return;}
-      const max = 100*1024*1024;
-      if(f.size>max){
-        fileInfo.textContent=`File too large (${(f.size/1024/1024).toFixed(2)} MB). Max 100 MB.`;
-        fileInfo.style.color='#dc2626';
-      }else{
-        fileInfo.textContent=`${f.name} — ${(f.size/1024/1024).toFixed(2)} MB`;
-        fileInfo.style.color='inherit';
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const content = document.getElementById("content").value.trim();
+
+      if (!title || !content) {
+        alert("Title and content are required.");
+        return;
       }
+
+      await addDoc(collection(db, "stories"), {
+        uid: currentUser.uid,
+        username: userData?.username || "unknown",
+        title,
+        description,
+        content,
+        status: "published",
+        createdAt: new Date()
+      });
+
+      alert("Story published successfully!");
+      window.location.href = "profile.html";
     });
-
-    openMenuBtn?.addEventListener('click',()=>{mobileMenu.classList.add('show');menuOverlay.classList.add('show');});
-    closeMenuBtn?.addEventListener('click',()=>{mobileMenu.classList.remove('show');menuOverlay.classList.remove('show');});
-    menuOverlay?.addEventListener('click',()=>{mobileMenu.classList.remove('show');menuOverlay.classList.remove('show');});
-
-    darkToggle?.addEventListener('click',()=>{
-      document.body.classList.toggle('dark');
-      localStorage.setItem('darkMode',document.body.classList.contains('dark'));
-    });
-    if(localStorage.getItem('darkMode')==='true') document.body.classList.add('dark');
-
-    previewBtn.addEventListener('click',()=>{
-      const title = document.getElementById('title').value||'Untitled';
-      const html = `<!DOCTYPE html><html><head><title>Preview - ${escapeHtml(title)}</title>
-        <style>body{font-family:system-ui;padding:20px;background:#fff;color:#111}h1{color:#16a34a}</style>
-        </head><body><h1>${escapeHtml(title)}</h1>
-        <h4 style="color:#6b7280">${escapeHtml(excerptEl.value)}</h4>
-        <pre style="white-space:pre-wrap;font-size:1rem">${escapeHtml(contentEl.value)}</pre>
-        </body></html>`;
-      const w = window.open('','_blank','width=800,height=900');
-      w.document.write(html);w.document.close();
-    });
-
-    clearBtn.addEventListener('click',()=>{
-      ['title','excerpt','content','cover','tags','publishDate'].forEach(id=>document.getElementById(id).value='');
-      if(bookFileEl) bookFileEl.value='';
-      document.getElementById('visibility').value='public';
-      statusDiv.textContent='';uploadProgress.style.display='none';progressBar.style.width='0%';
-      updateFileSection();
-    });
-
-    publishBtn.addEventListener('click',async()=>{
-      publishBtn.disabled=true;publishBtn.textContent='Publishing...';statusDiv.textContent='Preparing...';
-      try{
-        const title=document.getElementById('title').value.trim();
-        const content=contentEl.value.trim();
-        if(!title||!content) throw new Error('Title and content required.');
-        uploadProgress.style.display='block';
-        const steps=[10,40,75,100];
-        for(let i=0;i<steps.length;i++){
-          await new Promise(r=>setTimeout(r,300+i*100));
-          progressBar.style.width=steps[i]+'%';
-        }
-        statusDiv.textContent='Published successfully!';
-        publishBtn.textContent='Published';
-      }catch(e){
-        statusDiv.textContent='Error: '+e.message;
-        publishBtn.textContent='Publish';
-      }finally{
-        publishBtn.disabled=false;
-        setTimeout(()=>{uploadProgress.style.display='none';progressBar.style.width='0%';},1000);
-      }
-    });
-
-    function escapeHtml(s=''){
-      return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    }
-
-    (function(){
-      const path = location.pathname.split('/').pop()||'publish.html';
-      const map={'index.html':'mb-home','publish.html':'mb-publish','dashboard.html':'mb-dashboard','profile.html':'mb-profile'};
-      const id=map[path];
-      if(id) document.getElementById(id)?.classList.add('active');
-    })();
-
-    updateFileSection();
   </script>
 </body>
 </html>
