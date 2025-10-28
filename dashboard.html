@@ -119,79 +119,90 @@
     </div>
   </main>
 
-  <script type="module">
-    import { auth, db, storage } from "./app.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-    import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+<script type="module">
+  import { auth, db, storage } from "./app.js";
+  import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+  import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+  import {
+    ref as storageRef,
+    uploadBytes,
+    getDownloadURL
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
-    const publishBtn = document.getElementById("publishBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const publishFormContainer = document.getElementById("publishFormContainer");
-    const submitContent = document.getElementById("submitContent");
-    const statusDiv = document.getElementById("status");
+  const publishBtn = document.getElementById("publishBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const publishFormContainer = document.getElementById("publishFormContainer");
+  const submitContent = document.getElementById("submitContent");
+  const statusDiv = document.getElementById("status");
 
-    let currentUser = null;
+  let currentUser = null;
 
-    // ✅ Check if logged in
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUser = user;
-      } else {
-        window.location.href = "login.html";
+  // ✅ Ensure user logged in
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user;
+    } else {
+      window.location.href = "login.html";
+    }
+  });
+
+  // Toggle publish form
+  publishBtn.addEventListener("click", () => {
+    publishFormContainer.style.display =
+      publishFormContainer.style.display === "none" ? "block" : "none";
+  });
+
+  // ✅ Publish Handler
+  submitContent.addEventListener("click", async () => {
+    const title = document.getElementById("title").value.trim();
+    const type = document.getElementById("type").value;
+    const content = document.getElementById("content").value.trim();
+    const file = document.getElementById("cover").files[0];
+
+    if (!title || !content) {
+      statusDiv.textContent = "⚠️ Please enter title and content.";
+      return;
+    }
+
+    statusDiv.textContent = "Uploading... ⏳";
+
+    let coverUrl = "";
+
+    try {
+      if (file) {
+        // ✅ Correct way to create storage reference
+        const fileRef = storageRef(storage, "covers/" + Date.now() + "-" + file.name);
+        await uploadBytes(fileRef, file);
+        coverUrl = await getDownloadURL(fileRef);
       }
-    });
 
-    // Toggle publish form
-    publishBtn.addEventListener("click", () => {
-      publishFormContainer.style.display =
-        publishFormContainer.style.display === "none" ? "block" : "none";
-    });
+      await addDoc(collection(db, "contents"), {
+        title,
+        type,
+        content,
+        coverUrl,
+        author: currentUser.email.split("@")[0],
+        authorId: currentUser.uid,
+        publishDate: new Date().toLocaleDateString(),
+        createdAt: serverTimestamp(),
+      });
 
-    // ✅ Handle Publish
-    submitContent.addEventListener("click", async () => {
-      const title = document.getElementById("title").value.trim();
-      const type = document.getElementById("type").value;
-      const content = document.getElementById("content").value.trim();
-      const file = document.getElementById("cover").files[0];
+      statusDiv.textContent = "✅ Published successfully!";
+      document.getElementById("title").value = "";
+      document.getElementById("content").value = "";
+      document.getElementById("cover").value = "";
+    } catch (err) {
+      console.error("Publish error:", err);
+      statusDiv.textContent = "❌ Failed to publish: " + err.message;
+    }
+  });
 
-      if (!title || !content) {
-        statusDiv.textContent = "⚠️ Please enter title and content.";
-        return;
-      }
-
-      statusDiv.textContent = "Uploading... ⏳";
-
-      let coverUrl = "";
-      try {
-        // Upload cover if exists
-        if (file) {
-          const storageRef = ref(storage, "covers/" + Date.now() + "-" + file.name);
-          await uploadBytes(storageRef, file);
-          coverUrl = await getDownloadURL(storageRef);
-        }
-
-        // Save to Firestore
-        await addDoc(collection(db, "contents"), {
-          title,
-          type,
-          content,
-          coverUrl,
-          author: currentUser.email.split("@")[0],
-          authorId: currentUser.uid,
-          publishDate: new Date().toLocaleDateString(),
-          createdAt: serverTimestamp(),
-        });
-
-        statusDiv.textContent = "✅ Published successfully!";
-        document.getElementById("title").value = "";
-        document.getElementById("content").value = "";
-        document.getElementById("cover").value = "";
-      } catch (err) {
-        console.error(err);
-        statusDiv.textContent = "❌ Failed to publish: " + err.message;
-      }
-    });
+  // ✅ Logout
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "login.html";
+  });
+</script>
 
     // ✅ Logout
     logoutBtn.addEventListener("click", async () => {
@@ -201,3 +212,4 @@
   </script>
 </body>
 </html>
+
