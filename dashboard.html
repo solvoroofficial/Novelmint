@@ -1,668 +1,242 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NovelMint — Dashboard</title>
-  <link rel="icon" href="favicon.png" />
+  <title>Dashboard — NovelMint</title>
   <style>
-    :root{
-      --bg:#0b1220;
-      --panel:#0f1724;
-      --muted:#9aa7c0;
-      --accent:#7c5cff;
-      --card:#111827;
-      --glass: rgba(255,255,255,0.04);
-      --success:#10b981;
-      --danger:#ef4444;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background:linear-gradient(180deg,var(--bg),#071022 140%);
-      color:#e6eef8;
-      -webkit-font-smoothing:antialiased;
-    }
-
-    /* Layout */
-    .app {
-      display:flex;
-      min-height:100vh;
-    }
-
-    .sidebar {
-      width:260px;
-      background: linear-gradient(180deg,var(--panel), #0b1320);
-      padding:20px;
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-      border-right:1px solid rgba(255,255,255,0.03);
-    }
-
-    .brand {
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin-bottom:6px;
-    }
-    .logo {
-      width:44px;height:44px;border-radius:10px;
-      background:linear-gradient(135deg,#3b82f6,#7c5cff);
-      display:flex;align-items:center;justify-content:center;font-weight:700;color:white;
-      font-size:18px;
-    }
-    .brand h1{font-size:18px;margin:0;color:var(--accent);letter-spacing:0.2px}
-    .small{color:var(--muted);font-size:13px;margin-top:2px}
-
-    .nav {
-      display:flex;flex-direction:column;gap:8px;margin-top:6px;
-    }
-    .btn, .link {
-      display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;
-      background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted);
-      text-decoration:none;font-weight:600;cursor:pointer;
-    }
-    .btn.primary {
-      background:linear-gradient(90deg,var(--accent),#4f46e5);
-      color:white;border:none;
-    }
-    .btn.danger { background:var(--danger); color:white; border:none; }
-
-    .sidebar .spacer { flex:1 }
-
-    .main {
-      flex:1;
-      padding:20px;
-      overflow:auto;
-    }
-
-    .topbar {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      margin-bottom:18px;
-    }
-    .search {
-      flex:1;
-      max-width:560px;
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-    .search input {
-      width:100%;
-      padding:10px 12px;border-radius:10px;border:none;background:var(--glass);color:var(--muted);
-    }
-
-    /* Profile overview */
-    .profile-card {
-      display:flex;
-      gap:16px;
-      background:linear-gradient(180deg,#081025, #071120);
-      padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
-      align-items:center;margin-bottom:18px;
-      box-shadow: 0 6px 18px rgba(2,6,23,0.6);
-    }
-    .avatar {
-      width:84px;height:84px;border-radius:14px;background:#0b1220;display:flex;align-items:center;justify-content:center;font-size:28px;color:white;
-      overflow:hidden;
-    }
-    .avatar img{width:100%;height:100%;object-fit:cover}
-
-    .profile-meta h2{margin:0;font-size:20px;color:#fff}
-    .profile-meta p{margin:6px 0;color:var(--muted);font-size:13px}
-    .profile-stats{display:flex;gap:14px;margin-top:8px}
-    .stat{background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:10px;font-size:13px;color:var(--muted)}
-
-    /* Content area */
-    .section-title{display:flex;justify-content:space-between;align-items:center;margin:10px 0 8px}
-    .cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px; }
-
-    .card {
-      background:linear-gradient(180deg,#071229, #071220);
-      border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.03);
-      display:flex;flex-direction:column;height:100%;
-    }
-    .card .cover {
-      width:100%;height:160px;background:#0b1220;object-fit:cover;
-    }
-    .card-body { padding:12px; display:flex;flex-direction:column; gap:8px; flex:1; }
-    .card .title { font-weight:700;color:#dbeafe; font-size:16px; }
-    .card .meta { color:var(--muted); font-size:13px }
-    .card .excerpt { color:#cbd5e1; font-size:14px; line-height:1.45; flex:1 }
-
-    .card-footer { display:flex;align-items:center;justify-content:space-between;padding:10px;border-top:1px solid rgba(255,255,255,0.02) }
-    .actions { display:flex;gap:8px;align-items:center }
-
-    .like-btn {
-      display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;border:none;background:rgba(255,255,255,0.02);cursor:pointer;color:var(--muted);
-    }
-    .like-btn.liked { background:linear-gradient(90deg,#ff6b6b,#ff7aa2); color:#fff; }
-
-    .tiny { font-size:12px;color:var(--muted) }
-
-    /* Modal styles */
-    .modal {
-      position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);
-      z-index:60;padding:20px;
-    }
-    .modal-card { width:100%;max-width:720px;background:linear-gradient(180deg,#071125,#061020);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04) }
-    .form-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px }
-    .form-row { margin-bottom:10px }
-    input[type="text"], input[type="file"], textarea {
-      width:100%;padding:10px;border-radius:8px;border:none;background:var(--glass);color:var(--muted);
-    }
-    textarea { min-height:120px; resize:vertical }
-    .modal-actions { display:flex;gap:10px;justify-content:flex-end;margin-top:10px }
-
-    /* responsive */
-    @media (max-width:860px){
-      .sidebar { width:72px;padding:12px }
-      .brand h1,.small,.btn span{ display:none }
-      .sidebar .nav .btn, .sidebar .nav .link { justify-content:center; padding:10px; }
-      .search { max-width:280px }
-      .profile-card { flex-direction:row; gap:12px }
-    }
-    @media (max-width:560px){
-      .app { flex-direction:column }
-      .sidebar { width:100%; flex-direction:row; align-items:center; gap:8px; padding:10px }
-      .main { padding:12px }
-      .form-grid { grid-template-columns:1fr }
-      .card .cover{ height:140px }
-    }
-
-    /* small helpers */
-    .muted{color:var(--muted)}
-    .center{text-align:center}
+    body{font-family:system-ui,Segoe UI,Roboto;margin:0;background:#fff}
+    header{padding:14px;background:#111827;color:#fff;display:flex;justify-content:space-between;align-items:center}
+    header h1{font-size:16px;margin:0}
+    header button{background:#ef4444;border:none;color:#fff;padding:8px 10px;border-radius:6px}
+    .wrap{padding:14px}
+    .card{background:#f9fafb;padding:12px;border-radius:8px;margin-bottom:12px;border:1px solid #e5e7eb}
+    label{display:block;font-size:13px;color:#374151;margin:8px 0 4px}
+    input,textarea,select{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:6px}
+    button.primary{background:#111827;color:#fff;border:none;padding:10px 12px;border-radius:6px;margin-top:8px;width:100%}
+    .small{font-size:13px;color:#6b7280;margin-top:6px}
+    .list{display:grid;gap:10px}
+    .post{background:#fff;padding:10px;border:1px solid #e5e7eb;border-radius:8px}
+    .row{display:flex;gap:8px;align-items:center}
+    img.avatar{width:56px;height:56px;border-radius:8px;object-fit:cover;background:#eee}
+    @media (max-width:480px){ header h1{font-size:14px} img.avatar{width:48px;height:48px}}
   </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="logo">NM</div>
-        <div>
-          <h1>NovelMint</h1>
-          <div class="small">Dashboard</div>
-        </div>
-      </div>
+  <header>
+    <h1>NovelMint</h1>
+    <div>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
 
-      <nav class="nav">
-        <button id="openProfile" class="btn"><span>✍️ Edit Profile</span></button>
-        <a href="publish.html" class="btn primary"><span>📖 Go to Publish</span></a>
-        <button id="openPreview" class="link"><span>👀 Preview Homepage</span></button>
-      </nav>
-
-      <div class="spacer"></div>
-
-      <button id="logoutBtn" class="btn danger">Logout</button>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div class="search">
-          <input id="searchInput" placeholder="Search your titles..." />
-        </div>
-        <div style="display:flex;gap:10px;align-items:center">
-          <div class="tiny">Signed in as <span id="meEmail" class="muted">—</span></div>
-        </div>
-      </div>
-
-      <!-- Profile overview -->
-      <div class="profile-card" id="profileCard">
-        <div class="avatar" id="avatarContainer">
-          <!-- image or initials -->
-        </div>
-        <div class="profile-meta">
-          <h2 id="displayName">Loading...</h2>
-          <p id="username" class="muted">@username</p>
-          <div class="profile-stats">
-            <div class="stat">📚 <strong id="statContents">0</strong> posts</div>
-            <div class="stat">👥 <strong id="statReaders">0</strong> readers</div>
-            <div class="stat">💚 <strong id="statLikes">0</strong> likes</div>
+  <div class="wrap">
+    <!-- Profile card -->
+    <div class="card" id="profileCard">
+      <div class="row">
+        <img id="avatarPreview" class="avatar" src="https://via.placeholder.com/100" alt="avatar" />
+        <div style="flex:1">
+          <div style="display:flex;gap:8px">
+            <input id="displayName" placeholder="Display name (username)" />
           </div>
+          <div class="small">Add a simple name and bio — visible publicly.</div>
         </div>
       </div>
 
-      <!-- Your contents -->
-      <div class="section-title">
-        <h3 style="margin:0;color:var(--accent)">Your Published Works</h3>
-        <div class="tiny muted" id="worksInfo">Loading...</div>
-      </div>
+      <label>Bio</label>
+      <textarea id="bio" rows="2" placeholder="A short bio"></textarea>
 
-      <div class="cards" id="worksGrid">
-        <!-- cards injected here -->
-      </div>
-    </main>
-  </div>
+      <label>Avatar (optional image file)</label>
+      <input type="file" id="avatarFile" accept="image/*" />
 
-  <!-- Profile Modal -->
-  <div id="profileModal" class="modal" style="display:none">
-    <div class="modal-card" role="dialog" aria-modal="true">
-      <h3 style="margin-top:0;color:var(--accent)">Edit Profile</h3>
-      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-        <div class="avatar" id="modalAvatar"><img id="modalAvatarImg" src="" alt="" style="display:none"></div>
-        <div>
-          <div class="tiny muted">This information appears on your public profile</div>
-        </div>
-      </div>
-
-      <div class="form-grid">
-        <div>
-          <div class="form-row"><label class="tiny muted">Display name</label>
-            <input id="inputDisplayName" type="text" placeholder="e.g. Riya Sharma"></div>
-          <div class="form-row"><label class="tiny muted">Username</label>
-            <input id="inputUsername" type="text" placeholder="e.g. riya_writer"></div>
-        </div>
-
-        <div>
-          <div class="form-row"><label class="tiny muted">Profile photo</label>
-            <input id="inputPhoto" type="file" accept="image/*"></div>
-          <div class="form-row"><label class="tiny muted">Short bio</label>
-            <textarea id="inputBio" placeholder="A short writer bio..."></textarea></div>
-        </div>
-      </div>
-
-      <div class="modal-actions">
-        <button id="cancelProfile" class="btn">Cancel</button>
-        <button id="saveProfile" class="btn primary">Save Profile</button>
-      </div>
-      <div id="profileStatus" class="tiny muted" style="margin-top:8px"></div>
+      <button class="primary" id="saveProfileBtn">Save profile</button>
+      <div id="profileMsg" class="small"></div>
     </div>
-  </div>
 
-  <!-- Preview Modal (shows how homepage will look with like button) -->
-  <div id="previewModal" class="modal" style="display:none">
-    <div class="modal-card">
-      <h3 style="margin-top:0;color:var(--accent)">Homepage Preview</h3>
-      <div id="previewArea" style="margin-top:8px"></div>
-      <div style="display:flex;justify-content:flex-end;margin-top:12px">
-        <button id="closePreview" class="btn">Close</button>
-      </div>
+    <!-- Publish card -->
+    <div class="card">
+      <div style="font-weight:600;margin-bottom:8px">Publish new</div>
+      <label>Title</label>
+      <input id="title" placeholder="Title" />
+      <label>Type</label>
+      <select id="type"><option>Story</option><option>Poem</option><option>Thought</option></select>
+      <label>Content</label>
+      <textarea id="content" rows="5" placeholder="Write..."></textarea>
+      <label>Cover (optional)</label>
+      <input type="file" id="coverFile" accept="image/*" />
+      <button class="primary" id="publishBtn">Publish</button>
+      <div id="publishMsg" class="small"></div>
     </div>
+
+    <!-- My posts -->
+    <div style="font-weight:600;margin:6px 0">My posts</div>
+    <div id="myPosts" class="list"></div>
   </div>
 
   <script type="module">
-    // ---- imports ----
-    import { auth, db, storage } from "./app.js";
-    import {
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-
-    import {
-      doc, getDoc, setDoc, collection, addDoc, getDocs, query, where, orderBy, updateDoc, serverTimestamp, arrayUnion, arrayRemove, increment
-    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-
+    import { auth, db, storage } from './app.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
     import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+    import { serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-    // ---- elements ----
-    const openProfile = document.getElementById("openProfile");
-    const profileModal = document.getElementById("profileModal");
-    const cancelProfile = document.getElementById("cancelProfile");
-    const saveProfileBtn = document.getElementById("saveProfile");
-    const inputDisplayName = document.getElementById("inputDisplayName");
-    const inputUsername = document.getElementById("inputUsername");
-    const inputBio = document.getElementById("inputBio");
-    const inputPhoto = document.getElementById("inputPhoto");
-    const modalAvatarImg = document.getElementById("modalAvatarImg");
-    const modalAvatar = document.getElementById("modalAvatar");
-    const profileStatus = document.getElementById("profileStatus");
+    const logoutBtn = document.getElementById('logoutBtn');
+    const displayNameIn = document.getElementById('displayName');
+    const bioIn = document.getElementById('bio');
+    const avatarFile = document.getElementById('avatarFile');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    const profileMsg = document.getElementById('profileMsg');
 
-    const avatarContainer = document.getElementById("avatarContainer");
-    const displayNameEl = document.getElementById("displayName");
-    const usernameEl = document.getElementById("username");
-    const statContents = document.getElementById("statContents");
-    const statReaders = document.getElementById("statReaders");
-    const statLikes = document.getElementById("statLikes");
-    const worksGrid = document.getElementById("worksGrid");
-    const worksInfo = document.getElementById("worksInfo");
-    const meEmail = document.getElementById("meEmail");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const openPreview = document.getElementById("openPreview");
-    const previewModal = document.getElementById("previewModal");
-    const previewArea = document.getElementById("previewArea");
-    const closePreview = document.getElementById("closePreview");
-    const searchInput = document.getElementById("searchInput");
+    const titleIn = document.getElementById('title');
+    const typeIn = document.getElementById('type');
+    const contentIn = document.getElementById('content');
+    const coverFile = document.getElementById('coverFile');
+    const publishBtn = document.getElementById('publishBtn');
+    const publishMsg = document.getElementById('publishMsg');
+
+    const myPosts = document.getElementById('myPosts');
 
     let currentUser = null;
-    let myProfile = null;
-    let myContents = [];
 
-    // ---- auth listener ----
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
+      if (!user) { location.href = 'login.html'; return; }
       currentUser = user;
-      meEmail.textContent = user.email;
-      await loadProfileAndContents();
-    });
-
-    // ---- load profile & contents ----
-    async function loadProfileAndContents() {
+      // load profile (users collection)
       try {
-        // load profile (users collection)
-        const userRef = doc(db, "users", currentUser.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          myProfile = userSnap.data();
-        } else {
-          // initialize minimal profile and publicUsers
-          myProfile = {
-            displayName: currentUser.displayName || currentUser.email.split("@")[0],
-            username: currentUser.email.split("@")[0],
-            bio: "",
-            photoURL: ""
-          };
-          await setDoc(userRef, myProfile, { merge: true });
-          // also ensure publicUsers entry
-          const pubRef = doc(db, "publicUsers", currentUser.uid);
-          await setDoc(pubRef, {
-            name: myProfile.displayName,
-            email: currentUser.email,
-            joinDate: new Date().toLocaleDateString(),
-            photoURL: myProfile.photoURL || ""
-          }, { merge: true });
-        }
-
-        // display profile
-        renderProfileUI();
-
-        // load contents by this author
-        const q = query(collection(db, "contents"), where("authorId", "==", currentUser.uid), orderBy("createdAt", "desc"));
-        const snap = await getDocs(q);
-        myContents = [];
-        let totalLikes = 0;
-        snap.forEach(d => {
-          const data = d.data();
-          data._id = d.id;
-          myContents.push(data);
-          totalLikes += (data.likes || 0);
-        });
-
-        statContents.textContent = myContents.length;
-        statLikes.textContent = totalLikes;
-        // attempt to read readers count from publicUsers
-        const pu = await getDoc(doc(db, "publicUsers", currentUser.uid));
-        statReaders.textContent = pu.exists() ? (pu.data().readers || 0) : 0;
-
-        renderContents(myContents);
-      } catch (e) {
-        console.error("Load error:", e);
-      }
-    }
-
-    function renderProfileUI() {
-      displayNameEl.textContent = myProfile.displayName || currentUser.email.split("@")[0];
-      usernameEl.textContent = myProfile.username ? "@" + myProfile.username : "";
-      if (myProfile.photoURL) {
-        avatarContainer.innerHTML = `<img src="${myProfile.photoURL}" alt="avatar">`;
-        modalAvatarImg.src = myProfile.photoURL; modalAvatarImg.style.display = 'block';
-      } else {
-        const initials = (myProfile.displayName || currentUser.email.split("@")[0]).split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase();
-        avatarContainer.innerHTML = `<div style="width:84px;height:84px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;background:linear-gradient(135deg,#3b82f6,#7c5cff);border-radius:12px">${initials}</div>`;
-        modalAvatarImg.style.display = 'none';
-      }
-      // fill modal fields
-      inputDisplayName.value = myProfile.displayName || "";
-      inputUsername.value = myProfile.username || "";
-      inputBio.value = myProfile.bio || "";
-    }
-
-    // ---- render contents cards ----
-    function renderContents(list) {
-      worksGrid.innerHTML = "";
-      worksInfo.textContent = `${list.length} item(s)`;
-      if (!list.length) {
-        worksGrid.innerHTML = `<div class="center muted" style="grid-column:1/-1;padding:28px">No published works yet. Use Publish page to add one.</div>`;
-        return;
-      }
-      list.forEach(item => {
-        const c = document.createElement("div");
-        c.className = "card";
-        c.innerHTML = `
-          <img class="cover" src="${item.coverUrl || 'https://via.placeholder.com/800x450?text=No+Cover'}" alt="">
-          <div class="card-body">
-            <div class="title">${escapeHtml(item.title || 'Untitled')}</div>
-            <div class="meta">Type: ${escapeHtml(item.type || '—')} • ${item.publishDate || ''}</div>
-            <div class="excerpt">${escapeHtml((item.content||'').slice(0,180))}${(item.content && item.content.length>180)?'...':''}</div>
-          </div>
-          <div class="card-footer">
-            <div class="actions">
-              <button class="like-btn" data-id="${item._id}" aria-pressed="false">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="display:block">
-                  <path d="M12 21s-7.5-4.35-10-7.25C-0.05 9.32 2.5 5 6.5 5c2.24 0 3.5 1.38 4.5 2.66C12.5 6.38 13.76 5 16 5c4 0 6.55 4.32 4.5 8.75C19.5 16.65 12 21 12 21z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                <span class="likes-count">${item.likes || 0}</span>
-              </button>
-
-              <button class="btn" style="padding:8px 10px" data-edit="${item._id}">Edit</button>
-              <button class="btn" style="padding:8px 10px;background:#ef4444;color:white" data-delete="${item._id}">Delete</button>
-            </div>
-            <div class="tiny muted">ID: ${item._id}</div>
-          </div>
-        `;
-        worksGrid.appendChild(c);
-
-        // like handler
-        const likeBtn = c.querySelector('.like-btn');
-        const likesSpan = c.querySelector('.likes-count');
-        // set initial liked state if likedBy present
-        if (Array.isArray(item.likedBy) && item.likedBy.includes(currentUser.uid)) {
-          likeBtn.classList.add('liked');
-          likeBtn.setAttribute('aria-pressed','true');
-        }
-
-        likeBtn.addEventListener('click', async () => {
-          await toggleLike(item._id, likeBtn, likesSpan);
-        });
-
-        // edit & delete
-        const editBtn = c.querySelector('[data-edit]');
-        editBtn?.addEventListener('click', ()=> {
-          // go to publish page with edit param (publish page will handle)
-          window.location.href = `publish.html?edit=${item._id}`;
-        });
-        const delBtn = c.querySelector('[data-delete]');
-        delBtn?.addEventListener('click', async () => {
-          if (!confirm('Delete this post?')) return;
-          try {
-            await updateDoc(doc(db, 'contents', item._id), { deleted: true });
-            // simple UI remove
-            c.remove();
-            // refresh counts
-            const newList = myContents.filter(x=>x._id !== item._id);
-            myContents = newList;
-            statContents.textContent = myContents.length;
-          } catch(err) {
-            console.error(err);
-            alert('Failed to delete: '+err.message);
-          }
-        });
-      });
-    }
-
-    // ---- like toggle logic (uses atomic updates) ----
-    async function toggleLike(contentId, btnEl, likesSpan) {
-      try {
-        const contentRef = doc(db, "contents", contentId);
-        // fetch current
-        const snap = await getDoc(contentRef);
-        if (!snap.exists()) return;
-        const data = snap.data();
-        const likedBy = Array.isArray(data.likedBy) ? data.likedBy : [];
-        const already = likedBy.includes(currentUser.uid);
-
-        if (!already) {
-          // add
-          await updateDoc(contentRef, {
-            likes: increment(1),
-            likedBy: arrayUnion(currentUser.uid)
-          });
-          btnEl.classList.add('liked');
-          btnEl.setAttribute('aria-pressed','true');
-          likesSpan.textContent = Number(likesSpan.textContent||0)+1;
-        } else {
-          // remove
-          await updateDoc(contentRef, {
-            likes: increment(-1),
-            likedBy: arrayRemove(currentUser.uid)
-          });
-          btnEl.classList.remove('liked');
-          btnEl.setAttribute('aria-pressed','false');
-          likesSpan.textContent = Math.max(0, Number(likesSpan.textContent||0)-1);
+        const userDoc = doc(db, 'users', user.uid);
+        const snap = await getDoc(userDoc);
+        if (snap.exists()) {
+          const data = snap.data();
+          displayNameIn.value = data.username || '';
+          bioIn.value = data.bio || '';
+          if (data.photoURL) avatarPreview.src = data.photoURL;
         }
       } catch (e) {
-        console.error("Like toggle failed:", e);
-        alert("Failed to update like: " + (e.message || e));
+        console.error('load profile', e);
       }
-    }
-
-    // ---- profile modal handlers ----
-    openProfile.addEventListener('click', ()=> profileModal.style.display = 'flex');
-    cancelProfile.addEventListener('click', ()=> profileModal.style.display = 'none');
-
-    inputPhoto.addEventListener('change', (e)=>{
-      const f = e.target.files[0];
-      if (f) {
-        const url = URL.createObjectURL(f);
-        modalAvatarImg.src = url; modalAvatarImg.style.display = 'block';
-      }
+      loadMyPosts();
     });
 
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      location.href = 'login.html';
+    });
+
+    // Save profile: writes both 'users' (private) and 'publicUsers' (public)
     saveProfileBtn.addEventListener('click', async () => {
-      profileStatus.textContent = 'Saving...';
-      saveProfileBtn.disabled = true;
+      profileMsg.textContent = '';
+      if (!currentUser) return;
+      const username = displayNameIn.value.trim();
+      const bio = bioIn.value.trim();
+      profileMsg.textContent = 'Saving...';
+
       try {
-        const newDisplay = inputDisplayName.value.trim();
-        const newUser = inputUsername.value.trim();
-        const newBio = inputBio.value.trim();
-        const file = inputPhoto.files[0];
-
-        let photoURL = myProfile.photoURL || "";
-
-        if (file) {
-          // upload to storage
-          const fRef = storageRef(storage, `profiles/${currentUser.uid}_${Date.now()}_${file.name}`);
-          await uploadBytes(fRef, file);
-          photoURL = await getDownloadURL(fRef);
+        let photoURL = '';
+        if (avatarFile.files[0]) {
+          const f = avatarFile.files[0];
+          const r = storageRef(storage, `avatars/${currentUser.uid}_${Date.now()}_${f.name}`);
+          await uploadBytes(r, f);
+          photoURL = await getDownloadURL(r);
+          avatarPreview.src = photoURL;
         }
 
-        const updateData = {
-          displayName: newDisplay || myProfile.displayName,
-          username: newUser || myProfile.username,
-          bio: newBio,
-          photoURL: photoURL
-        };
-
-        // save to users collection (private)
-        await setDoc(doc(db, "users", currentUser.uid), updateData, { merge: true });
-
-        // save public summary to publicUsers (public)
-        await setDoc(doc(db, "publicUsers", currentUser.uid), {
-          name: updateData.displayName,
-          username: updateData.username,
-          bio: updateData.bio,
-          photoURL: updateData.photoURL,
-          email: currentUser.email,
-          joinDate: (await getDoc(doc(db,"publicUsers",currentUser.uid))).exists() ? undefined : new Date().toLocaleDateString()
+        // save to users (private profile)
+        await setDoc(doc(db, 'users', currentUser.uid), {
+          username,
+          bio,
+          photoURL,
+          updatedAt: serverTimestamp()
         }, { merge: true });
 
-        // update local profile and UI
-        myProfile = {...myProfile, ...updateData};
-        renderProfileUI();
-        profileStatus.textContent = 'Saved ✔️';
-        setTimeout(()=>{ profileStatus.textContent=''; profileModal.style.display='none'; }, 900);
-      } catch (e) {
-        console.error("Save profile failed:", e);
-        profileStatus.textContent = 'Failed to save: ' + (e.message || e);
-      } finally {
-        saveProfileBtn.disabled = false;
+        // save public minimal profile to publicUsers (for homepage/profile view)
+        await setDoc(doc(db, 'publicUsers', currentUser.uid), {
+          displayName: username,
+          bio,
+          photoURL,
+          joinDate: new Date().toLocaleDateString()
+        }, { merge: true });
+
+        profileMsg.textContent = 'Saved.';
+      } catch (err) {
+        console.error('save profile', err);
+        profileMsg.textContent = 'Failed: ' + (err.message || err);
       }
     });
 
-    // ---- preview (sample for homepage with like button) ----
-    openPreview.addEventListener('click', async () => {
-      previewModal.style.display = 'flex';
-      previewArea.innerHTML = '<div class="tiny muted">Loading preview...</div>';
+    // Publish content
+    publishBtn.addEventListener('click', async () => {
+      publishMsg.textContent = '';
+      if (!currentUser) { publishMsg.textContent = 'Login required'; return; }
+      const title = titleIn.value.trim();
+      const type = typeIn.value;
+      const content = contentIn.value.trim();
+      if (!title || !content) { publishMsg.textContent = 'Title and content required'; return; }
+      publishMsg.textContent = 'Publishing...';
+
       try {
-        // load some public contents (recent 6)
-        const q = query(collection(db, "contents"), orderBy("createdAt","desc"));
-        const snap = await getDocs(q);
-        let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">';
-        let count = 0;
-        snap.forEach(d=>{
-          if (count++>11) return;
-          const item = d.data();
-          const id = d.id;
-          html += `
-            <div style="background:var(--card);padding:12px;border-radius:10px">
-              <img src="${item.coverUrl || 'https://via.placeholder.com/600x360?text=No+Cover'}" style="width:100%;height:130px;object-fit:cover;border-radius:8px;margin-bottom:8px">
-              <div style="font-weight:700;color:#dbeafe">${escapeHtml(item.title||'Untitled')}</div>
-              <div style="color:var(--muted);font-size:13px;margin:6px 0">by <a href="profile.html?id=${item.authorId}" style="color:var(--accent);text-decoration:none">${escapeHtml(item.author||'Unknown')}</a></div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
-                <button class="like-btn-demo" data-id="${id}" style="padding:8px;border-radius:999px;border:none;background:rgba(255,255,255,0.02);color:var(--muted)">${item.likes||0} ❤</button>
-                <a href="profile.html?id=${item.authorId}" class="btn" style="padding:8px 10px">View</a>
-              </div>
-            </div>
-          `;
-        });
-        html += '</div>';
-        previewArea.innerHTML = html;
+        let coverUrl = '';
+        if (coverFile.files[0]) {
+          const f = coverFile.files[0];
+          const r = storageRef(storage, `covers/${currentUser.uid}_${Date.now()}_${f.name}`);
+          await uploadBytes(r, f);
+          coverUrl = await getDownloadURL(r);
+        }
 
-        // attach demo like handlers that call same toggle API
-        const demoBtns = previewArea.querySelectorAll('.like-btn-demo');
-        demoBtns.forEach(b=>{
-          b.addEventListener('click', async ()=> {
-            const id = b.dataset.id;
-            // optimistic UI
-            b.disabled = true;
-            try {
-              await toggleLike(id, b, b); // likesSpan is the button itself (we'll update text)
-              // refresh text
-              const snap = await getDoc(doc(db,'contents',id));
-              const likes = snap.exists() ? (snap.data().likes||0) : 0;
-              b.textContent = `${likes} ❤`;
-            } catch(e){
-              console.error(e);
-            } finally { b.disabled=false; }
-          });
+        // read public displayName if exists
+        let authorName = currentUser.email.split('@')[0];
+        try {
+          const p = await getDoc(doc(db, 'publicUsers', currentUser.uid));
+          if (p.exists()) authorName = p.data().displayName || authorName;
+        } catch (e){ /* ignore */ }
+
+        await addDoc(collection(db, 'contents'), {
+          title,
+          type,
+          content,
+          coverUrl,
+          author: authorName,
+          authorId: currentUser.uid,
+          publishDate: new Date().toLocaleDateString(),
+          createdAt: serverTimestamp()
         });
 
-      } catch (e) {
-        previewArea.innerHTML = `<div class="muted">Failed to load preview.</div>`;
+        publishMsg.textContent = 'Published.';
+        titleIn.value = ''; contentIn.value = ''; coverFile.value = '';
+        loadMyPosts();
+      } catch (err) {
+        console.error('publish', err);
+        publishMsg.textContent = 'Failed: ' + (err.message || err);
       }
     });
 
-    closePreview.addEventListener('click', ()=> previewModal.style.display = 'none');
+    // Load my posts
+    async function loadMyPosts(){
+      myPosts.innerHTML = 'Loading...';
+      try {
+        const q = query(collection(db, 'contents'), where('authorId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+        const snap = await getDocs(q);
+        myPosts.innerHTML = '';
+        if (snap.empty) myPosts.innerHTML = '<div class="small">No posts yet.</div>';
+        snap.forEach(d => {
+          const data = d.data();
+          const el = document.createElement('div');
+          el.className = 'post';
+          el.innerHTML = `
+            <div style="font-weight:600">${escapeHtml(data.title || 'Untitled')}</div>
+            <div class="small">${escapeHtml(data.type || '')} • ${escapeHtml(data.publishDate || '')}</div>
+            <div style="margin-top:6px">${escapeHtml((data.content||'').slice(0,140))}${(data.content||'').length>140?'...':''}</div>
+          `;
+          myPosts.appendChild(el);
+        });
+      } catch (err) {
+        console.error('load my posts', err);
+        myPosts.innerHTML = 'Failed to load posts';
+      }
+    }
 
-    // ---- search filter ----
-    searchInput.addEventListener('input', (e)=>{
-      const q = e.target.value.trim().toLowerCase();
-      const cards = Array.from(worksGrid.children);
-      cards.forEach(card=>{
-        const txt = card.innerText.toLowerCase();
-        card.style.display = txt.includes(q) ? '' : 'none';
-      });
-    });
-
-    // ---- logout ----
-    logoutBtn.addEventListener('click', async ()=>{
-      await signOut(auth);
-      window.location.href = 'login.html';
-    });
-
-    // ---- helper utils ----
-    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-    // small helper to get a doc (used in preview)
-    import { getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    // small helper
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, m=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
   </script>
 </body>
 </html>
-
