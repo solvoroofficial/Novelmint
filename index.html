@@ -3,51 +3,127 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NovelMint — Read Stories</title>
+  <title>NovelMint — Library</title>
   <link rel="icon" href="favicon.png" />
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background: #0f172a;
-      color: white;
+      background: #ffffff;
+      color: #111;
       margin: 0;
       padding: 0;
     }
 
+    /* HEADER */
     header {
-      background: #1e293b;
-      padding: 15px 20px;
-      text-align: center;
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #38bdf8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      padding: 10px 18px;
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-section img {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+    }
+
+    .logo-section span {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #16a34a; /* light green accent */
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #111;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: #16a34a;
+    }
+
+    /* Mobile nav */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .menu-toggle span {
+      height: 3px;
+      width: 25px;
+      background: #111;
+      margin: 4px 0;
+      border-radius: 2px;
+    }
+
+    @media (max-width: 700px) {
+      nav {
+        display: none;
+        flex-direction: column;
+        background: #fff;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        width: 100%;
+        border-top: 1px solid #e5e7eb;
+      }
+
+      nav.active {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+    }
+
+    /* CONTENT GRID */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 20px;
       padding: 20px;
     }
 
     .card {
-      background: #1e293b;
+      background: #f9fafb;
       border-radius: 12px;
       overflow: hidden;
-      transition: 0.3s;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      border: 1px solid #e5e7eb;
+      transition: 0.3s ease;
     }
 
     .card:hover {
-      transform: scale(1.02);
-      background: #334155;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transform: scale(1.01);
     }
 
     .cover {
       width: 100%;
       height: 180px;
       object-fit: cover;
-      background: #334155;
+      background: #d1fae5;
     }
 
     .content {
@@ -55,19 +131,20 @@
     }
 
     .title {
-      font-size: 1.2em;
-      color: #93c5fd;
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #111;
       margin-bottom: 8px;
     }
 
     .meta {
       font-size: 0.9em;
-      color: #94a3b8;
+      color: #6b7280;
       margin-bottom: 10px;
     }
 
     .meta a {
-      color: #38bdf8;
+      color: #16a34a;
       text-decoration: none;
       font-weight: 600;
     }
@@ -78,24 +155,44 @@
 
     .preview {
       font-size: 0.95em;
-      color: #cbd5e1;
+      color: #374151;
       line-height: 1.4;
     }
 
     footer {
-      background: #1e293b;
+      background: #f9fafb;
       text-align: center;
       padding: 15px;
       font-size: 0.9em;
-      color: #94a3b8;
+      color: #6b7280;
+      border-top: 1px solid #e5e7eb;
     }
   </style>
 </head>
 <body>
-  <header>📚 NovelMint Library</header>
+  <header>
+    <div class="logo-section">
+      <img src="logo.png" alt="NovelMint Logo">
+      <span>NovelMint</span>
+    </div>
+
+    <div class="menu-toggle" id="menuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <nav id="navMenu">
+      <a href="index.html">Library</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="publish.html">Publish</a>
+    </nav>
+  </header>
+
   <div class="grid" id="contentGrid">
-    <p style="text-align:center; width:100%; color:#94a3b8;">Loading content...</p>
+    <p style="text-align:center; width:100%; color:#6b7280;">Loading content...</p>
   </div>
+
   <footer>© 2025 NovelMint | Read. Write. Inspire.</footer>
 
   <script type="module">
@@ -111,7 +208,7 @@
         grid.innerHTML = "";
 
         if (snapshot.empty) {
-          grid.innerHTML = `<p style="text-align:center; color:#94a3b8;">No content published yet.</p>`;
+          grid.innerHTML = `<p style="text-align:center; color:#6b7280;">No content published yet.</p>`;
           return;
         }
 
@@ -139,7 +236,15 @@
     }
 
     fetchContents();
+
+    // mobile nav toggle
+    const menuToggle = document.getElementById("menuToggle");
+    const navMenu = document.getElementById("navMenu");
+    menuToggle.addEventListener("click", () => {
+      navMenu.classList.toggle("active");
+    });
   </script>
 </body>
 </html>
+
 
