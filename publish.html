@@ -38,6 +38,7 @@
       border-radius: 8px;
       background: #16244a;
       color: white;
+      resize: none;
     }
     button {
       width: 100%;
@@ -69,48 +70,69 @@
   <script type="module">
     import { auth, db } from "./app.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    import { collection, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
     const form = document.getElementById("publishForm");
     let currentUser = null;
     let userData = null;
 
+    // Wait until user is logged in
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        console.log("No user logged in — redirecting...");
         window.location.href = "login.html";
         return;
       }
       currentUser = user;
+      console.log("User logged in:", user.uid);
 
-      // Fetch user data for username
+      // Fetch user's profile data
       const userRef = doc(db, "users", user.uid);
       const snap = await getDoc(userRef);
-      if (snap.exists()) userData = snap.data();
+      if (snap.exists()) {
+        userData = snap.data();
+        console.log("User data:", userData);
+      } else {
+        console.log("User document not found in Firestore.");
+      }
     });
 
+    // Handle publish form submit
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+
+      if (!currentUser) {
+        alert("You must be logged in to publish a story.");
+        return;
+      }
+
       const title = document.getElementById("title").value.trim();
       const description = document.getElementById("description").value.trim();
       const content = document.getElementById("content").value.trim();
 
       if (!title || !content) {
-        alert("Title and content are required.");
+        alert("Please enter both title and content!");
         return;
       }
 
-      await addDoc(collection(db, "stories"), {
-        uid: currentUser.uid,
-        username: userData?.username || "unknown",
-        title,
-        description,
-        content,
-        status: "published",
-        createdAt: new Date()
-      });
+      try {
+        const storiesRef = collection(db, "stories");
+        await addDoc(storiesRef, {
+          uid: currentUser.uid,
+          username: userData?.username || "unknown",
+          title,
+          description,
+          content,
+          status: "published",
+          createdAt: serverTimestamp()
+        });
 
-      alert("Story published successfully!");
-      window.location.href = "profile.html";
+        alert("Story published successfully!");
+        window.location.href = "profile.html";
+      } catch (error) {
+        console.error("Error publishing story:", error);
+        alert("Something went wrong while publishing. Check console for details.");
+      }
     });
   </script>
 </body>
