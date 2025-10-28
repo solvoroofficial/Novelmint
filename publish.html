@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>NovelMint — Publish</title>
   <link rel="icon" href="favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root{
       --accent:#16a34a;
@@ -12,9 +13,10 @@
       --border:#e5e7eb;
       --white:#ffffff;
       --black:#111;
-      --mobile-bottom-height:64px;
+      --mobile-bottom-height:70px;
+      --topbar-height:56px;
     }
-    *{box-sizing:border-box}
+    *, *::before, *::after {box-sizing:border-box}
     body{
       margin:0;
       font-family:"Poppins",sans-serif;
@@ -22,257 +24,461 @@
       color:var(--black);
       min-height:100vh;
       display:flex;
+      flex-direction:column;
+      padding-top:var(--topbar-height);
+      padding-bottom:var(--mobile-bottom-height);
+    }
+    body.dark{
+      --white:#111;
+      --black:#f9fafb;
+      --border:#374151;
+      --muted:#9ca3af;
+      background:#111;
+      color:#f9fafb;
     }
 
-    /* ================= LEFT SIDEBAR (DESKTOP) ================= */
-    .sidebar{
-      width:250px;
-      background:var(--white);
-      border-right:1px solid var(--border);
-      padding:22px 16px;
+    /* ================= MOBILE TOPBAR (Always visible on small screens) ================= */
+    .topbar{
       position:fixed;
-      top:0;
-      left:0;
-      bottom:0;
+      top:0; left:0; right:0;
+      z-index:140;
+      height:var(--topbar-height);
+      background:var(--white);
+      border-bottom:1px solid var(--border);
+      padding:8px 14px;
       display:flex;
-      flex-direction:column;
+      align-items:center;
       justify-content:space-between;
-      gap:12px;
-      z-index:120;
+      box-shadow:0 1px 3px rgba(0,0,0,0.08);
+      padding-top:env(safe-area-inset-top);
     }
-
-    .brand{
+    .topbar .brand{
       display:flex;
-      gap:10px;
+      gap:8px;
       align-items:center;
-    }
-    .brand img{width:40px;height:40px;border-radius:50%}
-    .brand .name{
       font-weight:700;
-      font-size:1.15rem;
       color:var(--accent);
+      font-size:1.1rem;
+    }
+    .topbar .brand img{
+      width:34px; height:34px; border-radius:50%;
+    }
+    .topbar .menu-btn{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:40px; height:40px;
+      background:transparent;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      color:var(--black);
+    }
+    .topbar .menu-btn:hover{
+      background:#f3faf3;
     }
 
-    .nav{
-      margin-top:18px;
+    /* ================= MOBILE MENU OVERLAY ================= */
+    .mobile-menu-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.5);
+      z-index:199;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .2s;
+    }
+    .mobile-menu-overlay.show{
+      opacity:1;
+      pointer-events:all;
+    }
+    .mobile-menu{
+      position:fixed;
+      top:0; left:0; right:0;
+      background:var(--white);
+      padding:16px;
+      padding-top:calc(var(--topbar-height) + env(safe-area-inset-top));
+      border-radius:0 0 16px 16px;
+      box-shadow:0 10px 20px rgba(0,0,0,0.15);
+      transform:translateY(-100%);
+      transition:transform .3s ease;
+      z-index:200;
+      max-height:80vh;
+      overflow-y:auto;
+    }
+    .mobile-menu.show{
+      transform:translateY(0);
+    }
+    .mobile-menu .close-menu{
+      position:absolute;
+      top:12px; right:12px;
+      background:none;
+      border:none;
+      font-size:1.5rem;
+      cursor:pointer;
+      color:var(--muted);
+    }
+    .mobile-menu .nav{
       display:flex;
       flex-direction:column;
       gap:12px;
+      margin-top:20px;
     }
-
-    .nav a{
+    .mobile-menu a{
       display:flex;
-      gap:10px;
+      gap:12px;
       align-items:center;
-      padding:8px 10px;
+      padding:12px;
       color:var(--black);
       text-decoration:none;
-      border-radius:8px;
+      border-radius:10px;
       font-weight:500;
-      transition:background .12s, color .12s, transform .12s;
+      transition:all .15s;
     }
-    .nav a svg{width:20px;height:20px;stroke:currentColor; fill:none}
-    .nav a:hover{background:#f3faf3;color:var(--accent); transform:translateX(4px)}
-
-    .sidebar-footer{
-      font-size:0.85rem;
-      color:var(--muted);
-      border-top:1px solid var(--border);
-      padding-top:10px;
-      text-align:center;
+    .mobile-menu a:hover{
+      background:#f3faf3;
+      color:var(--accent);
+      transform:translateX(4px);
+    }
+    .mobile-menu svg{
+      width:22px; height:22px; stroke:currentColor; fill:none;
     }
 
     /* ================= MAIN CONTENT ================= */
     main{
-      margin-left:250px;
-      padding:28px;
       flex:1;
-      min-height:100vh;
+      padding:20px 16px;
+      overflow-y:auto;
     }
-
     .publish-card{
       max-width:900px;
       margin:0 auto;
       background:#f9fafb;
       border:1px solid var(--border);
-      border-radius:12px;
-      padding:22px;
-      box-shadow:0 6px 18px rgba(0,0,0,0.04);
+      border-radius:14px;
+      padding:20px;
+      box-shadow:0 6px 20px rgba(0,0,0,0.05);
     }
-
+    .publish-card.dark{
+      background:#1f2937;
+      border-color:#374151;
+    }
     .publish-card h1{
-      margin:0 0 14px 0;
-      font-size:1.25rem;
+      margin:0 0 16px 0;
+      font-size:1.35rem;
       color:var(--accent);
+      font-weight:600;
     }
 
-    label{display:block;margin-top:12px;margin-bottom:6px;font-weight:600;color:#374151}
-    input[type="text"], select, textarea, input[type="date"], .file-input {
+    label{
+      display:block;
+      margin:16px 0 6px;
+      font-weight:600;
+      color:#374151;
+      font-size:0.95rem;
+    }
+    body.dark label{color:#d1d5db}
+
+    input[type="text"], 
+    input[type="date"], 
+    select, 
+    textarea, 
+    .file-input {
       width:100%;
-      padding:10px 12px;
+      padding:12px 14px;
       border:1px solid var(--border);
-      border-radius:8px;
+      border-radius:10px;
       background:var(--white);
       font-size:1rem;
       color:var(--black);
       outline:none;
+      transition:border .15s;
+    }
+    body.dark input, 
+    body.dark select, 
+    body.dark textarea{
+      background:#1f2937;
+      border-color:#374151;
+      color:#f3f4f6;
+    }
+    input:focus, select:focus, textarea:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(22,164,74,0.15);
+    }
+    textarea{
+      min-height:140px;
+      resize:vertical;
+      font-family:inherit;
+    }
+    .row{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      margin-top:8px;
+    }
+    .col{flex:1}
+    .col.wide{flex:2}
+
+    .muted{
+      color:var(--muted);
+      font-size:0.9rem;
+      margin-top:6px;
     }
 
-    textarea{min-height:140px; resize:vertical}
-    .row{display:flex;gap:12px;align-items:flex-start}
-    .col{flex:1}
-
-    .muted{color:var(--muted); font-size:0.95rem; margin-top:6px}
-    .controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;align-items:center}
+    .controls{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:20px;
+      align-items:center;
+    }
+    button{
+      font-family:inherit;
+      font-weight:600;
+      padding:11px 18px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:0.95rem;
+      min-height:44px; /* touch target */
+      transition:all .15s;
+    }
     button.primary{
       background:var(--accent);
       color:#fff;
       border:none;
-      padding:10px 16px;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:600;
     }
+    button.primary:hover{background:#138843}
     button.ghost{
       background:#fff;
       border:1px solid var(--border);
-      padding:9px 14px;
-      border-radius:8px;
-      cursor:pointer;
+      color:var(--black);
+    }
+    body.dark button.ghost{
+      background:#1f2937;
+      border-color:#374151;
+      color:#f3f4f6;
+    }
+    button.ghost:hover{
+      background:#f3f4f6;
     }
 
-    .progress{height:8px;background:#e6f4ea;border-radius:6px;overflow:hidden;margin-top:10px;display:none}
-    .progress > span{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
-
-    .status{margin-top:10px;font-size:0.95rem}
-
-    /* ================= MOBILE TOP HEADER (compact, same accent) ================= */
-    .topbar{
+    .progress{
+      height:8px;
+      background:#e6f4ea;
+      border-radius:6px;
+      overflow:hidden;
+      margin-top:12px;
       display:none;
-      position:sticky;
-      top:0;
-      z-index:140;
-      width:100%;
-      background:var(--white);
-      border-bottom:1px solid var(--border);
-      padding:10px 14px;
-      align-items:center;
-      justify-content:space-between;
-      box-shadow:0 1px 0 rgba(0,0,0,0.03);
     }
-    .topbar .brand{gap:8px}
-    .topbar .menu-btn{display:flex;align-items:center;gap:6px;padding:6px;border-radius:8px;background:transparent;border:none;cursor:pointer}
+    .progress > span{
+      display:block;
+      height:100%;
+      width:0;
+      background:var(--accent);
+      transition:width .3s ease;
+    }
+    .status{
+      margin-top:12px;
+      font-size:0.95rem;
+      min-height:24px;
+    }
 
     /* ================= MOBILE BOTTOM NAV ================= */
     .mobile-bottom-nav{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      height:var(--mobile-bottom-height);
+      background:var(--white);
+      border-top:1px solid var(--border);
+      display:flex;
+      justify-content:space-around;
+      align-items:center;
+      z-index:160;
+      padding-bottom:env(safe-area-inset-bottom);
+      box-shadow:0 -2px 10px rgba(0,0,0,0.06);
+    }
+    body.dark .mobile-bottom-nav{
+      background:#111;
+      border-top-color:#374151;
+    }
+    .mobile-bottom-nav a{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:5px;
+      text-decoration:none;
+      color:var(--muted);
+      font-size:11px;
+      font-weight:500;
+      width:25%;
+      padding:8px 0;
+      border-radius:8px;
+      transition:all .15s;
+    }
+    .mobile-bottom-nav svg{
+      width:24px; height:24px; stroke:currentColor; fill:none;
+    }
+    .mobile-bottom-nav a.active{
+      color:var(--accent);
+      font-weight:600;
+    }
+    .mobile-bottom-nav a:active{
+      transform:scale(0.93);
+    }
+
+    /* ================= DESKTOP SIDEBAR (Hidden on mobile) ================= */
+    .sidebar{
       display:none;
     }
 
-    /* ================= RESPONSIVE BEHAVIOR ================= */
-    @media (max-width: 880px){
-      .row{flex-direction:column}
+    /* ================= FOOTER (Hidden on mobile) ================= */
+    footer{
+      display:none;
     }
 
-    @media (max-width: 768px){
-      /* hide desktop sidebar, show topbar and bottom nav */
-      .sidebar{display:none}
-      main{margin-left:0; padding:18px; padding-bottom: calc(var(--mobile-bottom-height) + 24px)}
-      .topbar{display:flex}
-      .mobile-bottom-nav{
+    /* ================= RESPONSIVE BREAKPOINTS ================= */
+    @media (min-width: 769px){
+      body{
+        padding-top:0;
+        padding-bottom:0;
+        flex-direction:row;
+      }
+      .topbar, .mobile-bottom-nav, .mobile-menu-overlay{
+        display:none !important;
+      }
+      .sidebar{
         display:flex;
-        position:fixed;
-        left:0; right:0; bottom:0;
-        height:var(--mobile-bottom-height);
+        width:250px;
         background:var(--white);
-        border-top:1px solid var(--border);
-        justify-content:space-around;
-        align-items:center;
-        z-index:160;
-        padding-bottom:env(safe-area-inset-bottom);
-      }
-      .mobile-bottom-nav a{
-        display:flex;
+        border-right:1px solid var(--border);
+        padding:22px 16px;
+        position:fixed;
+        top:0; left:0; bottom:0;
         flex-direction:column;
-        align-items:center;
-        justify-content:center;
-        gap:4px;
-        text-decoration:none;
-        color:var(--black);
-        font-size:11px;
-        width:20%;
-        max-width:80px;
+        justify-content:space-between;
+        gap:12px;
+        z-index:120;
       }
-      .mobile-bottom-nav svg{width:22px;height:22px;stroke:currentColor; fill:none}
-      .mobile-bottom-nav a.active{color:var(--accent); font-weight:600; transform:translateY(-2px)}
+      body.dark .sidebar{background:#111; border-right-color:#374151}
+      .brand img{width:40px;height:40px}
+      .brand .name{font-size:1.15rem}
+      .nav{margin-top:18px; gap:12px}
+      .nav a{
+        padding:10px 12px;
+        border-radius:10px;
+        font-weight:500;
+        transition:all .15s;
+      }
+      .nav a:hover{
+        background:#f3faf3;
+        color:var(--accent);
+        transform:translateX(4px);
+      }
+      main{
+        margin-left:250px;
+        padding:32px;
+      }
+      footer{
+        display:block;
+        margin-left:250px;
+        padding:20px 32px;
+        border-top:1px solid var(--border);
+        color:var(--muted);
+        background:var(--white);
+        font-size:0.9rem;
+      }
+      body.dark footer{background:#111; color:#9ca3af}
     }
 
-    /* small helper */
+    @media (max-width: 480px){
+      .publish-card{padding:16px}
+      .row{flex-direction:column}
+      .col.wide{width:100%}
+      .controls{flex-direction:column}
+      button{width:100%}
+    }
+
     .hidden{display:none}
   </style>
 </head>
 <body>
+  <!-- ================= MOBILE TOPBAR ================= -->
+  <header class="topbar" role="banner">
+    <div class="brand">
+      <img src="logo.png" alt="NovelMint logo" />
+      <div>NovelMint</div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="menu-btn" id="openMenuBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <button id="darkToggle" class="menu-btn" aria-label="Toggle dark mode">
+        <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
 
-  <!-- ================= SIDEBAR (Desktop / Laptop) ================= -->
+  <!-- ================= MOBILE MENU OVERLAY ================= -->
+  <div class="mobile-menu-overlay" id="menuOverlay"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="close-menu" id="closeMenuBtn">&times;</button>
+    <nav class="nav" aria-label="Mobile menu">
+      <a href="index.html">
+        <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5"></path><path d="M9 22V12h6v10"></path></svg>
+        <span>Library</span>
+      </a>
+      <a href="dashboard.html">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8"></rect><rect x="13" y="3" width="8" height="4"></rect><rect x="13" y="11" width="8" height="10"></rect><rect x="3" y="13" width="8" height="8"></rect></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="publish.html" class="active">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"></path></svg>
+        <span>Publish</span>
+      </a>
+      <a href="profile.html">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
+        <span>Profile</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- ================= DESKTOP SIDEBAR ================= -->
   <aside class="sidebar" role="navigation" aria-label="Sidebar">
     <div>
       <div class="brand">
         <img src="logo.png" alt="NovelMint logo" />
         <div class="name">NovelMint</div>
       </div>
-
       <nav class="nav" aria-label="Main">
         <a href="index.html" title="Library">
-          <!-- home icon (monochrome) -->
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5L12 3l9 6.5"></path><path d="M9 22V12h6v10"></path></svg>
+          <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5"></path><path d="M9 22V12h6v10"></path></svg>
           <span>Library</span>
         </a>
-
         <a href="dashboard.html" title="Dashboard">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8"></rect><rect x="13" y="3" width="8" height="4"></rect><rect x="13" y="11" width="8" height="10"></rect><rect x="3" y="13" width="8" height="8"></rect></svg>
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8"></rect><rect x="13" y="3" width="8" height="4"></rect><rect x="13" y="11" width="8" height="10"></rect><rect x="3" y="13" width="8" height="8"></rect></svg>
           <span>Dashboard</span>
         </a>
-
-        <a href="publish.html" title="Publish">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-7-7h14"></path></svg>
+        <a href="publish.html" title="Publish" class="active">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"></path></svg>
           <span>Publish</span>
         </a>
-
         <a href="profile.html" title="Profile">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
           <span>Profile</span>
         </a>
       </nav>
     </div>
-
     <div class="sidebar-footer">© 2025 NovelMint</div>
   </aside>
 
-  <!-- ================= MOBILE TOPBAR (same accent, compact) ================= -->
-  <div class="topbar" role="banner" aria-label="Top bar">
-    <div class="brand">
-      <img src="logo.png" alt="logo" style="width:34px;height:34px;border-radius:50%"/>
-      <div style="font-weight:700;color:var(--accent)">NovelMint</div>
-    </div>
-
-    <div style="display:flex;gap:8px;align-items:center">
-      <button class="menu-btn" id="openMenuBtn" aria-label="Open menu">
-        <!-- menu icon -->
-        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M3 12h18M3 6h18M3 18h18"></path></svg>
-      </button>
-      <button id="darkToggle" class="menu-btn" aria-label="Toggle dark mode" title="Toggle theme">
-        <!-- moon icon simple -->
-        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- ================= MAIN (Publish Form) ================= -->
+  <!-- ================= MAIN CONTENT ================= -->
   <main>
-    <div class="publish-card" role="main">
+    <div class="publish-card">
       <h1>Publish New Content</h1>
 
       <label for="type">Type</label>
-      <select id="type" aria-label="Select type">
+      <select id="type">
         <option value="">-- Choose type --</option>
         <option>Story</option>
         <option>Short Story</option>
@@ -287,12 +493,11 @@
       </select>
 
       <div class="row">
-        <div class="col">
+        <div class="col wide">
           <label for="title">Title</label>
           <input id="title" type="text" placeholder="Enter title (optional for quote)" />
         </div>
-
-        <div style="width:200px">
+        <div class="col" style="min-width:140px">
           <label for="visibility">Visibility</label>
           <select id="visibility">
             <option value="public">Public</option>
@@ -311,13 +516,12 @@
       <div class="muted" id="contentCount">0 characters</div>
 
       <div class="row">
-        <div class="col">
+        <div class="col wide">
           <label for="cover">Cover image (optional)</label>
           <input id="cover" type="file" accept="image/*" />
-          <div class="muted">Best size: 1200×675 px. Max 10 MB recommended.</div>
+          <div class="muted">Best: 1200×675 px. Max 10 MB.</div>
         </div>
-
-        <div style="width:200px">
+        <div class="col" style="min-width:140px">
           <label for="publishDate">Publish on (optional)</label>
           <input id="publishDate" type="date" />
         </div>
@@ -326,59 +530,48 @@
       <label for="tags">Tags (comma separated)</label>
       <input id="tags" type="text" placeholder="e.g. romance, short" />
 
-      <div id="fileSection" style="margin-top:12px; display:none">
+      <div id="fileSection" style="margin-top:16px; display:none">
         <label for="bookFile">Attach file (PDF / EPUB / DOCX) — max 100 MB</label>
-        <input id="bookFile" type="file" accept=".pdf,.epub,.doc,.docx,application/pdf,application/epub+zip" />
+        <input id="bookFile" type="file" accept=".pdf,.epub,.doc,.docx" />
         <div class="muted" id="fileInfo">No file selected.</div>
       </div>
 
       <div class="controls">
         <button id="publishBtn" class="primary">Publish</button>
-        <button id="previewBtn" class="ghost" type="button">Preview</button>
-        <button id="clearBtn" class="ghost" type="button">Clear</button>
+        <button id="previewBtn" class="ghost">Preview</button>
+        <button id="clearBtn" class="ghost">Clear</button>
       </div>
 
       <div class="progress" id="uploadProgress"><span></span></div>
-      <div class="status muted" id="status"> </div>
+      <div class="status muted" id="status"></div>
     </div>
   </main>
 
-  <!-- ================= MOBILE BOTTOM NAV (horizontal, black icons) ================= -->
+  <!-- ================= MOBILE BOTTOM NAV ================= -->
   <nav class="mobile-bottom-nav" role="navigation" aria-label="Mobile navigation">
-    <a href="index.html" id="mb-home" class="active" aria-label="Library">
+    <a href="index.html" id="mb-home">
       <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5"></path><path d="M9 22V12h6v10"></path></svg>
       <span>Library</span>
     </a>
-
-    <a href="dashboard.html" id="mb-dashboard" aria-label="Dashboard">
+    <a href="dashboard.html" id="mb-dashboard">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8"></rect><rect x="13" y="3" width="8" height="4"></rect><rect x="13" y="11" width="8" height="10"></rect><rect x="3" y="13" width="8" height="8"></rect></svg>
       <span>Dashboard</span>
     </a>
-
-    <a href="publish.html" id="mb-publish" aria-label="Publish">
+    <a href="publish.html" id="mb-publish" class="active">
       <svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"></path></svg>
       <span>Publish</span>
     </a>
-
-    <a href="profile.html" id="mb-profile" aria-label="Profile">
+    <a href="profile.html" id="mb-profile">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M6 20v-1a6 6 0 0 1 12 0v1"></path></svg>
       <span>Profile</span>
     </a>
   </nav>
 
-  <!-- ================= FOOTER (desktop; mobile reserved area) ================= -->
-  <footer style="margin-left:250px;padding:18px 24px;border-top:1px solid var(--border);color:var(--muted);background:transparent;">
-    © 2025 NovelMint. All rights reserved.
-  </footer>
+  <!-- ================= DESKTOP FOOTER ================= -->
+  <footer>© 2025 NovelMint. All rights reserved.</footer>
 
-  <!-- ================= SCRIPTS (UI logic + Firebase upload logic) ================= -->
+  <!-- ================= SCRIPT ================= -->
   <script type="module">
-    // If you're using your app.js exports (auth, db, storage), keep these imports
-    // import { auth, db, storage } from "./app.js";
-    // import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    // import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-    // import { ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
-
     // Elements
     const typeEl = document.getElementById('type');
     const fileSection = document.getElementById('fileSection');
@@ -395,166 +588,142 @@
     const progressBar = uploadProgress.querySelector('span');
     const statusDiv = document.getElementById('status');
 
-    // Mobile top controls
+    // Mobile menu
     const openMenuBtn = document.getElementById('openMenuBtn');
-    const navMenu = document.querySelector('.nav');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
     const darkToggle = document.getElementById('darkToggle');
 
-    // show/hide file section for book types
+    // Show/hide book file section
     function updateFileSection(){
       const t = (typeEl.value || '').toLowerCase();
-      if(t.includes('book')) fileSection.style.display = 'block';
-      else {
-        fileSection.style.display = 'none';
-        if(bookFileEl) bookFileEl.value = '';
+      fileSection.style.display = t.includes('book') ? 'block' : 'none';
+      if(!t.includes('book')){
+        bookFileEl.value = '';
         fileInfo.textContent = 'No file selected.';
       }
     }
     typeEl.addEventListener('change', updateFileSection);
 
-    // excerpt / content counters
+    // Counters
     excerptEl.addEventListener('input', () => {
       const len = excerptEl.value.length;
       excerptCount.textContent = `${len} / 300`;
-      excerptCount.style.color = len > 300 ? '#dc2626' : 'var(--muted)';
+      excerptCount.style.color = len > 300 ? '#dc2626' : '';
     });
-    contentEl.addEventListener('input', () => contentCount.textContent = `${contentEl.value.length} characters`);
+    contentEl.addEventListener('input', () => {
+      contentCount.textContent = `${contentEl.value.length} characters`;
+    });
 
-    // book file size check
-    if(bookFileEl){
-      bookFileEl.addEventListener('change', () => {
-        const f = bookFileEl.files[0];
-        if(!f){ fileInfo.textContent = 'No file selected.'; return; }
-        const max = 100 * 1024 * 1024;
-        if(f.size > max) {
-          fileInfo.textContent = `❌ File too large (${(f.size/1024/1024).toFixed(2)} MB). Max 100 MB.`;
-          fileInfo.style.color = '#dc2626';
-        } else {
-          fileInfo.textContent = `${f.name} — ${(f.size/1024/1024).toFixed(2)} MB`;
-          fileInfo.style.color = 'inherit';
-        }
-      });
-    }
-
-    // mobile menu toggle (topbar -> show nav as full-screen dropdown)
-    openMenuBtn && openMenuBtn.addEventListener('click', () => {
-      if(!navMenu) return;
-      // simple full-screen toggle for mobile
-      const isVisible = navMenu.style.display === 'flex';
-      if(!isVisible){
-        navMenu.style.position = 'fixed';
-        navMenu.style.left = '0';
-        navMenu.style.top = '56px';
-        navMenu.style.right = '0';
-        navMenu.style.background = 'var(--white)';
-        navMenu.style.padding = '16px';
-        navMenu.style.display = 'flex';
-        navMenu.style.flexDirection = 'column';
-        navMenu.style.gap = '12px';
-        navMenu.style.zIndex = '200';
+    // File size check
+    bookFileEl?.addEventListener('change', () => {
+      const f = bookFileEl.files[0];
+      if(!f){ fileInfo.textContent = 'No file selected.'; return; }
+      const max = 100 * 1024 * 1024;
+      if(f.size > max){
+        fileInfo.textContent = `File too large (${(f.size/1024/1024).toFixed(2)} MB). Max 100 MB.`;
+        fileInfo.style.color = '#dc2626';
       } else {
-        navMenu.style.display = '';
-        navMenu.style.position = '';
+        fileInfo.textContent = `${f.name} — ${(f.size/1024/1024).toFixed(2)} MB`;
+        fileInfo.style.color = 'inherit';
       }
     });
 
-    // dark toggle
-    darkToggle && darkToggle.addEventListener('click', () => {
+    // Mobile menu toggle
+    openMenuBtn?.addEventListener('click', () => {
+      mobileMenu.classList.add('show');
+      menuOverlay.classList.add('show');
+    });
+    closeMenuBtn?.addEventListener('click', () => {
+      mobileMenu.classList.remove('show');
+      menuOverlay.classList.remove('show');
+    });
+    menuOverlay?.addEventListener('click', () => {
+      mobileMenu.classList.remove('show');
+      menuOverlay.classList.remove('show');
+    });
+
+    // Dark mode
+    darkToggle?.addEventListener('click', () => {
       document.body.classList.toggle('dark');
       localStorage.setItem('darkMode', document.body.classList.contains('dark'));
     });
     if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark');
 
-    // preview
+    // Preview
     previewBtn.addEventListener('click', () => {
-      const html = `
-        <html><head><title>Preview - ${escapeHtml(document.getElementById('title').value||'Untitled')}</title></head>
-        <body style="font-family:Arial,Helvetica,sans-serif;padding:20px;">
-          <h1 style="color:${'var(--accent)'}">${escapeHtml(document.getElementById('title').value||'Untitled')}</h1>
-          <h4 style="color:#6b7280">${escapeHtml(excerptEl.value||'')}</h4>
-          <pre style="white-space:pre-wrap;font-size:1rem;color:#111">${escapeHtml(contentEl.value||'')}</pre>
+      const title = document.getElementById('title').value || 'Untitled';
+      const html = `<!DOCTYPE html><html><head><title>Preview - ${title}</title>
+        <style>body{font-family:system-ui;padding:20px;background:#fff;color:#111}h1{color:#16a34a}</style>
+        </head><body><h1>${escapeHtml(title)}</h1>
+        <h4 style="color:#6b7280">${escapeHtml(excerptEl.value)}</h4>
+        <pre style="white-space:pre-wrap;font-size:1rem">${escapeHtml(contentEl.value)}</pre>
         </body></html>`;
-      const w = window.open('', '_blank', 'width=800,height=900');
-      w.document.write(html);
-      w.document.close();
+      const win = window.open('', '_blank', 'width=800,height=900');
+      win.document.write(html);
+      win.document.close();
     });
 
-    // clear
+    // Clear form
     clearBtn.addEventListener('click', () => {
-      document.getElementById('title').value = '';
-      excerptEl.value = '';
-      contentEl.value = '';
-      document.getElementById('cover').value = '';
+      ['title','excerpt','content','cover','tags','publishDate'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = '';
+      });
       if(bookFileEl) bookFileEl.value = '';
-      document.getElementById('tags').value = '';
       document.getElementById('visibility').value = 'public';
-      document.getElementById('publishDate').value = '';
       statusDiv.textContent = '';
-      progressBar.style.width = '0%';
       uploadProgress.style.display = 'none';
+      progressBar.style.width = '0%';
       updateFileSection();
     });
 
-    // publishing logic (this is a template — if you use your app.js exports, uncomment the imports above
+    // Publish (simulated)
     publishBtn.addEventListener('click', async () => {
       publishBtn.disabled = true;
       publishBtn.textContent = 'Publishing...';
       statusDiv.textContent = 'Preparing...';
       try {
-        // Basic validation
         const title = document.getElementById('title').value.trim();
-        const content = document.getElementById('content').value.trim();
-        if(!title || !content){
-          statusDiv.textContent = '⚠️ Title and content are required.';
-          publishBtn.disabled = false;
-          publishBtn.textContent = 'Publish';
-          return;
-        }
+        const content = contentEl.value.trim();
+        if(!title || !content) throw new Error('Title and content required.');
 
-        // If you want to integrate Firebase upload: use uploadBytesResumable + getDownloadURL
-        // Here we'll simulate upload progress then "success"
         uploadProgress.style.display = 'block';
-        progressBar.style.width = '6%';
-        await fakeDelay(300);
-        progressBar.style.width = '35%';
-        await fakeDelay(400);
-        progressBar.style.width = '70%';
-        await fakeDelay(600);
-        progressBar.style.width = '100%';
-        await fakeDelay(200);
-
-        // Simulate saving entry (replace this with addDoc to Firestore)
-        statusDiv.textContent = '✅ Published successfully!';
+        const steps = [10, 40, 75, 100];
+        for(let i=0; i<steps.length; i++){
+          await new Promise(r => setTimeout(r, 300 + i*100));
+          progressBar.style.width = steps[i] + '%';
+        }
+        statusDiv.textContent = 'Published successfully!';
         publishBtn.textContent = 'Published';
-        publishBtn.disabled = false;
       } catch (err) {
-        console.error(err);
-        statusDiv.textContent = '❌ ' + (err.message || 'Publish failed');
-        publishBtn.disabled = false;
+        statusDiv.textContent = 'Error: ' + err.message;
         publishBtn.textContent = 'Publish';
       } finally {
-        setTimeout(()=>{ uploadProgress.style.display = 'none'; progressBar.style.width = '0%'; }, 800);
+        publishBtn.disabled = false;
+        setTimeout(() => {
+          uploadProgress.style.display = 'none';
+          progressBar.style.width = '0%';
+        }, 1000);
       }
     });
 
-    // helper functions
-    function escapeHtml(s=''){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-    function fakeDelay(ms){ return new Promise(r=>setTimeout(r,ms))}
+    function escapeHtml(s=''){
+      return String(s).replace(/[&<>"']/g, m => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      })[m]);
+    }
 
-    // highlight mobile bottom nav active
-    (function setActiveMobile(){
-      try{
-        const path = location.pathname.split('/').pop() || 'publish.html';
-        const map = { 'index.html':'mb-home','publish.html':'mb-publish','dashboard.html':'mb-dashboard','profile.html':'mb-profile' };
-        const id = map[path] || 'mb-publish';
-        const el = document.getElementById(id);
-        if(el) el.classList.add('active');
-      }catch(e){}
+    // Active mobile nav
+    (function(){
+      const path = location.pathname.split('/').pop() || 'publish.html';
+      const map = { 'index.html':'mb-home','publish.html':'mb-publish','dashboard.html':'mb-dashboard','profile.html':'mb-profile' };
+      const id = map[path];
+      if(id) document.getElementById(id)?.classList.add('active');
     })();
 
-    // initialize file visibility
     updateFileSection();
   </script>
 </body>
 </html>
-
