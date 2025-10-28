@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Writer Profile - NovelMint</title>
+  <style>
+    body { font-family: 'Poppins', sans-serif; background:#f8f9ff; margin:0; padding:1.5rem; }
+    .profile { max-width:600px; margin:auto; background:#fff; padding:2rem; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+    .profile img { width:100px; height:100px; border-radius:50%; border:3px solid #12172b; object-fit:cover; }
+    .profile h2 { margin:.5rem 0 0; }
+    .username { color:gray; }
+    .about { margin:1rem 0; }
+    .btns { display:flex; gap:1rem; }
+    button { background:#12172b; color:#fff; border:none; padding:.5rem 1rem; border-radius:8px; cursor:pointer; }
+    .posts { margin-top:2rem; }
+  </style>
+</head>
+<body>
+  <div class="profile">
+    <img id="profilePic" src="default-profile.jpg" alt="Profile Picture">
+    <h2 id="displayName">Loading...</h2>
+    <p class="username" id="username"></p>
+    <p class="about" id="about"></p>
+    <div class="btns">
+      <button id="followBtn">Become Reader</button>
+      <button id="appreciateBtn">Appreciate</button>
+    </div>
+    <div class="posts">
+      <h3>Published Works</h3>
+      <div id="userPosts"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { db } from "./app.js";
+    import { collection, query, where, getDocs, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { auth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const params = new URLSearchParams(window.location.search);
+    const username = params.get("user");
+    const displayNameEl = document.getElementById("displayName");
+    const aboutEl = document.getElementById("about");
+    const usernameEl = document.getElementById("username");
+    const profilePic = document.getElementById("profilePic");
+    const postsEl = document.getElementById("userPosts");
+    const followBtn = document.getElementById("followBtn");
+    const appreciateBtn = document.getElementById("appreciateBtn");
+
+    let profileUserId = null;
+
+    if (!username) {
+      displayNameEl.textContent = "User not found";
+    } else {
+      // find user by username
+      const q = query(collection(db, "users"), where("username", "==", username));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const userDoc = snap.docs[0];
+        const userData = userDoc.data();
+        profileUserId = userDoc.id;
+
+        displayNameEl.textContent = userData.name || username;
+        aboutEl.textContent = userData.about || "No bio yet.";
+        usernameEl.textContent = "@" + username;
+        if (userData.photoURL) profilePic.src = userData.photoURL;
+
+        // Load posts
+        const postQ = query(collection(db, "posts"), where("authorId", "==", profileUserId));
+        const postSnap = await getDocs(postQ);
+        postSnap.forEach(p => {
+          const d = p.data();
+          const div = document.createElement("div");
+          div.innerHTML = `<h4>${d.title}</h4><p>${d.excerpt || ""}</p><hr>`;
+          postsEl.appendChild(div);
+        });
+      } else {
+        displayNameEl.textContent = "User not found";
+      }
+    }
+
+    // Follow button
+    onAuthStateChanged(auth, async (user) => {
+      if (user && profileUserId && user.uid !== profileUserId) {
+        followBtn.addEventListener("click", async () => {
+          await updateDoc(doc(db, "users", profileUserId), {
+            followers: arrayUnion(user.uid)
+          });
+          alert("You are now a Reader of this author 📖");
+        });
+        appreciateBtn.addEventListener("click", () => {
+          alert("You appreciated this author ❤️");
+        });
+      } else {
+        followBtn.style.display = "none";
+        appreciateBtn.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
