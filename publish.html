@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovelMint — Dashboard</title>
+  <link rel="icon" href="favicon.png" />
+  <style>
+    :root {
+      --green: #2ecc71;
+      --light-bg: #f9f9f9;
+      --border: #e3e3e3;
+      --text-dark: #222;
+      --text-light: #555;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+      display: flex;
+      min-height: 100vh;
+      flex-direction: row;
+    }
+
+    /* Header */
+    header {
+      width: 240px;
+      background: white;
+      border-right: 1px solid var(--border);
+      padding: 25px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 25px;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+      position: fixed;
+      height: 100vh;
+    }
+
+    header img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+
+    header h2 {
+      margin: 0;
+      color: var(--green);
+    }
+
+    header button {
+      background: var(--green);
+      border: none;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95em;
+      transition: 0.3s;
+      width: 100%;
+    }
+
+    header button:hover {
+      background: #27ae60;
+    }
+
+    .logout {
+      background: #e74c3c !important;
+      margin-top: auto;
+    }
+
+    main {
+      margin-left: 260px;
+      flex: 1;
+      padding: 30px;
+    }
+
+    .publish {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 700px;
+      margin: 0 auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    h3 {
+      color: var(--green);
+      margin-bottom: 15px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text-dark);
+      font-size: 1em;
+      margin-bottom: 15px;
+    }
+
+    input[type="file"] {
+      border: none;
+      background: transparent;
+    }
+
+    button#publishBtn {
+      width: 100%;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button#publishBtn:hover {
+      background: #27ae60;
+    }
+
+    #status {
+      margin-top: 12px;
+      color: var(--green);
+      font-size: 0.9em;
+      text-align: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      header {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        justify-content: space-around;
+        position: relative;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      main {
+        margin-left: 0;
+        padding: 20px;
+      }
+
+      header h2 {
+        display: none;
+      }
+
+      header img {
+        width: 40px;
+        height: 40px;
+      }
+
+      header button {
+        width: auto;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="NovelMint Logo" />
+    <h2>NovelMint</h2>
+    <button id="showPublish">📖 Publish</button>
+    <button class="logout" id="logoutBtn">Logout</button>
+  </header>
+
+  <main>
+    <div class="publish" id="publishForm" style="display:none;">
+      <h3>Publish New Content</h3>
+      <input type="text" id="title" placeholder="Enter title" />
+      <select id="type">
+        <option>Story</option>
+        <option>Poem</option>
+        <option>Book</option>
+        <option>Short Book</option>
+        <option>Quote</option>
+        <option>Thought</option>
+        <option>Article</option>
+        <option>Blog</option>
+        <option>Novel</option>
+        <option>Fanfiction</option>
+      </select>
+      <textarea id="content" rows="6" placeholder="Write your content..."></textarea>
+      <label for="cover">Upload a cover image (optional):</label>
+      <input type="file" id="cover" accept="image/*" />
+      <label for="bookFile">Attach file (optional, up to 100 MB):</label>
+      <input type="file" id="bookFile" accept=".pdf,.doc,.docx,.txt" />
+      <button id="publishBtn">Publish</button>
+      <div id="status"></div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { auth, db, storage } from "./app.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+
+    const showPublish = document.getElementById("showPublish");
+    const publishForm = document.getElementById("publishForm");
+    const publishBtn = document.getElementById("publishBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const statusDiv = document.getElementById("status");
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) currentUser = user;
+      else window.location.href = "login.html";
+    });
+
+    showPublish.addEventListener("click", () => {
+      publishForm.style.display = publishForm.style.display === "none" ? "block" : "none";
+    });
+
+    publishBtn.addEventListener("click", async () => {
+      const title = document.getElementById("title").value.trim();
+      const type = document.getElementById("type").value;
+      const content = document.getElementById("content").value.trim();
+      const cover = document.getElementById("cover").files[0];
+      const bookFile = document.getElementById("bookFile").files[0];
+
+      if (!title || !content) {
+        statusDiv.textContent = "⚠️ Title and content are required.";
+        return;
+      }
+
+      statusDiv.textContent = "Uploading...";
+
+      try {
+        let coverUrl = "";
+        if (cover) {
+          const coverRef = ref(storage, "covers/" + Date.now() + "-" + cover.name);
+          await uploadBytes(coverRef, cover);
+          coverUrl = await getDownloadURL(coverRef);
+        }
+
+        let bookUrl = "";
+        if (bookFile && bookFile.size <= 100 * 1024 * 1024) {
+          const bookRef = ref(storage, "books/" + Date.now() + "-" + bookFile.name);
+          await uploadBytes(bookRef, bookFile);
+          bookUrl = await getDownloadURL(bookRef);
+        }
+
+        await addDoc(collection(db, "contents"), {
+          title,
+          type,
+          content,
+          coverUrl,
+          bookUrl,
+          author: currentUser.email.split("@")[0],
+          authorId: currentUser.uid,
+          publishDate: new Date().toLocaleDateString(),
+          createdAt: serverTimestamp(),
+        });
+
+        statusDiv.textContent = "✅ Published successfully!";
+      } catch (err) {
+        console.error(err);
+        statusDiv.textContent = "❌ " + err.message;
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>
