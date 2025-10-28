@@ -3,577 +3,356 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NovelMint — Dashboard (Publish)</title>
+  <title>NovelMint — Publish</title>
   <link rel="icon" href="favicon.png" />
   <style>
     :root {
-      --accent: #16a34a;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --white: #ffffff;
-      --black: #111111;
-      --mobile-bottom-height: 64px;
+      --accent: #6c63ff;
+      --dark-bg: #0b1120;
+      --light-bg: #ffffff;
+      --text-light: #f5f5f5;
+      --text-dark: #222;
+      --border: rgba(0, 0, 0, 0.1);
     }
 
     body {
       margin: 0;
       font-family: "Poppins", sans-serif;
-      background: var(--white);
-      color: var(--black);
+      background-color: var(--light-bg);
+      color: var(--text-dark);
+      transition: background 0.3s, color 0.3s;
       display: flex;
       min-height: 100vh;
     }
 
-    /* SIDEBAR / HEADER (desktop) */
+    body.dark {
+      background-color: var(--dark-bg);
+      color: var(--text-light);
+    }
+
+    /* ======= DESKTOP SIDEBAR (HEADER LEFT) ======= */
     header {
-      background: var(--white);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 220px;
+      height: 100vh;
+      background: var(--light-bg);
       border-right: 1px solid var(--border);
-      width: 250px;
-      padding: 20px 15px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      position: fixed;
-      height: 100vh;
-      box-sizing: border-box;
-      z-index: 100;
+      transition: background 0.3s;
+      z-index: 1000;
     }
 
-    .logo-section {
+    body.dark header {
+      background: #111a30;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    header .top {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 30px;
+      padding-top: 40px;
     }
-    .logo-section img { width: 38px; height: 38px; border-radius: 50%; }
-    .logo-section span { font-size: 1.2rem; font-weight: 600; color: var(--accent); }
 
-    nav { display:flex; flex-direction:column; gap:12px; margin-top:10px; }
-    nav a { text-decoration: none; color: var(--black); font-weight: 500; font-size: 1.02em; display:flex; gap:8px; align-items:center; }
-    nav a:hover { color: var(--accent); }
+    header .logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+    }
 
-    footer { text-align:center; font-size:0.85em; color:var(--muted); border-top:1px solid var(--border); padding-top:10px; margin-top:20px; }
+    header nav {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
 
-    /* MAIN */
+    header nav a {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    header nav a:hover {
+      color: var(--accent);
+    }
+
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: 1.2rem;
+      margin-bottom: 25px;
+      cursor: pointer;
+    }
+
+    /* ======= MAIN CONTENT ======= */
     main {
       flex: 1;
-      margin-left: 250px;
-      padding: 24px;
-      box-sizing: border-box;
+      margin-left: 220px;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
     }
 
-    .publish {
-      max-width: 820px;
-      margin: 0 auto;
-      background: #f9fafb;
+    .publish-box {
+      background: var(--light-bg);
+      color: var(--text-dark);
+      width: 100%;
+      max-width: 600px;
+      border-radius: 15px;
+      padding: 25px 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark .publish-box {
+      background: #111a30;
+      color: var(--text-light);
+    }
+
+    .publish-box h2 {
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--accent);
+    }
+
+    .publish-box label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: 500;
+    }
+
+    .publish-box select,
+    .publish-box input[type="text"],
+    .publish-box textarea,
+    .publish-box input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      font-size: 1em;
+      background: none;
+      color: inherit;
+      outline: none;
+      transition: border 0.2s;
     }
 
-    .publish h3 { color: var(--accent); margin: 0 0 12px 0; }
-    .row { display:flex; gap:12px; align-items:center; }
-    .col { flex:1; }
-    label { display:block; font-size:0.9rem; color:#374151; margin-bottom:6px; }
-    input[type="text"], input[type="date"], select, textarea {
-      width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--white); color:var(--black); font-size:1rem; box-sizing:border-box;
-    }
-    textarea { resize:vertical; min-height:100px; }
-
-    .small { font-size:0.9rem; color:var(--muted); margin-top:6px; }
-    .muted { color:var(--muted); }
-
-    .actions { display:flex; gap:12px; margin-top:12px; align-items:center; flex-wrap:wrap; }
-    button {
-      background: var(--accent); color:var(--white); border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-size:1rem;
-    }
-    button.secondary { background:#f3f4f6; color:var(--black); border:1px solid var(--border); }
-    button.danger { background:#ef4444; color:#fff; }
-
-    .status { margin-top:10px; font-size:0.95rem; }
-    .status.success { color: #15803d; }
-    .status.error { color: #dc2626; }
-    .progress { height:8px; background:#e6f4ea; border-radius:6px; overflow:hidden; margin-top:8px; }
-    .progress > span { display:block; height:100%; width:0%; background:var(--accent); transition:width 0.2s ease; }
-
-    /* responsive */
-    @media (max-width: 880px) {
-      .row { flex-direction:column; align-items:stretch; }
+    .publish-box textarea {
+      height: 140px;
+      resize: none;
     }
 
-    /* MOBILE header top behavior */
-    @media (max-width: 768px) {
-      body { flex-direction: column; }
-      header {
-        flex-direction: row; align-items:center; justify-content:space-between; position: sticky; top:0; width:100%;
-        height:auto; border-right:none; border-bottom:1px solid var(--border); padding:10px 16px;
-        z-index: 110;
-      }
-      nav { display:none; position:absolute; top:60px; right:0; width:100%; background:var(--white); border-top:1px solid var(--border); text-align:center; padding:8px 0; }
-      nav.active { display:flex; flex-direction:column; gap:10px; }
-      main { margin-left:0; padding:16px; }
-      footer { display:none; }
-
-      /* Ensure main content not hidden behind bottom nav */
-      main { padding-bottom: calc(var(--mobile-bottom-height) + 16px); }
+    .publish-box select:focus,
+    .publish-box input:focus,
+    .publish-box textarea:focus {
+      border-color: var(--accent);
     }
 
-    /* MOBILE bottom nav (only on mobile) */
+    .publish-box button {
+      margin-top: 20px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .publish-box button:hover {
+      background: #584ef2;
+    }
+
+    /* ======= FOOTER ======= */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 220px;
+      right: 0;
+      background: var(--light-bg);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+
+    body.dark footer {
+      background: #111a30;
+      color: #ccc;
+    }
+
+    /* ======= MOBILE BOTTOM NAV ======= */
     .mobile-bottom-nav {
       display: none;
     }
+
     @media (max-width: 768px) {
+      header {
+        display: none;
+      }
+
+      main {
+        margin-left: 0;
+        padding-bottom: 90px;
+      }
+
+      footer {
+        position: relative;
+        left: 0;
+        padding-bottom: 70px;
+      }
+
       .mobile-bottom-nav {
         display: flex;
         position: fixed;
+        bottom: 0;
         left: 0;
         right: 0;
-        bottom: 0;
-        height: var(--mobile-bottom-height);
-        background: var(--white);
+        height: 64px;
+        background: var(--light-bg);
         border-top: 1px solid var(--border);
+        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
         justify-content: space-around;
         align-items: center;
-        z-index: 120;
-        padding-bottom: env(safe-area-inset-bottom);
+        z-index: 999;
+        transition: background 0.3s;
+      }
+
+      body.dark .mobile-bottom-nav {
+        background: #0f172a;
+        border-color: rgba(255, 255, 255, 0.1);
       }
 
       .mobile-bottom-nav a {
+        flex: 1;
+        text-align: center;
         text-decoration: none;
-        color: var(--black);
+        color: #555;
+        font-size: 0.75rem;
         display: flex;
         flex-direction: column;
         align-items: center;
-        font-size: 0.7rem;
-        gap: 4px;
-        width: 20%;
-        max-width: 80px;
+      }
+
+      body.dark .mobile-bottom-nav a {
+        color: #ccc;
       }
 
       .mobile-bottom-nav svg {
-        width: 22px;
-        height: 22px;
-        display: block;
-        stroke: currentColor; /* monochrome icons */
+        width: 26px;
+        height: 26px;
+        stroke: currentColor;
         fill: none;
+        margin-bottom: 2px;
       }
 
-      .mobile-bottom-nav .label {
-        font-size: 11px;
-        color: var(--black);
+      .mobile-bottom-nav a.active {
+        color: var(--accent);
+        font-weight: 600;
       }
 
-      /* active state subtle */
-      .mobile-bottom-nav a.active { color: var(--accent); }
+      .mobile-bottom-nav a.active svg {
+        transform: scale(1.1);
+      }
     }
-
-    /* MENU TOGGLE */
-    .menu-toggle { display:none; cursor:pointer; margin-left:8px; }
-    .menu-toggle span { width:24px; height:3px; background:var(--black); border-radius:2px; display:block; margin:3px 0; }
-
   </style>
 </head>
+
 <body>
-  <!-- Header (left on desktop, top on mobile) -->
+  <!-- ======= LEFT HEADER (Laptop) ======= -->
   <header>
-    <div style="display:flex; align-items:center; gap:10px;">
-      <div class="logo-section">
-        <img src="logo.png" alt="NovelMint logo" style="width:38px;height:38px;border-radius:50%;">
-        <span>NovelMint</span>
-      </div>
-
-      <div class="menu-toggle" id="menuToggle" aria-hidden="true" title="Menu">
-        <span></span><span></span><span></span>
-      </div>
+    <div class="top">
+      <a href="#" class="logo">NovelMint</a>
+      <nav>
+        <a href="library.html">Library</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="publish.html" style="color: var(--accent);">Publish</a>
+        <a href="profile.html">Profile</a>
+      </nav>
     </div>
-
-    <nav id="navMenu" aria-label="Main navigation">
-      <a href="index.html">📚 Library</a>
-      <a href="dashboard.html">📊 Dashboard</a>
-      <a href="publish.html">✍️ Publish</a>
-    </nav>
-
-    <footer>© 2025 NovelMint</footer>
+    <button class="toggle-btn" onclick="toggleDarkMode()">🌙</button>
   </header>
 
-  <!-- Main: Publish form with extra features -->
+  <!-- ======= MAIN CONTENT ======= -->
   <main>
-    <div class="publish" id="publishForm">
-      <h3>📖 Publish New Content</h3>
+    <div class="publish-box">
+      <h2>Publish Your Work</h2>
 
-      <div class="row" style="margin-bottom:12px;">
-        <div class="col">
-          <label for="title">Title</label>
-          <input id="title" type="text" placeholder="Enter title" />
-        </div>
+      <label for="type">Select Type:</label>
+      <select id="type" onchange="toggleFileUpload()">
+        <option value="">-- Select Type --</option>
+        <option value="story">Story</option>
+        <option value="poem">Poem</option>
+        <option value="quote">Quote</option>
+        <option value="shortbook">Short Book</option>
+      </select>
 
-        <div style="width:160px;">
-          <label for="type">Type</label>
-          <select id="type">
-            <option>Story</option>
-            <option>Short Story</option>
-            <option>Flash Fiction</option>
-            <option>Poem</option>
-            <option>Quote</option>
-            <option>Article</option>
-            <option>Essay</option>
-            <option>Book</option>
-            <option>Short Book</option>
-            <option>Thought</option>
-          </select>
-        </div>
+      <label for="title">Title:</label>
+      <input type="text" id="title" placeholder="Enter title (optional for quote)">
+
+      <label for="content">Content:</label>
+      <textarea id="content" placeholder="Write your content here..."></textarea>
+
+      <div id="fileUploadSection" style="display:none;">
+        <label for="file">Attach File (for Short Book, up to 100 MB):</label>
+        <input type="file" id="file" accept=".pdf,.docx,.txt,.epub">
       </div>
 
-      <label for="excerpt">Excerpt (optional)</label>
-      <textarea id="excerpt" rows="3" placeholder="Short excerpt or description (appears on cards)"></textarea>
-      <div class="small muted" id="excerptCount">0 / 300</div>
-
-      <label for="content">Content</label>
-      <textarea id="content" rows="8" placeholder="Write your content..."></textarea>
-      <div class="small muted" id="contentCount">0 characters</div>
-
-      <div class="row" style="margin-top:12px;">
-        <div class="col">
-          <label for="cover">Cover image (optional)</label>
-          <input id="cover" type="file" accept="image/*" />
-          <div class="small muted">Best: 1200×675 px. Max 10 MB recommended.</div>
-        </div>
-
-        <div style="width:220px;">
-          <label for="visibility">Visibility</label>
-          <select id="visibility">
-            <option value="public">Public</option>
-            <option value="private">Private</option>
-            <option value="draft">Draft</option>
-          </select>
-
-          <label for="publishDate" style="margin-top:10px;">Publish on (optional)</label>
-          <input id="publishDate" type="date" />
-        </div>
-      </div>
-
-      <label for="tags" style="margin-top:12px;">Tags (comma separated)</label>
-      <input id="tags" type="text" placeholder="e.g. romance, short, inspirational" />
-
-      <!-- File upload for Book / Short Book -->
-      <div id="fileSection" style="margin-top:12px; display:none;">
-        <label for="bookFile">Attach file (PDF / EPUB / DOCX) — max 100 MB</label>
-        <input id="bookFile" type="file" accept=".pdf,.epub,application/epub+zip,application/pdf,.doc,.docx" />
-        <div class="small muted" id="fileInfo">No file selected.</div>
-      </div>
-
-      <!-- Actions -->
-      <div class="actions">
-        <button id="publishBtn">Publish</button>
-        <button class="secondary" id="clearBtn" type="button">Clear</button>
-        <button class="secondary" id="previewBtn" type="button">Preview</button>
-      </div>
-
-      <!-- progress / status -->
-      <div id="uploadProgress" class="progress" style="display:none;">
-        <span style="width:0%"></span>
-      </div>
-      <div id="status" class="status muted"></div>
+      <button>Publish Now</button>
     </div>
   </main>
 
-  <!-- MOBILE BOTTOM NAV (horizontal, black icons only) -->
-  <nav class="mobile-bottom-nav" role="navigation" aria-label="Mobile navigation">
-    <a href="index.html" id="mb-home" class="mb-item" title="Library">
-      <!-- Home / Library icon (black outline) -->
-      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M3 9.5L12 3l9 6.5"></path>
-        <path d="M9 22V12h6v10"></path>
-      </svg>
-      <span class="label">Library</span>
+  <!-- ======= FOOTER ======= -->
+  <footer>
+    © 2025 NovelMint. All rights reserved.
+  </footer>
+
+  <!-- ======= MOBILE BOTTOM NAV ======= -->
+  <div class="mobile-bottom-nav">
+    <a href="library.html">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Home</span>
     </a>
-
-    <a href="dashboard.html" id="mb-dashboard" class="mb-item" title="Dashboard">
-      <!-- Dashboard icon -->
-      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <rect x="3" y="3" width="8" height="8"></rect>
-        <rect x="13" y="3" width="8" height="4"></rect>
-        <rect x="13" y="11" width="8" height="10"></rect>
-        <rect x="3" y="13" width="8" height="8"></rect>
-      </svg>
-      <span class="label">Dashboard</span>
+    <a href="dashboard.html">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zM3 21h8v-6H3v6zm10-8h8V3h-8v10z"/></svg>
+      <span>Dashboard</span>
     </a>
-
-    <a href="publish.html" id="mb-publish" class="mb-item" title="Publish">
-      <!-- Publish icon (pen) -->
-      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 20h9"></path>
-        <path d="M16.5 3.5l4 4L8 20l-4 1 1-4 12.5-12.5z"></path>
-      </svg>
-      <span class="label">Publish</span>
+    <a href="publish.html" class="active">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+      <span>Publish</span>
     </a>
-
-    <a href="profile.html" id="mb-profile" class="mb-item" title="Profile">
-      <!-- Profile icon -->
-      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M20 21v-2a4 4 0 0 0-3-3.87"></path>
-        <path d="M4 21v-2a4 4 0 0 1 3-3.87"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>
-      <span class="label">Profile</span>
+    <a href="profile.html">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
+      <span>Profile</span>
     </a>
-  </nav>
+  </div>
 
-  <!-- Firebase + logic (uses same imports pattern as your app.js setup) -->
-  <script type="module">
-    import { auth, db, storage } from "./app.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-    import { ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
-
-    // Elements
-    const typeEl = document.getElementById("type");
-    const bookFileEl = document.getElementById("bookFile");
-    const fileSection = document.getElementById("fileSection");
-    const fileInfo = document.getElementById("fileInfo");
-
-    const titleEl = document.getElementById("title");
-    const excerptEl = document.getElementById("excerpt");
-    const contentEl = document.getElementById("content");
-    const coverEl = document.getElementById("cover");
-    const tagsEl = document.getElementById("tags");
-    const publishDateEl = document.getElementById("publishDate");
-    const visibilityEl = document.getElementById("visibility");
-
-    const publishBtn = document.getElementById("publishBtn");
-    const clearBtn = document.getElementById("clearBtn");
-    const previewBtn = document.getElementById("previewBtn");
-
-    const statusDiv = document.getElementById("status");
-    const uploadProgress = document.getElementById("uploadProgress");
-    const progressBar = uploadProgress.querySelector("span");
-
-    const excerptCount = document.getElementById("excerptCount");
-    const contentCount = document.getElementById("contentCount");
-
-    let currentUser = null;
-
-    // show/hide file section when type changes
-    function updateFileSection() {
-      const t = typeEl.value.toLowerCase();
-      // show for book or short book
-      if (t.includes("book")) {
-        fileSection.style.display = "block";
-      } else {
-        fileSection.style.display = "none";
-        bookFileEl.value = "";
-        fileInfo.textContent = "No file selected.";
-      }
+  <script>
+    function toggleFileUpload() {
+      const type = document.getElementById("type").value;
+      const fileSection = document.getElementById("fileUploadSection");
+      fileSection.style.display = type === "shortbook" ? "block" : "none";
     }
 
-    typeEl.addEventListener("change", updateFileSection);
-
-    // file info & size check
-    bookFileEl.addEventListener("change", () => {
-      const f = bookFileEl.files[0];
-      if (!f) { fileInfo.textContent = "No file selected."; return; }
-      const max = 100 * 1024 * 1024; // 100 MB
-      if (f.size > max) {
-        fileInfo.textContent = `❌ File too large (${(f.size/1024/1024).toFixed(2)} MB). Max 100 MB.`;
-        fileInfo.classList.add("error");
-      } else {
-        fileInfo.textContent = `${f.name} — ${(f.size/1024/1024).toFixed(2)} MB`;
-      }
-    });
-
-    // counts
-    excerptEl.addEventListener("input", () => {
-      const len = excerptEl.value.length;
-      excerptCount.textContent = `${len} / 300`;
-      if (len > 300) excerptCount.style.color = "#dc2626"; else excerptCount.style.color = "var(--muted)";
-    });
-
-    contentEl.addEventListener("input", () => {
-      contentCount.textContent = `${contentEl.value.length} characters`;
-    });
-
-    // auth check
-    onAuthStateChanged(auth, (user) => {
-      if (user) currentUser = user;
-      else window.location.href = "login.html";
-    });
-
-    // clear
-    clearBtn.addEventListener("click", () => {
-      titleEl.value = "";
-      excerptEl.value = "";
-      contentEl.value = "";
-      coverEl.value = "";
-      bookFileEl.value = "";
-      tagsEl.value = "";
-      publishDateEl.value = "";
-      visibilityEl.value = "public";
-      statusDiv.textContent = "";
-      progressBar.style.width = "0%";
-      uploadProgress.style.display = "none";
-      updateFileSection();
-    });
-
-    // preview (simple)
-    previewBtn.addEventListener("click", () => {
-      const previewWindow = window.open("", "_blank", "width=700,height=800");
-      const html = `
-        <html><head><title>Preview - ${escapeHtml(titleEl.value || "Untitled")}</title></head>
-        <body style="font-family:Arial,Helvetica,sans-serif;padding:20px;">
-          <h1 style="color:${'var(--accent)'};">${escapeHtml(titleEl.value || "Untitled")}</h1>
-          <h4 style="color:#6b7280;">${escapeHtml(excerptEl.value || "")}</h4>
-          <pre style="white-space:pre-wrap;font-size:1rem;color:#111;">${escapeHtml(contentEl.value || "")}</pre>
-        </body></html>`;
-      previewWindow.document.write(html);
-      previewWindow.document.close();
-    });
-
-    // Publishing logic (uploads cover + optional book file)
-    publishBtn.addEventListener("click", async () => {
-      if (!currentUser) { statusDiv.textContent = "⚠️ You must be logged in."; statusDiv.className = "status error"; return; }
-
-      const title = titleEl.value.trim();
-      const excerpt = excerptEl.value.trim();
-      const content = contentEl.value.trim();
-      const type = typeEl.value;
-      const tags = tagsEl.value.split(",").map(t => t.trim()).filter(Boolean);
-      const visibility = visibilityEl.value;
-      const publishOn = publishDateEl.value || null;
-      const coverFile = coverEl.files[0];
-      const bookFile = bookFileEl.files[0];
-
-      if (!title || !content) {
-        statusDiv.textContent = "⚠️ Title and content are required.";
-        statusDiv.className = "status error";
-        return;
-      }
-
-      // book file size check
-      if (bookFile) {
-        const max = 100 * 1024 * 1024;
-        if (bookFile.size > max) {
-          statusDiv.textContent = `❌ Attached file is too large (${(bookFile.size/1024/1024).toFixed(2)}MB). Max 100 MB.`;
-          statusDiv.className = "status error";
-          return;
-        }
-      }
-
-      publishBtn.disabled = true;
-      publishBtn.textContent = "Publishing...";
-      statusDiv.textContent = "Uploading resources...";
-      statusDiv.className = "status muted";
-
-      try {
-        uploadProgress.style.display = "none";
-        progressBar.style.width = "0%";
-
-        // helper to upload a file and return URL (with simple progress)
-        async function uploadFile(file, folder) {
-          if (!file) return "";
-          const fileName = `${folder}/${Date.now()}-${file.name.replace(/\s+/g,'_')}`;
-          const storageRef = ref(storage, fileName);
-          const uploadTask = uploadBytesResumable(storageRef, file);
-
-          return new Promise((resolve, reject) => {
-            uploadProgress.style.display = "block";
-            uploadTask.on('state_changed',
-              (snapshot) => {
-                const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                progressBar.style.width = percent + '%';
-              },
-              (err) => {
-                uploadProgress.style.display = "none";
-                reject(err);
-              },
-              async () => {
-                const url = await getDownloadURL(uploadTask.snapshot.ref);
-                uploadProgress.style.display = "none";
-                progressBar.style.width = "0%";
-                resolve(url);
-              }
-            );
-          });
-        }
-
-        // upload cover (if any)
-        let coverUrl = "";
-        if (coverFile) {
-          statusDiv.textContent = "Uploading cover image...";
-          coverUrl = await uploadFile(coverFile, "covers");
-        }
-
-        // upload book file (if any)
-        let bookFileUrl = "";
-        let bookFileName = "";
-        if (bookFile) {
-          statusDiv.textContent = "Uploading attached file (may take a while)...";
-          bookFileUrl = await uploadFile(bookFile, "books");
-          bookFileName = bookFile.name;
-        }
-
-        // finally add doc to Firestore
-        statusDiv.textContent = "Saving content...";
-        const docData = {
-          title,
-          excerpt,
-          content,
-          type,
-          tags,
-          visibility,
-          coverUrl: coverUrl || "",
-          fileUrl: bookFileUrl || "",
-          fileName: bookFileName || "",
-          author: currentUser.email ? currentUser.email.split("@")[0] : "unknown",
-          authorId: currentUser.uid,
-          publishDate: publishOn || new Date().toLocaleDateString(),
-          createdAt: serverTimestamp()
-        };
-
-        await addDoc(collection(db, "contents"), docData);
-
-        statusDiv.textContent = "✅ Published successfully!";
-        statusDiv.className = "status success";
-        publishBtn.textContent = "Publish";
-        publishBtn.disabled = false;
-      } catch (err) {
-        console.error(err);
-        statusDiv.textContent = "❌ " + (err.message || "Upload failed");
-        statusDiv.className = "status error";
-        publishBtn.disabled = false;
-        publishBtn.textContent = "Publish";
-      }
-    });
-
-    // mobile top nav toggle
-    const menuToggle = document.getElementById("menuToggle");
-    const navMenu = document.getElementById("navMenu");
-    menuToggle.addEventListener("click", () => navMenu.classList.toggle("active"));
-
-    // highlight active mobile bottom icon (based on pathname)
-    (function setActiveMobileNav() {
-      try {
-        const path = location.pathname.split("/").pop() || "index.html";
-        const map = {
-          "index.html": "mb-home",
-          "": "mb-home",
-          "dashboard.html": "mb-dashboard",
-          "publish.html": "mb-publish",
-          "profile.html": "mb-profile"
-        };
-        const id = map[path] || "mb-home";
-        const el = document.getElementById(id);
-        if (el) el.classList.add("active");
-      } catch (e) { /* ignore */ }
-    })();
-
-    // small utility
-    function escapeHtml(s = "") {
-      return String(s).replace(/[&<>"']/g, (m) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[m]));
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
     }
 
-    // initialize file section visibility
-    updateFileSection();
+    if (localStorage.getItem("darkMode") === "true") {
+      document.body.classList.add("dark");
+    }
   </script>
 </body>
 </html>
