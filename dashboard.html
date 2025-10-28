@@ -1,398 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>NovelMint — Dashboard</title>
-  <style>
-    :root{--bg:#0f172a;--card:#1e293b;--accent:#38bdf8;--muted:#94a3b8}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Poppins,system-ui,Arial;background:var(--bg);color:#fff;min-height:100vh;display:flex}
-    /* left sidebar like Instagram (compact) */
-    .sidebar{width:220px;background:var(--card);display:flex;flex-direction:column;align-items:center;padding:20px;gap:12px}
-    .brand{color:var(--accent);font-weight:700;font-size:20px}
-    .btn{width:100%;padding:8px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
-    .btn.secondary{background:#ef4444}
-    main{flex:1;padding:20px;overflow:auto}
-    .card{background:linear-gradient(180deg,#121426,#182033);padding:18px;border-radius:12px;max-width:900px;margin:0 auto}
-    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:none;background:#334155;color:#fff;margin:8px 0}
-    label{font-size:13px;color:var(--muted);display:block;margin-top:6px}
-    .row{display:flex;gap:12px}
-    .row .col{flex:1}
-    .small{font-size:13px;color:var(--muted)}
-    .profile-preview{display:flex;gap:12px;align-items:center}
-    .avatar{width:72px;height:72px;border-radius:12px;background:#223044;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
-    .hidden{display:none}
-    .status{margin-top:8px;color:var(--accent)}
-    @media(max-width:720px){.sidebar{width:100%;flex-direction:row;justify-content:space-around}.card{margin:12px}}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NovelMint — Dashboard</title>
+<style>
+  :root{--bg:#0f172a;--side:#0b1220;--panel:#0f172a;--card:#1e293b;--accent:#38bdf8;--muted:#94a3b8}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Poppins,system-ui;background:var(--bg);color:white;min-height:100vh}
+  .wrap{display:flex;gap:20px;padding:16px}
+  aside{width:220px;background:var(--card);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+  aside h2{margin:0;color:var(--accent);text-align:center}
+  main{flex:1}
+  .panel{background:var(--card);padding:16px;border-radius:12px;margin-bottom:16px}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  input,textarea,select{width:100%;padding:10px;border-radius:8px;border:none;background:#0b1220;color:white;margin-bottom:10px}
+  input[type=file]{padding:6px}
+  button{padding:10px;border-radius:8px;border:none;background:var(--accent);color:#022;cursor:pointer;font-weight:600}
+  .small{font-size:13px;color:var(--muted)}
+  @media(max-width:900px){.wrap{flex-direction:column}aside{width:100%}}
+</style>
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="brand">NovelMint</div>
-    <button id="editProfileBtn" class="btn">Edit Profile</button>
-    <button id="showPublishBtn" class="btn">Publish</button>
-    <button id="logoutBtn" class="btn secondary">Logout</button>
-  </aside>
+  <div class="wrap">
+    <aside>
+      <h2>NovelMint</h2>
+      <button id="goHome">🏠 View Site</button>
+      <button id="logoutBtn" style="background:#ef4444;color:white">Logout</button>
+      <div class="small">Tip: complete your profile for public view</div>
+    </aside>
 
-  <main>
-    <!-- Profile / Profile form -->
-    <section id="profileCard" class="card">
-      <h3 id="profileHeading">Your profile</h3>
-
-      <!-- preview -->
-      <div id="profilePreview" class="profile-preview">
-        <div class="avatar" id="avatarPreview">U</div>
-        <div>
-          <div id="displayNamePreview" style="font-weight:700">Your name</div>
-          <div class="small" id="usernamePreview">@username</div>
-          <div class="small" id="bioPreview">Short bio...</div>
-          <div class="small" id="instaPreview">Instagram: -</div>
-          <div class="small" id="memberSincePreview">Member since: -</div>
-        </div>
-      </div>
-
-      <!-- profile form (shown on first login or edit) -->
-      <div id="profileForm" class="hidden" style="margin-top:12px">
-        <label>Display name</label>
-        <input id="displayName" placeholder="Your full name or pen name" />
-
-        <label>Username</label>
-        <input id="username" placeholder="unique username (like instagram handle)" />
-
-        <label>Short bio</label>
-        <textarea id="bio" rows="3" placeholder="One-line bio"></textarea>
-
-        <label>Instagram (optional)</label>
-        <input id="instagram" placeholder="@yourhandle or https://..." />
-
+    <main>
+      <!-- Profile panel (shown automatically if no profile data) -->
+      <div id="profilePanel" class="panel">
+        <h3 style="margin-top:0;color:var(--accent)">Your Profile</h3>
+        <label>Username (unique display)</label>
+        <input id="username" placeholder="e.g. riya_writer" />
+        <label>Full name</label>
+        <input id="fullname" placeholder="e.g. Riya Sharma" />
+        <label>Bio</label>
+        <textarea id="bio" rows="3" placeholder="Write something about you..."></textarea>
         <label>Profile photo (optional)</label>
-        <input id="profilePhoto" type="file" accept="image/*" />
-
-        <button id="saveProfileBtn" class="btn">Save profile</button>
-        <div id="profileStatus" class="status"></div>
-      </div>
-    </section>
-
-    <!-- Publish area -->
-    <section id="publishCard" class="card hidden" style="margin-top:18px">
-      <h3>Publish new content</h3>
-      <label>Title</label>
-      <input id="title" placeholder="Enter title" />
-
-      <label>Type</label>
-      <select id="type">
-        <option>Story</option>
-        <option>Poem</option>
-        <option>Book</option>
-        <option>Thought</option>
-      </select>
-
-      <label>Content</label>
-      <textarea id="content" rows="6" placeholder="Write your content..."></textarea>
-
-      <div class="row">
-        <div class="col">
-          <label>Cover image (optional)</label>
-          <input id="cover" type="file" accept="image/*" />
-        </div>
-        <div class="col">
-          <label>Visibility note</label>
-          <div class="small">Published content is public and will appear on the homepage.</div>
-        </div>
+        <input id="photo" type="file" accept="image/*" />
+        <button id="saveProfile">Save Profile</button>
+        <div id="profileStatus" class="small"></div>
       </div>
 
-      <button id="publishBtn" class="btn" style="margin-top:12px">Publish</button>
-      <div id="publishStatus" class="status"></div>
-    </section>
+      <!-- Publish panel -->
+      <div class="panel">
+        <h3 style="margin-top:0;color:var(--accent)">Publish New Content</h3>
+        <input id="title" placeholder="Title" />
+        <select id="type"><option>Story</option><option>Poem</option><option>Book</option><option>Thought</option></select>
+        <textarea id="content" rows="6" placeholder="Write your content..."></textarea>
+        <label class="small">Cover image (optional)</label>
+        <input id="cover" type="file" accept="image/*" />
+        <button id="publishBtn">Publish</button>
+        <div id="publishStatus" class="small"></div>
+      </div>
 
-    <!-- list of my works (simple) -->
-    <section id="myWorksCard" class="card hidden" style="margin-top:18px">
-      <h3>Your published works</h3>
-      <div id="worksList" class="small">Loading…</div>
-    </section>
-  </main>
+      <!-- My works list -->
+      <div id="worksPanel" class="panel">
+        <h3 style="margin-top:0;color:var(--accent)">Your Published Works</h3>
+        <div id="worksList" class="small">Loading...</div>
+      </div>
+    </main>
+  </div>
 
-  <script type="module">
-    // Imports
-    import { auth, db, storage } from "./app.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    import {
-      doc, getDoc, setDoc, collection, addDoc, query, where, getDocs, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-    import {
-      ref as storageRef, uploadBytes, getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+<script type="module">
+  import { auth, db, storage } from './app.js';
+  import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
+  import { doc, getDoc, setDoc, collection, addDoc, query, where, getDocs, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+  import { ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js';
 
-    // Elements
-    const editProfileBtn = document.getElementById("editProfileBtn");
-    const showPublishBtn = document.getElementById("showPublishBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
+  const profilePanel = document.getElementById('profilePanel');
+  const usernameEl = document.getElementById('username');
+  const fullnameEl = document.getElementById('fullname');
+  const bioEl = document.getElementById('bio');
+  const photoEl = document.getElementById('photo');
+  const saveProfileBtn = document.getElementById('saveProfile');
+  const profileStatus = document.getElementById('profileStatus');
 
-    const profileForm = document.getElementById("profileForm");
-    const profilePreview = document.getElementById("profilePreview");
-    const profileCard = document.getElementById("profileCard");
-    const profileStatus = document.getElementById("profileStatus");
-    const publishCard = document.getElementById("publishCard");
-    const myWorksCard = document.getElementById("myWorksCard");
-    const worksList = document.getElementById("worksList");
-    const publishStatus = document.getElementById("publishStatus");
+  const titleEl = document.getElementById('title');
+  const typeEl = document.getElementById('type');
+  const contentEl = document.getElementById('content');
+  const coverEl = document.getElementById('cover');
+  const publishBtn = document.getElementById('publishBtn');
+  const publishStatus = document.getElementById('publishStatus');
 
-    // Profile preview fields
-    const displayNamePreview = document.getElementById("displayNamePreview");
-    const usernamePreview = document.getElementById("usernamePreview");
-    const bioPreview = document.getElementById("bioPreview");
-    const instaPreview = document.getElementById("instaPreview");
-    const memberSincePreview = document.getElementById("memberSincePreview");
-    const avatarPreview = document.getElementById("avatarPreview");
+  const worksList = document.getElementById('worksList');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const goHome = document.getElementById('goHome');
 
-    // Form inputs
-    const displayNameInput = document.getElementById("displayName");
-    const usernameInput = document.getElementById("username");
-    const bioInput = document.getElementById("bio");
-    const instagramInput = document.getElementById("instagram");
-    const profilePhotoInput = document.getElementById("profilePhoto");
+  let currentUser = null;
 
-    // Publish form inputs
-    const titleInput = document.getElementById("title");
-    const typeInput = document.getElementById("type");
-    const contentInput = document.getElementById("content");
-    const coverInput = document.getElementById("cover");
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return window.location.href = 'login.html';
+    currentUser = user;
+    await loadProfile();
+    await loadWorks();
+  });
 
-    const saveProfileBtn = document.getElementById("saveProfileBtn");
-    const publishBtn = document.getElementById("publishBtn");
+  goHome.addEventListener('click', () => location.href = 'index.html');
+  logoutBtn.addEventListener('click', async () => { await signOut(auth); location.href = 'login.html'; });
 
-    let currentUser = null;
-    let currentUserDoc = null; // data snapshot
-
-    // Utility: show / hide
-    const show = el => el.classList.remove("hidden");
-    const hide = el => el.classList.add("hidden");
-
-    // Ensure user is logged in and load profile
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
-      currentUser = user;
-      // Load user document from 'users' collection
-      try {
-        const userDocRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userDocRef);
-
-        if (!snap.exists()) {
-          // New user — open profile form
-          currentUserDoc = null;
-          openProfileForm(); // user must fill required profile
-        } else {
-          currentUserDoc = snap.data();
-          populateProfilePreview(currentUserDoc);
-          // Ensure publicUsers is also updated (so public listing works)
-          await setDoc(doc(db, "publicUsers", user.uid), {
-            name: currentUserDoc.displayName || user.email.split("@")[0],
-            email: user.email,
-            joinDate: currentUserDoc.joinDate || (new Date()).toLocaleDateString(),
-            photoURL: currentUserDoc.photoURL || ""
-          }, { merge: true });
-          showDashboardSections();
-          await loadMyWorks();
-        }
-      } catch (err) {
-        console.error("Error loading profile:", err);
-        profileStatus.textContent = "Error loading profile: " + err.message;
-        openProfileForm();
-      }
-    });
-
-    // Open profile form (used for first time or editing)
-    function openProfileForm() {
-      show(profileForm);
-      hide(profilePreview);
-      // prefill if we have data
-      if (currentUserDoc) {
-        displayNameInput.value = currentUserDoc.displayName || "";
-        usernameInput.value = currentUserDoc.username || "";
-        bioInput.value = currentUserDoc.bio || "";
-        instagramInput.value = currentUserDoc.instagram || "";
+  async function loadProfile(){
+    profileStatus.textContent = 'Loading profile...';
+    try {
+      const uRef = doc(db, 'users', currentUser.uid);
+      const snap = await getDoc(uRef);
+      if (snap.exists()) {
+        const d = snap.data();
+        usernameEl.value = d.username || '';
+        fullnameEl.value = d.fullname || '';
+        bioEl.value = d.bio || '';
+        // hide profile panel? keep visible to allow edit
+        profileStatus.textContent = 'Profile loaded. You can edit and save.';
       } else {
-        displayNameInput.value = currentUser.email ? currentUser.email.split("@")[0] : "";
+        // first time user — show panel with empty fields
+        profileStatus.textContent = 'Please complete your profile to be visible publicly.';
       }
+    } catch (err) {
+      console.error(err);
+      profileStatus.textContent = '⚠️ Failed to load profile.';
     }
+  }
 
-    // Populate preview area
-    function populateProfilePreview(data) {
-      displayNamePreview.textContent = data.displayName || currentUser.email.split("@")[0];
-      usernamePreview.textContent = data.username ? "@" + data.username : "";
-      bioPreview.textContent = data.bio || "";
-      instaPreview.textContent = data.instagram ? "Instagram: " + data.instagram : "Instagram: -";
-      memberSincePreview.textContent = "Member since: " + (data.joinDate || new Date().toLocaleDateString());
-      if (data.photoURL) {
-        avatarPreview.style.background = "transparent";
-        avatarPreview.innerHTML = `<img src="${data.photoURL}" alt="avatar" style="width:72px;height:72px;object-fit:cover;border-radius:12px">`;
-      } else {
-        avatarPreview.style.background = "#223044";
-        avatarPreview.textContent = (data.displayName || currentUser.email.split("@")[0]).slice(0,2).toUpperCase();
+  saveProfileBtn.addEventListener('click', async () => {
+    profileStatus.textContent = 'Saving...';
+    try {
+      let photoURL = '';
+      const file = photoEl.files[0];
+      if (file) {
+        const fRef = storageRef(storage, `profiles/${currentUser.uid}_${Date.now()}_${file.name}`);
+        await uploadBytes(fRef, file);
+        photoURL = await getDownloadURL(fRef);
       }
+      const profileData = {
+        username: usernameEl.value.trim() || currentUser.email.split('@')[0],
+        fullname: fullnameEl.value.trim() || '',
+        bio: bioEl.value.trim() || '',
+        photoURL: photoURL || null,
+        updatedAt: new Date().toISOString()
+      };
+      // Save to private users collection
+      await setDoc(doc(db, 'users', currentUser.uid), profileData, { merge:true });
+      // Also save public minimal info to publicUsers for browsing
+      await setDoc(doc(db, 'publicUsers', currentUser.uid), {
+        name: profileData.fullname || profileData.username,
+        displayName: profileData.username,
+        photoURL: profileData.photoURL || null,
+        bio: profileData.bio || '',
+        joinDate: new Date().toLocaleDateString()
+      }, { merge:true });
+
+      profileStatus.textContent = '✅ Profile saved.';
+      await loadProfile();
+    } catch (err) {
+      console.error(err);
+      profileStatus.textContent = '❌ Error saving profile: ' + err.message;
     }
+  });
 
-    // Show main dashboard sections
-    function showDashboardSections() {
-      hide(profileForm);
-      show(profilePreview);
-      show(publishCard);
-      show(myWorksCard);
-      profileStatus.textContent = "";
+  // Publish handler
+  publishBtn.addEventListener('click', async () => {
+    publishStatus.textContent = 'Publishing...';
+    const title = titleEl.value.trim();
+    const type = typeEl.value;
+    const content = contentEl.value.trim();
+    if (!title || !content) { publishStatus.textContent = '⚠️ Title and content required.'; return; }
+
+    try {
+      // get author display name
+      const userSnap = await getDoc(doc(db, 'users', currentUser.uid));
+      const udata = userSnap.exists() ? userSnap.data() : {};
+      const displayName = udata.username || udata.fullname || currentUser.email.split('@')[0];
+
+      let coverUrl = '';
+      const file = coverEl.files[0];
+      if (file) {
+        const cRef = storageRef(storage, `covers/${currentUser.uid}_${Date.now()}_${file.name}`);
+        await uploadBytes(cRef, file);
+        coverUrl = await getDownloadURL(cRef);
+      }
+
+      // Add content doc
+      await addDoc(collection(db, 'contents'), {
+        title,
+        type,
+        content,
+        coverUrl,
+        author: displayName,
+        authorId: currentUser.uid,
+        publishDate: new Date().toLocaleDateString(),
+        createdAt: serverTimestamp()
+      });
+
+      // Ensure publicUsers has name (so profile link shows)
+      await setDoc(doc(db, 'publicUsers', currentUser.uid), {
+        name: udata.fullname || displayName,
+        displayName: udata.username || displayName,
+        photoURL: udata.photoURL || null
+      }, { merge:true });
+
+      // clear form
+      titleEl.value = '';
+      contentEl.value = '';
+      coverEl.value = '';
+      publishStatus.textContent = '✅ Published successfully!';
+      await loadWorks();
+    } catch (err) {
+      console.error(err);
+      publishStatus.textContent = '❌ ' + err.message;
     }
+  });
 
-    // Buttons
-    editProfileBtn.addEventListener("click", () => {
-      openProfileForm();
-    });
-
-    showPublishBtn.addEventListener("click", () => {
-      // toggle publish card
-      if (publishCard.classList.contains("hidden")) {
-        show(publishCard);
-      } else {
-        hide(publishCard);
-      }
-    });
-
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
-    });
-
-    // Save profile handler
-    saveProfileBtn.addEventListener("click", async () => {
-      if (!currentUser) return profileStatus.textContent = "No user logged in";
-
-      const displayName = displayNameInput.value.trim();
-      const username = usernameInput.value.trim();
-      const bio = bioInput.value.trim();
-      const instagram = instagramInput.value.trim();
-      const file = profilePhotoInput.files[0];
-
-      if (!displayName || !username) {
-        profileStatus.textContent = "Please provide display name and username.";
-        return;
-      }
-
-      profileStatus.textContent = "Saving profile...";
-
-      try {
-        // upload photo if present
-        let photoURL = (currentUserDoc && currentUserDoc.photoURL) ? currentUserDoc.photoURL : "";
-        if (file) {
-          const pRef = storageRef(storage, `profilePhotos/${currentUser.uid}_${Date.now()}_${file.name}`);
-          await uploadBytes(pRef, file);
-          photoURL = await getDownloadURL(pRef);
-        }
-
-        // Save into users collection (secure)
-        const userData = {
-          displayName,
-          username,
-          bio,
-          instagram,
-          photoURL,
-          joinDate: (currentUserDoc && currentUserDoc.joinDate) ? currentUserDoc.joinDate : (new Date()).toLocaleDateString()
-        };
-
-        await setDoc(doc(db, "users", currentUser.uid), userData, { merge: true });
-
-        // Also save a public-friendly record for listing
-        await setDoc(doc(db, "publicUsers", currentUser.uid), {
-          name: displayName,
-          email: currentUser.email,
-          joinDate: userData.joinDate,
-          photoURL
-        }, { merge: true });
-
-        currentUserDoc = userData;
-        populateProfilePreview(userData);
-        showDashboardSections();
-        profileStatus.textContent = "Profile saved ✓";
-        await loadMyWorks();
-      } catch (err) {
-        console.error("Error saving profile:", err);
-        profileStatus.textContent = "Error saving profile: " + err.message;
-      }
-    });
-
-    // Publish handler
-    publishBtn.addEventListener("click", async () => {
-      if (!currentUser) return publishStatus.textContent = "No user logged in";
-      const title = titleInput.value.trim();
-      const type = typeInput.value;
-      const content = contentInput.value.trim();
-      const file = coverInput.files[0];
-
-      if (!title || !content) {
-        publishStatus.textContent = "Title and content are required.";
-        return;
-      }
-      publishStatus.textContent = "Publishing...";
-
-      try {
-        // Upload cover if exists
-        let coverUrl = "";
-        if (file) {
-          const cRef = storageRef(storage, `covers/${currentUser.uid}_${Date.now()}_${file.name}`);
-          await uploadBytes(cRef, file);
-          coverUrl = await getDownloadURL(cRef);
-        }
-
-        // Create content doc in 'contents' collection (public read per rules)
-        await addDoc(collection(db, "contents"), {
-          title,
-          type,
-          content,
-          coverUrl,
-          author: (currentUserDoc && currentUserDoc.displayName) ? currentUserDoc.displayName : currentUser.email.split("@")[0],
-          authorId: currentUser.uid,
-          publishDate: new Date().toLocaleDateString(),
-          createdAt: serverTimestamp()
-        });
-
-        publishStatus.textContent = "Published ✓";
-        titleInput.value = ""; contentInput.value = ""; coverInput.value = "";
-        await loadMyWorks(); // refresh list
-      } catch (err) {
-        console.error("Publish error:", err);
-        publishStatus.textContent = "Publish failed: " + err.message;
-      }
-    });
-
-    // Load my works (contents by this user)
-    async function loadMyWorks() {
-      if (!currentUser) return;
-      worksList.textContent = "Loading works...";
-      try {
-        const q = query(collection(db, "contents"), where("authorId", "==", currentUser.uid));
-        const snap = await getDocs(q);
-        if (snap.empty) {
-          worksList.innerHTML = "<div class='small'>You have not published anything yet.</div>";
-          return;
-        }
-        worksList.innerHTML = "";
-        snap.forEach(docu => {
-          const d = docu.data();
-          const line = document.createElement("div");
-          line.style.padding = "8px 0";
-          line.innerHTML = `<strong>${escapeHtml(d.title||'Untitled')}</strong> • <span class="small">${escapeHtml(d.type||'')}</span> • <span class="small">${escapeHtml(d.publishDate||'')}</span>`;
-          worksList.appendChild(line);
-        });
-      } catch (err) {
-        console.error("Load works error:", err);
-        worksList.textContent = "Failed to load works: " + err.message;
-      }
+  // Load user's works
+  async function loadWorks(){
+    try {
+      const q = query(collection(db, 'contents'), where('authorId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      worksList.innerHTML = '';
+      if (snap.empty) { worksList.textContent = 'No posts yet.'; return; }
+      snap.forEach(docu => {
+        const d = docu.data();
+        const el = document.createElement('div');
+        el.style.padding = '8px 0';
+        el.innerHTML = `<strong>${escapeHtml(d.title)}</strong> <div style="color:var(--muted);font-size:13px">${escapeHtml(d.publishDate||'')}</div>`;
+        worksList.appendChild(el);
+      });
+    } catch (err) {
+      console.error(err);
+      worksList.textContent = 'Failed to load your posts.';
     }
+  }
 
-    // basic escape
-    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-  </script>
+  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+</script>
 </body>
 </html>
-
