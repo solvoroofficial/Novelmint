@@ -1,101 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Writer Profile - NovelMint</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile Setup — NovelMint</title>
+  <script type="module" src="app.js"></script>
   <style>
-    body { font-family: 'Poppins', sans-serif; background:#f8f9ff; margin:0; padding:1.5rem; }
-    .profile { max-width:600px; margin:auto; background:#fff; padding:2rem; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1);}
-    .profile img { width:100px; height:100px; border-radius:50%; border:3px solid #12172b; object-fit:cover; }
-    .profile h2 { margin:.5rem 0 0; }
-    .username { color:gray; }
-    .about { margin:1rem 0; }
-    .btns { display:flex; gap:1rem; }
-    button { background:#12172b; color:#fff; border:none; padding:.5rem 1rem; border-radius:8px; cursor:pointer; }
-    .posts { margin-top:2rem; }
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #0a0a1a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: #111c3a;
+      padding: 25px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    }
+    h2 {
+      text-align: center;
+      color: #9ec9ff;
+      margin-bottom: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 8px;
+      background: #16244a;
+      color: white;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #3478ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #1e5ed8;
+    }
+    label {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    .preview {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    .preview img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid #9ec9ff;
+      object-fit: cover;
+    }
   </style>
 </head>
 <body>
-  <div class="profile">
-    <img id="profilePic" src="default-profile.jpg" alt="Profile Picture">
-    <h2 id="displayName">Loading...</h2>
-    <p class="username" id="username"></p>
-    <p class="about" id="about"></p>
-    <div class="btns">
-      <button id="followBtn">Become Reader</button>
-      <button id="appreciateBtn">Appreciate</button>
+  <div class="card">
+    <h2 id="formTitle">Create Your Profile</h2>
+
+    <div class="preview">
+      <img id="imgPreview" src="default.png" alt="Preview">
     </div>
-    <div class="posts">
-      <h3>Published Works</h3>
-      <div id="userPosts"></div>
-    </div>
+
+    <form id="profileForm">
+      <label>Full Name</label>
+      <input type="text" id="name" required placeholder="Enter your full name" />
+
+      <label>Username</label>
+      <input type="text" id="username" required placeholder="@username" />
+
+      <label>Bio</label>
+      <textarea id="bio" rows="3" placeholder="Write something about yourself..."></textarea>
+
+      <label>Profile Image</label>
+      <input type="file" id="profileImage" accept="image/*" />
+
+      <button type="submit" id="saveBtn">Save Profile</button>
+    </form>
   </div>
 
   <script type="module">
-    import { db } from "./app.js";
-    import { collection, query, where, getDocs, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { auth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { auth, db, storage } from "./app.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
-    const params = new URLSearchParams(window.location.search);
-    const username = params.get("user");
-    const displayNameEl = document.getElementById("displayName");
-    const aboutEl = document.getElementById("about");
-    const usernameEl = document.getElementById("username");
-    const profilePic = document.getElementById("profilePic");
-    const postsEl = document.getElementById("userPosts");
-    const followBtn = document.getElementById("followBtn");
-    const appreciateBtn = document.getElementById("appreciateBtn");
+    const form = document.getElementById("profileForm");
+    const imgInput = document.getElementById("profileImage");
+    const imgPreview = document.getElementById("imgPreview");
+    const formTitle = document.getElementById("formTitle");
+    let currentUser = null;
+    let existingData = null;
 
-    let profileUserId = null;
-
-    if (!username) {
-      displayNameEl.textContent = "User not found";
-    } else {
-      // find user by username
-      const q = query(collection(db, "users"), where("username", "==", username));
-      const snap = await getDocs(q);
-      if (!snap.empty) {
-        const userDoc = snap.docs[0];
-        const userData = userDoc.data();
-        profileUserId = userDoc.id;
-
-        displayNameEl.textContent = userData.name || username;
-        aboutEl.textContent = userData.about || "No bio yet.";
-        usernameEl.textContent = "@" + username;
-        if (userData.photoURL) profilePic.src = userData.photoURL;
-
-        // Load posts
-        const postQ = query(collection(db, "posts"), where("authorId", "==", profileUserId));
-        const postSnap = await getDocs(postQ);
-        postSnap.forEach(p => {
-          const d = p.data();
-          const div = document.createElement("div");
-          div.innerHTML = `<h4>${d.title}</h4><p>${d.excerpt || ""}</p><hr>`;
-          postsEl.appendChild(div);
-        });
-      } else {
-        displayNameEl.textContent = "User not found";
+    imgInput.addEventListener("change", () => {
+      const file = imgInput.files[0];
+      if (file) {
+        imgPreview.src = URL.createObjectURL(file);
       }
-    }
+    });
 
-    // Follow button
     onAuthStateChanged(auth, async (user) => {
-      if (user && profileUserId && user.uid !== profileUserId) {
-        followBtn.addEventListener("click", async () => {
-          await updateDoc(doc(db, "users", profileUserId), {
-            followers: arrayUnion(user.uid)
-          });
-          alert("You are now a Reader of this author 📖");
-        });
-        appreciateBtn.addEventListener("click", () => {
-          alert("You appreciated this author ❤️");
-        });
-      } else {
-        followBtn.style.display = "none";
-        appreciateBtn.style.display = "none";
+      if (!user) {
+        window.location.href = "login.html";
+        return;
       }
+      currentUser = user;
+
+      // Check if user already has profile
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        existingData = userDoc.data();
+        formTitle.textContent = "Edit Your Profile";
+        document.getElementById("name").value = existingData.name || "";
+        document.getElementById("username").value = existingData.username || "";
+        document.getElementById("bio").value = existingData.bio || "";
+        if (existingData.profileImage) imgPreview.src = existingData.profileImage;
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const username = document.getElementById("username").value.trim();
+      const bio = document.getElementById("bio").value.trim();
+      let profileImageUrl = existingData?.profileImage || "";
+
+      if (imgInput.files[0]) {
+        const imageRef = ref(storage, `profileImages/${currentUser.uid}.jpg`);
+        await uploadBytes(imageRef, imgInput.files[0]);
+        profileImageUrl = await getDownloadURL(imageRef);
+      }
+
+      await setDoc(doc(db, "users", currentUser.uid), {
+        name,
+        username,
+        bio,
+        profileImage: profileImageUrl,
+        updatedAt: new Date(),
+      });
+
+      window.location.href = "profile.html";
     });
   </script>
 </body>
 </html>
+
