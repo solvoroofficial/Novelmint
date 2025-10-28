@@ -1,303 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NovelMint — Authors</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovelMint — Public Authors</title>
+  <link rel="icon" href="favicon.png" />
   <style>
-    :root{
-      --bg:#0e0e1a;
-      --card:#1b1b2f;
-      --muted:#cfcfe0;
-      --accent:#5f4dee;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
+    body {
       font-family: "Poppins", sans-serif;
-      background:var(--bg);
-      color:var(--muted);
-      -webkit-font-smoothing:antialiased;
+      background: #0f172a;
+      color: white;
+      margin: 0;
+      padding: 0;
     }
 
-    header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:18px;
-      border-bottom:1px solid rgba(255,255,255,0.03);
-    }
-    header h1{
-      margin:0;
-      font-size:18px;
-      color:var(--accent);
-    }
-    #search{
-      max-width:420px;
-      width:100%;
-      padding:10px 12px;
-      border-radius:8px;
-      border: none;
-      background:#0f1724;
-      color:var(--muted);
+    header {
+      background: #1e293b;
+      padding: 15px 20px;
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #38bdf8;
     }
 
-    .container{
-      max-width:1100px;
-      margin:20px auto;
-      padding:0 16px;
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
     }
 
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:16px;
-      margin-top:18px;
+    .card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      transition: 0.3s;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
 
-    .card{
-      background:var(--card);
-      padding:14px;
-      border-radius:12px;
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-      min-height:96px;
+    .card:hover {
+      transform: scale(1.03);
+      background: #334155;
     }
 
-    .avatar{
-      width:64px;height:64px;border-radius:10px;
-      background:linear-gradient(135deg,#2b2b4a,#141425);
-      display:flex;align-items:center;justify-content:center;
-      font-weight:700;color:#fff;font-size:20px;
-      flex-shrink:0;
+    .name {
+      font-size: 1.2em;
+      color: #93c5fd;
+      margin-bottom: 8px;
     }
 
-    .meta{
-      flex:1;
-    }
-    .meta h3{
-      margin:0 0 6px 0;
-      font-size:16px;
-      color:#fff;
-    }
-    .meta p{margin:4px 0;color:rgba(255,255,255,0.75);font-size:13px}
-
-    .stats{
-      display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;
-    }
-    .stat{
-      background:rgba(255,255,255,0.03);
-      padding:6px 8px;border-radius:8px;font-size:13px;
+    .email {
+      font-size: 0.9em;
+      color: #cbd5e1;
+      margin-bottom: 5px;
     }
 
-    .actions{
-      display:flex;flex-direction:column;gap:8px;margin-left:12px;
-    }
-    .btn{
-      background:var(--accent);
-      color:white;padding:8px 10px;border-radius:8px;border:none;
-      cursor:pointer;font-size:13px;
-    }
-    .link-btn{
-      background:transparent;border:1px solid rgba(255,255,255,0.06);
-      color:var(--muted);padding:8px 10px;border-radius:8px;font-size:13px;
+    .date {
+      font-size: 0.8em;
+      color: #94a3b8;
     }
 
-    .note{
-      text-align:center;color:rgba(255,255,255,0.65);margin-top:12px;
-    }
-
-    @media (max-width: 900px){
-      .grid{grid-template-columns:repeat(2,1fr)}
-    }
-    @media (max-width: 560px){
-      header{flex-direction:column;align-items:stretch;gap:10px}
-      .grid{grid-template-columns:1fr}
-      .card{align-items:center}
-      .meta{text-align:center}
-      .actions{flex-direction:row;margin-left:0}
+    .footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9em;
+      background: #1e293b;
+      color: #94a3b8;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>NovelMint — Authors</h1>
-    <input id="search" placeholder="Search authors by name or uid..." />
-  </header>
+  <header>🌿 NovelMint Authors</header>
 
-  <div class="container">
-    <div id="status" class="note">Loading authors…</div>
-    <div id="grid" class="grid"></div>
+  <div class="container" id="authorsList">
+    <p style="text-align:center; width:100%; color:#94a3b8;">Loading authors...</p>
   </div>
 
+  <div class="footer">© 2025 NovelMint Platform</div>
+
   <script type="module">
-    import { db } from './app.js';
-    import {
-      collection,
-      getDocs,
-      query,
-      where,
-      orderBy,
-      limit
-    } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js';
+    import { db } from "./app.js";
+    import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-    const grid = document.getElementById('grid');
-    const status = document.getElementById('status');
-    const search = document.getElementById('search');
+    const authorsList = document.getElementById("authorsList");
 
-    // Load all authors and for each author count their contents
-    async function loadAuthors() {
+    async function fetchAuthors() {
       try {
-        status.textContent = 'Loading authors…';
-        grid.innerHTML = '';
-
-        const authorsRef = collection(db, 'authors');
-        // You can add orderBy if you want specific order: orderBy('joinDate','desc')
-        const snap = await getDocs(authorsRef);
-
-        if (snap.empty) {
-          status.textContent = 'No authors found.';
-          return;
-        }
-
-        const authors = [];
-        snap.forEach(doc => {
-          authors.push({ uid: doc.id, ...doc.data() });
+        const querySnapshot = await getDocs(collection(db, "publicUsers"));
+        authorsList.innerHTML = ""; // clear loading text
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const card = document.createElement("div");
+          card.classList.add("card");
+          card.innerHTML = `
+            <div class="name">${data.name || "Unknown Author"}</div>
+            <div class="email">${data.email || ""}</div>
+            <div class="date">🌱 Joined: ${data.joinDate || "N/A"}</div>
+          `;
+          authorsList.appendChild(card);
         });
 
-        // For each author fetch contents count
-        // NOTE: this performs one query per author; fine for small numbers.
-        const enriched = await Promise.all(authors.map(async (a) => {
-          try {
-            // query contents where authorId == uid
-            const q = query(collection(db, 'contents'), where('authorId', '==', a.uid));
-            const cSnap = await getDocs(q);
-            return { ...a, contentsCount: cSnap.size };
-          } catch (e) {
-            return { ...a, contentsCount: 0 };
-          }
-        }));
-
-        status.textContent = `Showing ${enriched.length} authors.`;
-        renderGrid(enriched);
-      } catch (err) {
-        console.error(err);
-        status.textContent = 'Error loading authors. Check Firestore rules or console.';
-        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,0.6);padding:20px">Permission denied or network error. Make sure your Firestore rules allow reads to the "authors" collection for this page.</div>`;
-      }
-    }
-
-    function renderGrid(list) {
-      grid.innerHTML = '';
-      list.forEach(a => {
-        const displayName = a.displayName || a.name || (a.email ? a.email.split('@')[0] : a.uid);
-        const join = a.joinDate ? formatDate(a.joinDate) : 'Unknown';
-        const readers = a.readers ?? 0;
-        const apprec = a.appreciations ?? 0;
-        const contentsCount = a.contentsCount ?? 0;
-        const photoURL = a.photoURL || a.avatarUrl || '';
-
-        const card = document.createElement('div');
-        card.className = 'card';
-
-        const avatar = document.createElement('div');
-        avatar.className = 'avatar';
-        if (photoURL) {
-          avatar.style.background = 'transparent';
-          const img = document.createElement('img');
-          img.src = photoURL;
-          img.alt = displayName;
-          img.style.width = '64px';
-          img.style.height = '64px';
-          img.style.objectFit = 'cover';
-          img.style.borderRadius = '10px';
-          avatar.appendChild(img);
-        } else {
-          avatar.textContent = displayName.slice(0,2).toUpperCase();
+        if (querySnapshot.empty) {
+          authorsList.innerHTML = `<p style="text-align:center; color:#94a3b8;">No authors found yet.</p>`;
         }
 
-        const meta = document.createElement('div');
-        meta.className = 'meta';
-        meta.innerHTML = `
-          <h3>${escapeHtml(displayName)}</h3>
-          <p>🕓 Member since: ${escapeHtml(join)}</p>
-          <div class="stats">
-            <div class="stat">📚 ${contentsCount} content</div>
-            <div class="stat">👥 ${readers} readers</div>
-            <div class="stat">💚 ${apprec} appreciations</div>
-          </div>
-        `;
-
-        const actions = document.createElement('div');
-        actions.className = 'actions';
-        const viewBtn = document.createElement('a');
-        viewBtn.className = 'btn';
-        // link to an (optional) author page - implement author.html separately
-        viewBtn.href = `author.html?uid=${a.uid}`;
-        viewBtn.textContent = 'View';
-        viewBtn.title = 'View author profile (if public)';
-
-        const worksBtn = document.createElement('a');
-        worksBtn.className = 'link-btn';
-        worksBtn.href = `author_works.html?uid=${a.uid}`; // optional page
-        worksBtn.textContent = 'Works';
-
-        actions.appendChild(viewBtn);
-        actions.appendChild(worksBtn);
-
-        card.appendChild(avatar);
-        card.appendChild(meta);
-        card.appendChild(actions);
-
-        grid.appendChild(card);
-      });
-    }
-
-    // Simple search filter
-    search.addEventListener('input', () => {
-      const q = search.value.trim().toLowerCase();
-      const cards = Array.from(grid.children);
-      if (!q) {
-        cards.forEach(c => c.style.display = '');
-        status.textContent = `Showing ${cards.length} authors.`;
-        return;
-      }
-      let shown = 0;
-      cards.forEach(card => {
-        const txt = card.innerText.toLowerCase();
-        if (txt.includes(q)) {
-          card.style.display = '';
-          shown++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-      status.textContent = `Showing ${shown} authors (filtered).`;
-    });
-
-    // Helpers
-    function formatDate(d){
-      try{
-        const date = (typeof d === 'string' || typeof d === 'number') ? new Date(d) : d;
-        if (isNaN(date)) return 'Unknown';
-        return date.toLocaleDateString();
-      }catch(e){
-        return 'Unknown';
+      } catch (error) {
+        console.error("Error fetching authors:", error);
+        authorsList.innerHTML = `<p style="color:red; text-align:center;">⚠️ Unable to load public users. Please check your Firestore Rules.</p>`;
       }
     }
 
-    // Basic escaping to avoid injecting HTML
-    function escapeHtml(s){
-      if (!s) return '';
-      return String(s).replace(/[&<>"']/g, function(m){
-        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]);
-      });
-    }
-
-    // Start
-    loadAuthors();
+    fetchAuthors();
   </script>
 </body>
 </html>
