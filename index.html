@@ -66,6 +66,16 @@
       margin-bottom: 10px;
     }
 
+    .meta a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .meta a:hover {
+      text-decoration: underline;
+    }
+
     .preview {
       font-size: 0.95em;
       color: #cbd5e1;
@@ -90,15 +100,20 @@
 
   <script type="module">
     import { db } from "./app.js";
-    import { collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
     const grid = document.getElementById("contentGrid");
 
     async function fetchContents() {
       try {
-        const q = query(collection(db, "contents"));
+        const q = query(collection(db, "contents"), orderBy("createdAt", "desc"));
         const snapshot = await getDocs(q);
         grid.innerHTML = "";
+
+        if (snapshot.empty) {
+          grid.innerHTML = `<p style="text-align:center; color:#94a3b8;">No content published yet.</p>`;
+          return;
+        }
 
         snapshot.forEach((doc) => {
           const data = doc.data();
@@ -108,16 +123,15 @@
             <img src="${data.coverUrl || 'https://via.placeholder.com/300x180?text=No+Cover'}" class="cover">
             <div class="content">
               <div class="title">${data.title || "Untitled"}</div>
-              <div class="meta">✍️ ${data.author || "Unknown"} • ${data.publishDate || ""}</div>
+              <div class="meta">
+                ✍️ <a href="profile.html?id=${data.authorId || ''}">${data.author || "Unknown"}</a>
+                • ${data.publishDate || ""}
+              </div>
               <div class="preview">${data.content ? data.content.slice(0, 120) + '...' : ''}</div>
             </div>
           `;
           grid.appendChild(card);
         });
-
-        if (snapshot.empty) {
-          grid.innerHTML = `<p style="text-align:center; color:#94a3b8;">No content published yet.</p>`;
-        }
       } catch (err) {
         console.error(err);
         grid.innerHTML = `<p style="color:red; text-align:center;">⚠️ Unable to load content.</p>`;
