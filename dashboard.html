@@ -1,242 +1,333 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dashboard — NovelMint</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovelMint — Dashboard</title>
+  <link rel="icon" href="favicon.png" />
   <style>
-    body{font-family:system-ui,Segoe UI,Roboto;margin:0;background:#fff}
-    header{padding:14px;background:#111827;color:#fff;display:flex;justify-content:space-between;align-items:center}
-    header h1{font-size:16px;margin:0}
-    header button{background:#ef4444;border:none;color:#fff;padding:8px 10px;border-radius:6px}
-    .wrap{padding:14px}
-    .card{background:#f9fafb;padding:12px;border-radius:8px;margin-bottom:12px;border:1px solid #e5e7eb}
-    label{display:block;font-size:13px;color:#374151;margin:8px 0 4px}
-    input,textarea,select{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:6px}
-    button.primary{background:#111827;color:#fff;border:none;padding:10px 12px;border-radius:6px;margin-top:8px;width:100%}
-    .small{font-size:13px;color:#6b7280;margin-top:6px}
-    .list{display:grid;gap:10px}
-    .post{background:#fff;padding:10px;border:1px solid #e5e7eb;border-radius:8px}
-    .row{display:flex;gap:8px;align-items:center}
-    img.avatar{width:56px;height:56px;border-radius:8px;object-fit:cover;background:#eee}
-    @media (max-width:480px){ header h1{font-size:14px} img.avatar{width:48px;height:48px}}
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: #ffffff;
+      color: #111;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ==== SIDEBAR (LAPTOP VIEW) ==== */
+    header {
+      background: #fff;
+      border-right: 1px solid #e5e7eb;
+      width: 250px;
+      padding: 20px 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      height: 100vh;
+      box-sizing: border-box;
+      z-index: 100;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .logo-section img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+    }
+
+    .logo-section span {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #16a34a; /* light green accent */
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #111;
+      font-weight: 500;
+      font-size: 1.05em;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: #16a34a;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.85em;
+      color: #6b7280;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 10px;
+      margin-top: 30px;
+    }
+
+    /* ==== MAIN SECTION ==== */
+    main {
+      flex: 1;
+      margin-left: 250px;
+      padding: 25px;
+      box-sizing: border-box;
+    }
+
+    h3 {
+      color: #16a34a;
+      margin-bottom: 15px;
+    }
+
+    .publish {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 0 auto;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #fff;
+      color: #111;
+      margin-bottom: 15px;
+      font-size: 1em;
+      transition: 0.2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #16a34a;
+      box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+    }
+
+    button {
+      background: #16a34a;
+      border: none;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 1em;
+    }
+
+    button:hover {
+      background: #15803d;
+    }
+
+    .logout {
+      background: #ef4444;
+      margin-top: auto;
+    }
+
+    .logout:hover {
+      background: #dc2626;
+    }
+
+    #status {
+      margin-top: 10px;
+      color: #16a34a;
+      font-size: 0.9em;
+    }
+
+    /* ==== MOBILE VIEW ==== */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        height: auto;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 10px 18px;
+        background: #fff;
+      }
+
+      nav {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        background: #fff;
+        width: 100%;
+        border-top: 1px solid #e5e7eb;
+        text-align: center;
+        padding: 10px 0;
+      }
+
+      nav.active {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+
+      main {
+        margin-left: 0;
+        padding: 20px;
+      }
+
+      footer {
+        display: none;
+      }
+    }
+
+    /* ==== MENU TOGGLE ==== */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .menu-toggle span {
+      height: 3px;
+      width: 25px;
+      background: #111;
+      margin: 4px 0;
+      border-radius: 2px;
+    }
   </style>
 </head>
 <body>
+  <!-- HEADER -->
   <header>
-    <h1>NovelMint</h1>
     <div>
-      <button id="logoutBtn">Logout</button>
-    </div>
-  </header>
-
-  <div class="wrap">
-    <!-- Profile card -->
-    <div class="card" id="profileCard">
-      <div class="row">
-        <img id="avatarPreview" class="avatar" src="https://via.placeholder.com/100" alt="avatar" />
-        <div style="flex:1">
-          <div style="display:flex;gap:8px">
-            <input id="displayName" placeholder="Display name (username)" />
-          </div>
-          <div class="small">Add a simple name and bio — visible publicly.</div>
-        </div>
+      <div class="logo-section">
+        <img src="logo.png" alt="NovelMint Logo">
+        <span>NovelMint</span>
       </div>
 
-      <label>Bio</label>
-      <textarea id="bio" rows="2" placeholder="A short bio"></textarea>
+      <div class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
 
-      <label>Avatar (optional image file)</label>
-      <input type="file" id="avatarFile" accept="image/*" />
-
-      <button class="primary" id="saveProfileBtn">Save profile</button>
-      <div id="profileMsg" class="small"></div>
+      <nav id="navMenu">
+        <a href="index.html">📚 Library</a>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="publish.html">✍️ Publish</a>
+      </nav>
     </div>
 
-    <!-- Publish card -->
-    <div class="card">
-      <div style="font-weight:600;margin-bottom:8px">Publish new</div>
-      <label>Title</label>
-      <input id="title" placeholder="Title" />
-      <label>Type</label>
-      <select id="type"><option>Story</option><option>Poem</option><option>Thought</option></select>
-      <label>Content</label>
-      <textarea id="content" rows="5" placeholder="Write..."></textarea>
-      <label>Cover (optional)</label>
-      <input type="file" id="coverFile" accept="image/*" />
-      <button class="primary" id="publishBtn">Publish</button>
-      <div id="publishMsg" class="small"></div>
+    <footer>© 2025 NovelMint</footer>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <div class="publish" id="publishForm">
+      <h3>📖 Publish New Content</h3>
+      <input type="text" id="title" placeholder="Enter title" />
+      <select id="type">
+        <option>Story</option>
+        <option>Poem</option>
+        <option>Book</option>
+        <option>Thought</option>
+      </select>
+      <textarea id="content" rows="6" placeholder="Write your content..."></textarea>
+      <input type="file" id="cover" accept="image/*" />
+      <button id="publishBtn">Publish</button>
+      <div id="status"></div>
     </div>
+  </main>
 
-    <!-- My posts -->
-    <div style="font-weight:600;margin:6px 0">My posts</div>
-    <div id="myPosts" class="list"></div>
-  </div>
-
+  <!-- SCRIPT -->
   <script type="module">
-    import { auth, db, storage } from './app.js';
+    import { auth, db, storage } from "./app.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    import { doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-    import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
-    import { serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
-    const logoutBtn = document.getElementById('logoutBtn');
-    const displayNameIn = document.getElementById('displayName');
-    const bioIn = document.getElementById('bio');
-    const avatarFile = document.getElementById('avatarFile');
-    const avatarPreview = document.getElementById('avatarPreview');
-    const saveProfileBtn = document.getElementById('saveProfileBtn');
-    const profileMsg = document.getElementById('profileMsg');
+    const publishBtn = document.getElementById("publishBtn");
+    const logoutBtn = document.createElement("button");
+    logoutBtn.textContent = "Logout";
+    logoutBtn.classList.add("logout");
+    document.querySelector("footer").appendChild(logoutBtn);
 
-    const titleIn = document.getElementById('title');
-    const typeIn = document.getElementById('type');
-    const contentIn = document.getElementById('content');
-    const coverFile = document.getElementById('coverFile');
-    const publishBtn = document.getElementById('publishBtn');
-    const publishMsg = document.getElementById('publishMsg');
-
-    const myPosts = document.getElementById('myPosts');
-
+    const statusDiv = document.getElementById("status");
     let currentUser = null;
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) { location.href = 'login.html'; return; }
-      currentUser = user;
-      // load profile (users collection)
-      try {
-        const userDoc = doc(db, 'users', user.uid);
-        const snap = await getDoc(userDoc);
-        if (snap.exists()) {
-          const data = snap.data();
-          displayNameIn.value = data.username || '';
-          bioIn.value = data.bio || '';
-          if (data.photoURL) avatarPreview.src = data.photoURL;
-        }
-      } catch (e) {
-        console.error('load profile', e);
+    onAuthStateChanged(auth, (user) => {
+      if (user) currentUser = user;
+      else window.location.href = "login.html";
+    });
+
+    publishBtn.addEventListener("click", async () => {
+      const title = document.getElementById("title").value.trim();
+      const type = document.getElementById("type").value;
+      const content = document.getElementById("content").value.trim();
+      const file = document.getElementById("cover").files[0];
+
+      if (!title || !content) {
+        statusDiv.textContent = "⚠️ Title and content required.";
+        return;
       }
-      loadMyPosts();
-    });
 
-    logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      location.href = 'login.html';
-    });
-
-    // Save profile: writes both 'users' (private) and 'publicUsers' (public)
-    saveProfileBtn.addEventListener('click', async () => {
-      profileMsg.textContent = '';
-      if (!currentUser) return;
-      const username = displayNameIn.value.trim();
-      const bio = bioIn.value.trim();
-      profileMsg.textContent = 'Saving...';
+      statusDiv.textContent = "Uploading...";
 
       try {
-        let photoURL = '';
-        if (avatarFile.files[0]) {
-          const f = avatarFile.files[0];
-          const r = storageRef(storage, `avatars/${currentUser.uid}_${Date.now()}_${f.name}`);
-          await uploadBytes(r, f);
-          photoURL = await getDownloadURL(r);
-          avatarPreview.src = photoURL;
+        let coverUrl = "";
+        if (file) {
+          const fileRef = ref(storage, "covers/" + Date.now() + "-" + file.name);
+          await uploadBytes(fileRef, file);
+          coverUrl = await getDownloadURL(fileRef);
         }
 
-        // save to users (private profile)
-        await setDoc(doc(db, 'users', currentUser.uid), {
-          username,
-          bio,
-          photoURL,
-          updatedAt: serverTimestamp()
-        }, { merge: true });
-
-        // save public minimal profile to publicUsers (for homepage/profile view)
-        await setDoc(doc(db, 'publicUsers', currentUser.uid), {
-          displayName: username,
-          bio,
-          photoURL,
-          joinDate: new Date().toLocaleDateString()
-        }, { merge: true });
-
-        profileMsg.textContent = 'Saved.';
-      } catch (err) {
-        console.error('save profile', err);
-        profileMsg.textContent = 'Failed: ' + (err.message || err);
-      }
-    });
-
-    // Publish content
-    publishBtn.addEventListener('click', async () => {
-      publishMsg.textContent = '';
-      if (!currentUser) { publishMsg.textContent = 'Login required'; return; }
-      const title = titleIn.value.trim();
-      const type = typeIn.value;
-      const content = contentIn.value.trim();
-      if (!title || !content) { publishMsg.textContent = 'Title and content required'; return; }
-      publishMsg.textContent = 'Publishing...';
-
-      try {
-        let coverUrl = '';
-        if (coverFile.files[0]) {
-          const f = coverFile.files[0];
-          const r = storageRef(storage, `covers/${currentUser.uid}_${Date.now()}_${f.name}`);
-          await uploadBytes(r, f);
-          coverUrl = await getDownloadURL(r);
-        }
-
-        // read public displayName if exists
-        let authorName = currentUser.email.split('@')[0];
-        try {
-          const p = await getDoc(doc(db, 'publicUsers', currentUser.uid));
-          if (p.exists()) authorName = p.data().displayName || authorName;
-        } catch (e){ /* ignore */ }
-
-        await addDoc(collection(db, 'contents'), {
+        await addDoc(collection(db, "contents"), {
           title,
           type,
           content,
           coverUrl,
-          author: authorName,
+          author: currentUser.email.split("@")[0],
           authorId: currentUser.uid,
           publishDate: new Date().toLocaleDateString(),
-          createdAt: serverTimestamp()
+          createdAt: serverTimestamp(),
         });
 
-        publishMsg.textContent = 'Published.';
-        titleIn.value = ''; contentIn.value = ''; coverFile.value = '';
-        loadMyPosts();
+        statusDiv.textContent = "✅ Published successfully!";
       } catch (err) {
-        console.error('publish', err);
-        publishMsg.textContent = 'Failed: ' + (err.message || err);
+        console.error(err);
+        statusDiv.textContent = "❌ " + err.message;
       }
     });
 
-    // Load my posts
-    async function loadMyPosts(){
-      myPosts.innerHTML = 'Loading...';
-      try {
-        const q = query(collection(db, 'contents'), where('authorId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
-        const snap = await getDocs(q);
-        myPosts.innerHTML = '';
-        if (snap.empty) myPosts.innerHTML = '<div class="small">No posts yet.</div>';
-        snap.forEach(d => {
-          const data = d.data();
-          const el = document.createElement('div');
-          el.className = 'post';
-          el.innerHTML = `
-            <div style="font-weight:600">${escapeHtml(data.title || 'Untitled')}</div>
-            <div class="small">${escapeHtml(data.type || '')} • ${escapeHtml(data.publishDate || '')}</div>
-            <div style="margin-top:6px">${escapeHtml((data.content||'').slice(0,140))}${(data.content||'').length>140?'...':''}</div>
-          `;
-          myPosts.appendChild(el);
-        });
-      } catch (err) {
-        console.error('load my posts', err);
-        myPosts.innerHTML = 'Failed to load posts';
-      }
-    }
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
 
-    // small helper
-    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, m=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    // Mobile nav toggle
+    const menuToggle = document.getElementById("menuToggle");
+    const navMenu = document.getElementById("navMenu");
+    menuToggle.addEventListener("click", () => {
+      navMenu.classList.toggle("active");
+    });
   </script>
 </body>
 </html>
