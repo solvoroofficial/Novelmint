@@ -16,11 +16,11 @@
       min-height: 100vh;
     }
 
-    /* SIDEBAR (HEADER LEFT FOR LAPTOP) */
+    /* SIDEBAR FOR DESKTOP */
     header {
       background: #fff;
       border-right: 1px solid #e5e7eb;
-      width: 250px;
+      width: 240px;
       padding: 20px 15px;
       display: flex;
       flex-direction: column;
@@ -79,7 +79,7 @@
     /* CONTENT SECTION */
     main {
       flex: 1;
-      margin-left: 250px;
+      margin-left: 240px;
       padding: 20px;
       box-sizing: border-box;
     }
@@ -143,7 +143,7 @@
       line-height: 1.4;
     }
 
-    /* MOBILE VIEW */
+    /* --- MOBILE VIEW --- */
     @media (max-width: 768px) {
       body {
         flex-direction: column;
@@ -159,7 +159,11 @@
         width: 100%;
         border-right: none;
         border-bottom: 1px solid #e5e7eb;
-        padding: 10px 18px;
+        padding: 10px 16px;
+      }
+
+      .logo-section {
+        margin-bottom: 0;
       }
 
       nav {
@@ -177,15 +181,21 @@
         display: flex;
       }
 
-      .menu-toggle {
-        display: flex;
+      footer {
+        display: none;
       }
 
       main {
         margin-left: 0;
+        margin-top: 0;
+      }
+
+      .menu-toggle {
+        display: flex;
       }
     }
 
+    /* MENU TOGGLE */
     .menu-toggle {
       display: none;
       flex-direction: column;
@@ -203,22 +213,23 @@
 </head>
 <body>
   <header>
-    <div>
-      <div class="logo-section">
-        <img src="logo.png" alt="NovelMint Logo">
-        <span>NovelMint</span>
-      </div>
-      <div class="menu-toggle" id="menuToggle">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <nav id="navMenu">
-        <a href="index.html">📚 Library</a>
-        <a href="dashboard.html">📊 Dashboard</a>
-        <a href="publish.html">✍️ Publish</a>
-      </nav>
+    <div class="logo-section">
+      <img src="logo.png" alt="NovelMint Logo">
+      <span>NovelMint</span>
     </div>
+
+    <div class="menu-toggle" id="menuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <nav id="navMenu">
+      <a href="index.html">📚 Library</a>
+      <a href="dashboard.html">📊 Dashboard</a>
+      <a href="publish.html">✍️ Publish</a>
+    </nav>
+
     <footer>© 2025 NovelMint</footer>
   </header>
 
@@ -279,6 +290,7 @@
   </script>
 </body>
 </html>
+
 
 
 
