@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NovelMint — Edit Profile</title>
+  <link rel="icon" href="favicon.png" />
+  <style>
+    :root{--accent:#16a34a;--muted:#6b7280;--border:#e5e7eb;--white:#fff;--black:#111;--mobile-bottom-height:64px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Poppins",sans-serif;background:var(--white);color:var(--black);display:flex;min-height:100vh}
+
+    /* Left header (desktop) */
+    header{background:var(--white);border-right:1px solid var(--border);width:250px;padding:20px 15px;display:flex;flex-direction:column;justify-content:space-between;position:fixed;height:100vh;box-sizing:border-box;z-index:100}
+    .logo-section{display:flex;align-items:center;gap:10px}
+    .logo-section img{width:38px;height:38px;border-radius:50%}
+    .logo-section span{font-size:1.2rem;font-weight:600;color:var(--accent)}
+    nav{display:flex;flex-direction:column;gap:15px}
+    nav a{text-decoration:none;color:var(--black);font-weight:500}
+    footer{font-size:0.85rem;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:30px;text-align:center}
+
+    main{flex:1;margin-left:250px;padding:28px;box-sizing:border-box}
+    .card{max-width:900px;margin:0 auto;background:#f9fafb;border:1px solid var(--border);border-radius:12px;padding:20px}
+    h2{margin:0 0 12px 0;color:var(--accent)}
+    label{display:block;margin-top:10px;font-weight:600}
+    input[type="text"], input[type="email"], select, textarea, input[type="tel"], input[type="url"]{
+      width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--white);margin-top:6px;font-size:1rem
+    }
+    textarea{min-height:120px;resize:vertical}
+    .fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .full-row{grid-column:1/-1}
+    .actions{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:10px 12px;border-radius:8px;border:none;cursor:pointer}
+    .btn.primary{background:var(--accent);color:#fff}
+    .btn.secondary{background:#f3f4f6}
+    .status{margin-top:8px}
+
+    @media(max-width:768px){
+      body{flex-direction:column}
+      header{position:static;width:100%;height:auto;border-right:none;border-bottom:1px solid var(--border);display:flex;flex-direction:row;align-items:center;justify-content:space-between;padding:10px 16px}
+      main{margin-left:0;padding:16px;padding-bottom:calc(var(--mobile-bottom-height)+20px)}
+      .fields-grid{grid-template-columns:1fr}
+    }
+
+    .avatar-preview{width:120px;height:120px;border-radius:10px;object-fit:cover;background:#e6f4ea;border:1px solid #d1fae5}
+    .progress{height:8px;background:#e6f4ea;border-radius:8px;margin-top:8px;overflow:hidden}
+    .progress > span{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div>
+      <div class="logo-section">
+        <img src="logo.png" alt="logo">
+        <span>NovelMint</span>
+      </div>
+      <nav>
+        <a href="index.html">Library</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="publish.html">Publish</a>
+      </nav>
+    </div>
+    <footer>© 2025 NovelMint</footer>
+  </header>
+
+  <!-- Main -->
+  <main>
+    <div class="card">
+      <h2>Edit Profile</h2>
+      <p class="muted">Fill fields you want to show publicly. Your profile will be saved under your user id.</p>
+
+      <div style="display:flex;gap:16px;align-items:center;margin-top:12px">
+        <img id="avatarPreview" class="avatar-preview" src="https://via.placeholder.com/120x120?text=No+Image" alt="avatar">
+        <div style="flex:1">
+          <label for="photo">Profile Image</label>
+          <input id="photo" type="file" accept="image/*">
+          <div class="progress" id="uploadProgress" style="display:none"><span></span></div>
+        </div>
+      </div>
+
+      <div class="fields-grid" style="margin-top:12px">
+        <div>
+          <label for="fullName">Full name</label>
+          <input id="fullName" type="text" placeholder="Your full name">
+        </div>
+
+        <div>
+          <label for="username">Username</label>
+          <input id="username" type="text" placeholder="username (unique)">
+        </div>
+
+        <div>
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="you@example.com">
+        </div>
+
+        <div>
+          <label for="phone">Phone</label>
+          <input id="phone" type="tel" placeholder="+91...">
+        </div>
+
+        <div>
+          <label for="country">Country</label>
+          <input id="country" type="text" placeholder="Country">
+        </div>
+
+        <div>
+          <label for="languages">Languages</label>
+          <input id="languages" type="text" placeholder="e.g. English, Hindi">
+        </div>
+
+        <div class="full-row">
+          <label for="bio">Bio</label>
+          <textarea id="bio" placeholder="Short bio (max 300 chars)"></textarea>
+        </div>
+
+        <div>
+          <label for="genre">Writing genre</label>
+          <input id="genre" type="text" placeholder="e.g. Fiction, Poetry">
+        </div>
+
+        <div>
+          <label for="pronouns">Pronouns</label>
+          <input id="pronouns" type="text" placeholder="e.g. He/Him">
+        </div>
+
+        <div>
+          <label for="instagram">Instagram</label>
+          <input id="instagram" type="text" placeholder="@yourhandle or full URL">
+        </div>
+
+        <div>
+          <label for="website">Website</label>
+          <input id="website" type="url" placeholder="https://...">
+        </div>
+
+        <div class="full-row">
+          <label for="favoriteQuote">Favorite quote</label>
+          <input id="favoriteQuote" type="text" placeholder="One-liner quote">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="saveBtn">Save profile</button>
+        <button class="btn secondary" id="cancelBtn">Cancel</button>
+      </div>
+
+      <div class="status" id="status"></div>
+    </div>
+  </main>
+
+  <!-- Mobile bottom nav -->
+  <div class="mobile-bottom-nav" style="display:none;position:fixed;left:0;right:0;bottom:0;height:64px;background:#fff;border-top:1px solid #e5e7eb;justify-content:space-around;align-items:center;z-index:120">
+    <a href="index.html"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2z"/></svg><span style="font-size:11px">Home</span></a>
+    <a href="dashboard.html"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none"><path d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zM3 21h8v-6H3v6zm10-8h8V3h-8v10z"/></svg><span style="font-size:11px">Dashboard</span></a>
+    <a href="publish.html"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none"><path d="M12 5v14m-7-7h14"/></svg><span style="font-size:11px">Publish</span></a>
+    <a href="profile.html"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg><span style="font-size:11px">Profile</span></a>
+  </div>
+
+  <script type="module">
+    import { auth, db, storage } from "./app.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+
+    // Elements
+    const avatarPreview = document.getElementById("avatarPreview");
+    const photoInput = document.getElementById("photo");
+    const uploadProgress = document.getElementById("uploadProgress");
+    const uploadBar = uploadProgress.querySelector("span");
+    const fullNameEl = document.getElementById("fullName");
+    const usernameEl = document.getElementById("username");
+    const emailEl = document.getElementById("email");
+    const phoneEl = document.getElementById("phone");
+    const countryEl = document.getElementById("country");
+    const languagesEl = document.getElementById("languages");
+    const bioEl = document.getElementById("bio");
+    const genreEl = document.getElementById("genre");
+    const pronounsEl = document.getElementById("pronouns");
+    const instagramEl = document.getElementById("instagram");
+    const websiteEl = document.getElementById("website");
+    const favoriteQuoteEl = document.getElementById("favoriteQuote");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const statusDiv = document.getElementById("status");
+
+    let currentUser = null;
+    let currentProfileData = null;
+    let uploadedPhotoUrl = "";
+
+    function showMobileNavIfNeeded(){
+      if (window.innerWidth <= 768) {
+        document.querySelector('.mobile-bottom-nav').style.display = 'flex';
+      }
+    }
+    showMobileNavIfNeeded();
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // not logged in -> redirect to login
+        window.location.href = "login.html";
+        return;
+      }
+      currentUser = user;
+      await loadProfileData(user.uid);
+    });
+
+    async function loadProfileData(uid){
+      try {
+        const uDoc = await getDoc(doc(db, "users", uid));
+        if (uDoc.exists()){
+          const d = uDoc.data();
+          currentProfileData = d;
+          avatarPreview.src = d.photoURL || "https://via.placeholder.com/120x120?text=No+Image";
+          fullNameEl.value = d.fullName || "";
+          usernameEl.value = d.username || "";
+          emailEl.value = d.email || (currentUser.email || "");
+          phoneEl.value = d.phone || "";
+          countryEl.value = d.country || "";
+          languagesEl.value = d.languages || "";
+          bioEl.value = d.bio || "";
+          genreEl.value = d.genre || "";
+          pronounsEl.value = d.pronouns || "";
+          instagramEl.value = d.instagram || "";
+          websiteEl.value = d.website || "";
+          favoriteQuoteEl.value = d.favoriteQuote || "";
+        } else {
+          // prefill email from auth
+          emailEl.value = currentUser.email || "";
+        }
+      } catch (e){
+        console.error(e);
+        statusDiv.textContent = "Error loading profile.";
+      }
+    }
+
+    // photo upload preview
+    photoInput.addEventListener("change", () => {
+      const f = photoInput.files[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = e => avatarPreview.src = e.target.result;
+      reader.readAsDataURL(f);
+    });
+
+    // Save profile
+    saveBtn.addEventListener("click", async () => {
+      statusDiv.textContent = "";
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saving...";
+      try {
+        let photoURL = currentProfileData ? currentProfileData.photoURL || "" : "";
+
+        // handle photo upload if a file selected
+        const file = photoInput.files[0];
+        if (file) {
+          uploadProgress.style.display = "block";
+          uploadBar.style.width = "0%";
+          const path = `profiles/${currentUser.uid}/${Date.now()}-${file.name.replace(/\s+/g,'_')}`;
+          const storageRef = ref(storage, path);
+          const uploadTask = uploadBytesResumable(storageRef, file);
+          await new Promise((res, rej) => {
+            uploadTask.on('state_changed', snap=>{
+              const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+              uploadBar.style.width = pct + "%";
+            }, err => { uploadProgress.style.display = 'none'; rej(err) }, async ()=>{
+              uploadProgress.style.display = "none";
+              photoURL = await getDownloadURL(uploadTask.snapshot.ref);
+              res();
+            });
+          });
+        }
+
+        // build profile object
+        const profileObj = {
+          fullName: fullNameEl.value.trim() || "",
+          username: usernameEl.value.trim() || "",
+          email: emailEl.value.trim() || currentUser.email || "",
+          phone: phoneEl.value.trim() || "",
+          country: countryEl.value.trim() || "",
+          languages: languagesEl.value.trim() || "",
+          bio: bioEl.value.trim() || "",
+          genre: genreEl.value.trim() || "",
+          pronouns: pronounsEl.value.trim() || "",
+          instagram: instagramEl.value.trim() || "",
+          website: websiteEl.value.trim() || "",
+          favoriteQuote: favoriteQuoteEl.value.trim() || "",
+          photoURL: photoURL || "",
+          updatedAt: serverTimestamp(),
+          uid: currentUser.uid,
+          joinDate: currentProfileData?.joinDate || (new Date().toLocaleDateString())
+        };
+
+        // save to users collection (document id = uid)
+        await setDoc(doc(db, "users", currentUser.uid), profileObj, { merge: true });
+
+        statusDiv.textContent = "✅ Profile saved.";
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Save profile";
+        // redirect to profile view
+        setTimeout(()=> location.href = `profile.html?id=${currentUser.uid}`, 700);
+      } catch (e) {
+        console.error(e);
+        statusDiv.textContent = "❌ " + (e.message || "Save failed");
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Save profile";
+      }
+    });
+
+    cancelBtn.addEventListener("click", () => {
+      window.history.back();
+    });
+
+  </script>
+</body>
+</html>
