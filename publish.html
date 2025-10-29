@@ -3,138 +3,331 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Publish — NovelMint</title>
-  <script type="module" src="app.js"></script>
+  <title>NovelMint — Dashboard</title>
+  <link rel="icon" href="favicon.png" />
   <style>
     body {
-      font-family: "Poppins", sans-serif;
-      background: #0a0a1a;
-      color: white;
       margin: 0;
-      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: #ffffff;
+      color: #111;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
       min-height: 100vh;
     }
-    .card {
-      background: #111c3a;
-      padding: 25px;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 600px;
-      margin-top: 60px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+
+    /* ==== SIDEBAR (LAPTOP VIEW) ==== */
+    header {
+      background: #fff;
+      border-right: 1px solid #e5e7eb;
+      width: 250px;
+      padding: 20px 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      height: 100vh;
+      box-sizing: border-box;
+      z-index: 100;
     }
-    h2 {
-      text-align: center;
-      color: #9ec9ff;
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
     }
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 8px;
-      background: #16244a;
-      color: white;
-      resize: none;
+
+    .logo-section img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
     }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #3478ff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 10px;
+
+    .logo-section span {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #16a34a; /* light green accent */
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #111;
+      font-weight: 500;
+      font-size: 1.05em;
       transition: 0.3s;
     }
+
+    nav a:hover {
+      color: #16a34a;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.85em;
+      color: #6b7280;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 10px;
+      margin-top: 30px;
+    }
+
+    /* ==== MAIN SECTION ==== */
+    main {
+      flex: 1;
+      margin-left: 250px;
+      padding: 25px;
+      box-sizing: border-box;
+    }
+
+    h3 {
+      color: #16a34a;
+      margin-bottom: 15px;
+    }
+
+    .publish {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 0 auto;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #fff;
+      color: #111;
+      margin-bottom: 15px;
+      font-size: 1em;
+      transition: 0.2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #16a34a;
+      box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+    }
+
+    button {
+      background: #16a34a;
+      border: none;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 1em;
+    }
+
     button:hover {
-      background: #1e5ed8;
+      background: #15803d;
+    }
+
+    .logout {
+      background: #ef4444;
+      margin-top: auto;
+    }
+
+    .logout:hover {
+      background: #dc2626;
+    }
+
+    #status {
+      margin-top: 10px;
+      color: #16a34a;
+      font-size: 0.9em;
+    }
+
+    /* ==== MOBILE VIEW ==== */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        height: auto;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 10px 18px;
+        background: #fff;
+      }
+
+      nav {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        background: #fff;
+        width: 100%;
+        border-top: 1px solid #e5e7eb;
+        text-align: center;
+        padding: 10px 0;
+      }
+
+      nav.active {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+
+      main {
+        margin-left: 0;
+        padding: 20px;
+      }
+
+      footer {
+        display: none;
+      }
+    }
+
+    /* ==== MENU TOGGLE ==== */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .menu-toggle span {
+      height: 3px;
+      width: 25px;
+      background: #111;
+      margin: 4px 0;
+      border-radius: 2px;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>Publish Story</h2>
-    <form id="publishForm">
-      <input type="text" id="title" required placeholder="Story Title" />
-      <textarea id="description" rows="2" placeholder="Short Description"></textarea>
-      <textarea id="content" rows="8" required placeholder="Write your story here..."></textarea>
-      <button type="submit">Publish</button>
-    </form>
-  </div>
+  <!-- HEADER -->
+  <header>
+    <div>
+      <div class="logo-section">
+        <img src="logo.png" alt="NovelMint Logo">
+        <span>NovelMint</span>
+      </div>
 
+      <div class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <nav id="navMenu">
+        <a href="index.html">📚 Library</a>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="publish.html">✍️ Publish</a>
+      </nav>
+    </div>
+
+    <footer>© 2025 NovelMint</footer>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <div class="publish" id="publishForm">
+      <h3>📖 Publish New Content</h3>
+      <input type="text" id="title" placeholder="Enter title" />
+      <select id="type">
+        <option>Story</option>
+        <option>Poem</option>
+        <option>Book</option>
+        <option>Thought</option>
+      </select>
+      <textarea id="content" rows="6" placeholder="Write your content..."></textarea>
+      <input type="file" id="cover" accept="image/*" />
+      <button id="publishBtn">Publish</button>
+      <div id="status"></div>
+    </div>
+  </main>
+
+  <!-- SCRIPT -->
   <script type="module">
-    import { auth, db } from "./app.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    import { collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { auth, db, storage } from "./app.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
-    const form = document.getElementById("publishForm");
+    const publishBtn = document.getElementById("publishBtn");
+    const logoutBtn = document.createElement("button");
+    logoutBtn.textContent = "Logout";
+    logoutBtn.classList.add("logout");
+    document.querySelector("footer").appendChild(logoutBtn);
+
+    const statusDiv = document.getElementById("status");
     let currentUser = null;
-    let userData = null;
 
-    // Wait until user is logged in
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        console.log("No user logged in — redirecting...");
-        window.location.href = "login.html";
+    onAuthStateChanged(auth, (user) => {
+      if (user) currentUser = user;
+      else window.location.href = "login.html";
+    });
+
+    publishBtn.addEventListener("click", async () => {
+      const title = document.getElementById("title").value.trim();
+      const type = document.getElementById("type").value;
+      const content = document.getElementById("content").value.trim();
+      const file = document.getElementById("cover").files[0];
+
+      if (!title || !content) {
+        statusDiv.textContent = "⚠️ Title and content required.";
         return;
       }
-      currentUser = user;
-      console.log("User logged in:", user.uid);
 
-      // Fetch user's profile data
-      const userRef = doc(db, "users", user.uid);
-      const snap = await getDoc(userRef);
-      if (snap.exists()) {
-        userData = snap.data();
-        console.log("User data:", userData);
-      } else {
-        console.log("User document not found in Firestore.");
+      statusDiv.textContent = "Uploading...";
+
+      try {
+        let coverUrl = "";
+        if (file) {
+          const fileRef = ref(storage, "covers/" + Date.now() + "-" + file.name);
+          await uploadBytes(fileRef, file);
+          coverUrl = await getDownloadURL(fileRef);
+        }
+
+        await addDoc(collection(db, "contents"), {
+          title,
+          type,
+          content,
+          coverUrl,
+          author: currentUser.email.split("@")[0],
+          authorId: currentUser.uid,
+          publishDate: new Date().toLocaleDateString(),
+          createdAt: serverTimestamp(),
+        });
+
+        statusDiv.textContent = "✅ Published successfully!";
+      } catch (err) {
+        console.error(err);
+        statusDiv.textContent = "❌ " + err.message;
       }
     });
 
-    // Handle publish form submit
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
 
-      if (!currentUser) {
-        alert("You must be logged in to publish a story.");
-        return;
-      }
-
-      const title = document.getElementById("title").value.trim();
-      const description = document.getElementById("description").value.trim();
-      const content = document.getElementById("content").value.trim();
-
-      if (!title || !content) {
-        alert("Please enter both title and content!");
-        return;
-      }
-
-      try {
-        const storiesRef = collection(db, "stories");
-        await addDoc(storiesRef, {
-          uid: currentUser.uid,
-          username: userData?.username || "unknown",
-          title,
-          description,
-          content,
-          status: "published",
-          createdAt: serverTimestamp()
-        });
-
-        alert("Story published successfully!");
-        window.location.href = "profile.html";
-      } catch (error) {
-        console.error("Error publishing story:", error);
-        alert("Something went wrong while publishing. Check console for details.");
-      }
+    // Mobile nav toggle
+    const menuToggle = document.getElementById("menuToggle");
+    const navMenu = document.getElementById("navMenu");
+    menuToggle.addEventListener("click", () => {
+      navMenu.classList.toggle("active");
     });
   </script>
 </body>
 </html>
-
