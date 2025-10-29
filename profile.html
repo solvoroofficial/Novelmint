@@ -1,119 +1,331 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profile — NovelMint</title>
-  <script type="module" src="app.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NovelMint — Author Profile</title>
+  <link rel="icon" href="favicon.png" />
   <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: #0a0a1a;
-      color: white;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+    :root{
+      --accent:#16a34a; --muted:#6b7280; --border:#e5e7eb; --white:#fff; --black:#111;
+      --mobile-bottom-height:64px;
     }
-    .profile-card {
-      background: #111c3a;
-      padding: 25px;
-      border-radius: 20px;
-      width: 90%;
-      max-width: 420px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.4);
-      text-align: center;
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:"Poppins",sans-serif;background:var(--white);color:var(--black);display:flex;min-height:100vh;
     }
-    img {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      border: 3px solid #9ec9ff;
-      object-fit: cover;
+
+    /* Left sidebar header (desktop) */
+    header{
+      background:var(--white);border-right:1px solid var(--border);width:250px;padding:20px 15px;
+      display:flex;flex-direction:column;justify-content:space-between;position:fixed;height:100vh;box-sizing:border-box;z-index:100;
     }
-    h2 {
-      color: #9ec9ff;
-      margin-top: 10px;
+    .logo-section{display:flex;align-items:center;gap:10px}
+    .logo-section img{width:38px;height:38px;border-radius:50%}
+    .logo-section span{font-size:1.2rem;font-weight:600;color:var(--accent)}
+    nav{display:flex;flex-direction:column;gap:15px}
+    nav a{text-decoration:none;color:var(--black);font-weight:500}
+    footer{font-size:0.85rem;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:30px;text-align:center}
+
+    /* Main content */
+    main{flex:1;margin-left:250px;padding:28px;box-sizing:border-box;}
+    .profile-card{
+      display:flex;gap:24px;padding:22px;border-radius:12px;background:#f9fafb;border:1px solid var(--border);
+      align-items:flex-start;max-width:1000px;margin:0 auto;
     }
-    p {
-      color: #c4c4c4;
+    .avatar{
+      width:140px;height:140px;border-radius:12px;object-fit:cover;background:#e6f4ea;border:1px solid #d1fae5;
     }
-    .btns {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 15px;
+    .profile-info{flex:1}
+    .name-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .author-name{font-size:1.35rem;font-weight:700}
+    .username{color:var(--muted);font-weight:600}
+    .bio{margin-top:8px;color:#374151}
+    .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:12px}
+    .meta-item{background:#fff;padding:8px;border-radius:8px;border:1px solid var(--border);font-size:0.95rem;color:#374151}
+    .social-links{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+    .social-links a{color:var(--black);text-decoration:none;font-weight:600}
+
+    /* Posts list */
+    .posts{margin-top:24px;max-width:1000px;margin-left:auto;margin-right:auto}
+    .post-card{display:flex;gap:14px;background:#fff;border:1px solid var(--border);padding:12px;border-radius:10px;margin-bottom:12px;align-items:center}
+    .post-cover{width:120px;height:72px;object-fit:cover;border-radius:8px;background:#d1fae5}
+    .post-body{flex:1}
+    .post-title{font-weight:700}
+    .post-meta{color:var(--muted);font-size:0.9rem;margin-top:6px}
+
+    /* Edit button */
+    .actions{display:flex;gap:8px;margin-top:12px}
+    .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    .btn.secondary{background:#f3f4f6}
+    .btn.primary{background:var(--accent);color:#fff}
+
+    /* Mobile behavior */
+    @media (max-width:768px){
+      body{flex-direction:column}
+      header{position:static;width:100%;height:auto;border-right:none;border-bottom:1px solid var(--border);display:flex;flex-direction:row;align-items:center;justify-content:space-between;padding:10px 16px}
+      nav{display:none;position:absolute;top:60px;right:0;background:var(--white);width:100%;border-top:1px solid var(--border)}
+      main{margin-left:0;padding:16px;padding-bottom:calc(var(--mobile-bottom-height) + 24px)}
+      .profile-card{flex-direction:column;align-items:center;text-align:center}
+      .avatar{width:120px;height:120px}
+      .profile-info{width:100%}
     }
-    button {
-      background: #3478ff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.3s;
+
+    /* Mobile bottom nav */
+    .mobile-bottom-nav{display:none}
+    @media (max-width:768px){
+      .mobile-bottom-nav{
+        display:flex;position:fixed;left:0;right:0;bottom:0;height:var(--mobile-bottom-height);
+        background:var(--white);border-top:1px solid var(--border);justify-content:space-around;align-items:center;z-index:120;padding-bottom:env(safe-area-inset-bottom)
+      }
+      .mobile-bottom-nav a{flex:1;text-align:center;text-decoration:none;color:var(--black);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px}
+      .mobile-bottom-nav svg{width:20px;height:20px;stroke:currentColor;fill:none}
     }
-    button:hover {
-      background: #1e5ed8;
-    }
-    .logout {
-      background: #ff5757;
-    }
-    .logout:hover {
-      background: #ff3030;
-    }
+
+    /* small helpers */
+    .muted{color:var(--muted)}
   </style>
 </head>
 <body>
-  <div class="profile-card">
-    <img id="profileImage" src="default.png" alt="Profile">
-    <h2 id="userName">Loading...</h2>
-    <p id="userUsername"></p>
-    <p id="userBio"></p>
-    <div class="btns">
-      <button id="editBtn">Edit Profile</button>
-      <button class="logout" id="logoutBtn">Logout</button>
+  <!-- HEADER -->
+  <header>
+    <div>
+      <div class="logo-section">
+        <img src="logo.png" alt="NovelMint Logo">
+        <span>NovelMint</span>
+      </div>
+      <div class="menu-toggle" id="menuToggle" style="display:none;">
+        <span></span><span></span><span></span>
+      </div>
+      <nav id="navMenu">
+        <a href="index.html">📚 Library</a>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="publish.html">✍️ Publish</a>
+      </nav>
     </div>
+    <footer>© 2025 NovelMint</footer>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <div id="profileArea">
+      <div class="profile-card">
+        <img id="avatarImg" class="avatar" src="https://via.placeholder.com/140x140?text=No+Image" alt="avatar">
+        <div class="profile-info">
+          <div class="name-row">
+            <div>
+              <div class="author-name" id="fullName">Loading...</div>
+              <div class="username" id="userName">@username</div>
+            </div>
+            <div style="margin-left:auto" id="ownerActions"></div>
+          </div>
+
+          <div class="bio" id="bio">—</div>
+
+          <div class="social-links" id="socialLinks"></div>
+
+          <div class="meta-grid" id="metaGrid">
+            <!-- populated dynamically with fields -->
+          </div>
+        </div>
+      </div>
+
+      <section class="posts">
+        <h3>Posts by this author</h3>
+        <div id="postsList">
+          <p class="muted">Loading posts…</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Mobile bottom nav -->
+  <div class="mobile-bottom-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="index.html">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2z"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="dashboard.html">
+      <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zM3 21h8v-6H3v6zm10-8h8V3h-8v10z"/></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="publish.html">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+      <span>Publish</span>
+    </a>
+    <a href="profileediting.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
+      <span>Profile</span>
+    </a>
   </div>
 
   <script type="module">
     import { auth, db } from "./app.js";
-    import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { doc, getDoc, collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    // no storage needed for profile view
 
-    const img = document.getElementById("profileImage");
-    const nameEl = document.getElementById("userName");
-    const usernameEl = document.getElementById("userUsername");
-    const bioEl = document.getElementById("userBio");
+    // helpers
+    function qs(name) {
+      const u = new URL(location.href);
+      return u.searchParams.get(name);
+    }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
+    const uidParam = qs("id"); // profile id in query param ?id=UID
+    let profileId = uidParam || null;
+    let currentUser = null;
+
+    // Elements
+    const avatarImg = document.getElementById("avatarImg");
+    const fullNameEl = document.getElementById("fullName");
+    const userNameEl = document.getElementById("userName");
+    const bioEl = document.getElementById("bio");
+    const socialLinksEl = document.getElementById("socialLinks");
+    const metaGridEl = document.getElementById("metaGrid");
+    const postsListEl = document.getElementById("postsList");
+    const ownerActionsEl = document.getElementById("ownerActions");
+
+    // Default fields to display (order)
+    const displayFields = [
+      { key: "fullName", label: "Full name" },
+      { key: "username", label: "Username" },
+      { key: "email", label: "Email" },
+      { key: "country", label: "Country" },
+      { key: "genre", label: "Writing genre" },
+      { key: "website", label: "Website" },
+      { key: "instagram", label: "Instagram" },
+      { key: "languages", label: "Languages" },
+      { key: "pronouns", label: "Pronouns" },
+      { key: "phone", label: "Phone" },
+      { key: "joinDate", label: "Join date" },
+      { key: "favoriteQuote", label: "Favorite quote" }
+    ];
+
+    // fetch profile data by id
+    async function loadProfile(id) {
+      try {
+        const userDoc = await getDoc(doc(db, "users", id));
+        if (!userDoc.exists()) {
+          fullNameEl.textContent = "Unknown user";
+          userNameEl.textContent = "";
+          bioEl.textContent = "This user has not set up a profile yet.";
+          postsListEl.innerHTML = `<p class="muted">No posts found.</p>`;
+          return;
+        }
+
+        const data = userDoc.data();
+
+        avatarImg.src = data.photoURL || "https://via.placeholder.com/140x140?text=No+Image";
+        fullNameEl.textContent = data.fullName || (data.username || "Unknown");
+        userNameEl.textContent = data.username ? ("@" + data.username) : "";
+        bioEl.textContent = data.bio || "";
+
+        // social links (instagram, website, twitter)
+        socialLinksEl.innerHTML = "";
+        if (data.instagram) {
+          const a = document.createElement("a");
+          a.href = data.instagram.startsWith("http") ? data.instagram : `https://instagram.com/${data.instagram.replace(/^@/,'')}`;
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.textContent = "Instagram";
+          socialLinksEl.appendChild(a);
+        }
+        if (data.website) {
+          const a = document.createElement("a");
+          a.href = data.website.startsWith("http") ? data.website : "https://" + data.website;
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.style.marginLeft = "8px";
+          a.textContent = "Website";
+          socialLinksEl.appendChild(a);
+        }
+
+        // meta grid
+        metaGridEl.innerHTML = "";
+        for (const f of displayFields) {
+          const el = document.createElement("div");
+          el.className = "meta-item";
+          const v = data[f.key] || "—";
+          el.innerHTML = `<strong style="display:block;margin-bottom:6px">${f.label}</strong><div>${escapeHtml(String(v))}</div>`;
+          metaGridEl.appendChild(el);
+        }
+
+      } catch (e) {
+        console.error(e);
+        fullNameEl.textContent = "Error loading profile";
+      }
+    }
+
+    // fetch their posts
+    async function loadPosts(authorId) {
+      postsListEl.innerHTML = `<p class="muted">Loading posts…</p>`;
+      try {
+        const q = query(collection(db, "contents"), where("authorId", "==", authorId), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        postsListEl.innerHTML = "";
+        if (snap.empty) {
+          postsListEl.innerHTML = `<p class="muted">No posts published yet.</p>`;
+          return;
+        }
+        snap.forEach(docSnap => {
+          const d = docSnap.data();
+          const card = document.createElement("div");
+          card.className = "post-card";
+          card.innerHTML = `
+            <img class="post-cover" src="${d.coverUrl || 'https://via.placeholder.com/300x180?text=No+Cover'}" alt="cover">
+            <div class="post-body">
+              <div class="post-title"><a href="post.html?id=${docSnap.id}" style="text-decoration:none;color:var(--black)">${escapeHtml(d.title || 'Untitled')}</a></div>
+              <div class="post-meta"> ${escapeHtml(d.type || '')} • ${escapeHtml(d.publishDate || '')}</div>
+            </div>
+          `;
+          postsListEl.appendChild(card);
+        });
+      } catch (e) {
+        console.error(e);
+        postsListEl.innerHTML = `<p class="muted">Error loading posts.</p>`;
+      }
+    }
+
+    // auth state to determine owner
+    import("https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js").then(({ onAuthStateChanged })=>{
+      onAuthStateChanged(auth, (user)=>{
+        currentUser = user;
+        if (!profileId && user) profileId = user.uid; // if no id param, show current user's profile
+        init();
+      });
+    });
+
+    function showOwnerActions(id){
+      ownerActionsEl.innerHTML = "";
+      if (currentUser && currentUser.uid === id) {
+        const editBtn = document.createElement("button");
+        editBtn.className = "btn primary";
+        editBtn.textContent = "Edit profile";
+        editBtn.onclick = ()=> location.href = "profileediting.html";
+        ownerActionsEl.appendChild(editBtn);
+      } else {
+        // follow button placeholder
+        const followBtn = document.createElement("button");
+        followBtn.className = "btn secondary";
+        followBtn.textContent = "Follow";
+        followBtn.onclick = ()=> alert("Follow feature not implemented yet.");
+        ownerActionsEl.appendChild(followBtn);
+      }
+    }
+
+    async function init(){
+      if (!profileId) {
+        // neither query param nor logged in user
+        fullNameEl.textContent = "No profile specified";
+        postsListEl.innerHTML = `<p class="muted">Open a profile from the library or login.</p>`;
         return;
       }
+      showOwnerActions(profileId);
+      await loadProfile(profileId);
+      await loadPosts(profileId);
+    }
 
-      const docRef = doc(db, "users", user.uid);
-      const snap = await getDoc(docRef);
-      if (snap.exists()) {
-        const data = snap.data();
-        nameEl.textContent = data.name || "Unnamed";
-        usernameEl.textContent = data.username ? "@" + data.username : "";
-        bioEl.textContent = data.bio || "";
-        if (data.profileImage) img.src = data.profileImage;
-      } else {
-        window.location.href = "profileForm.html";
-      }
-    });
-
-    document.getElementById("editBtn").addEventListener("click", () => {
-      window.location.href = "profileForm.html";
-    });
-
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      signOut(auth).then(() => (window.location.href = "login.html"));
-    });
+    // small helper
+    function escapeHtml(s=""){ return s.replace(/[&<>"']/g, (m)=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[m])); }
   </script>
 </body>
 </html>
