@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Author Profile - Novel Mint</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reuse the same styles from stream page, add author-specific styles */
+        :root {
+            --primary-white: #ffffff;
+            --light-green: #f0fff4;
+            --soft-green: #e6fff1;
+            --accent-green: #10b981;
+            --dark-green: #047857;
+            --publish-color: #059669;
+            --text-dark: #1f2937;
+            --text-medium: #4b5563;
+            --text-light: #6b7280;
+            --border-color: #d1d5db;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--light-green);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .author-header {
+            background: linear-gradient(135deg, var(--dark-green), var(--publish-color));
+            padding: 24px 20px;
+            color: white;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .author-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid white;
+            overflow: hidden;
+            background: var(--light-green);
+        }
+
+        .author-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .author-details {
+            flex: 1;
+        }
+
+        .author-name {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .author-username {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .author-bio {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            max-width: 600px;
+        }
+
+        .author-stats {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .author-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .follow-btn, .message-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .follow-btn {
+            background: white;
+            color: var(--publish-color);
+        }
+
+        .follow-btn:hover {
+            background: var(--light-green);
+            transform: translateY(-2px);
+        }
+
+        .message-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .message-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main Content */
+        .author-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .author-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--primary-white);
+            border-radius: var(--radius-md);
+            padding: 4px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-medium);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: var(--light-green);
+            color: var(--publish-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Content Grid (reuse from stream) */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .content-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .content-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .content-card {
+            background: var(--primary-white);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .content-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-green);
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary-white);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-medium);
+            transition: var(--transition);
+            padding: 8px;
+            width: 60px;
+        }
+
+        .nav-item.active {
+            color: var(--publish-color);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .nav-text {
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* Loading and No Content */
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(5, 150, 105, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--publish-color);
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        .no-content {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--primary-white);
+            border-radius: var(--radius-md);
+            border: 2px dashed var(--border-color);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .author-header {
+                padding: 20px 16px;
+            }
+            
+            .author-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .author-avatar-large {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .author-actions {
+                justify-content: center;
+            }
+            
+            .author-container {
+                padding-bottom: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="author-header">
+        <div class="header-content">
+            <button class="back-btn" id="backBtn">
+                <i class="fas fa-arrow-left"></i>
+                Back
+            </button>
+            
+            <div class="author-info">
+                <div class="author-avatar-large" id="authorAvatar">
+                    <i class="fas fa-user" style="font-size: 48px; color: var(--publish-color); display: flex; align-items: center; justify-content: center; height: 100%;"></i>
+                </div>
+                
+                <div class="author-details">
+                    <h1 class="author-name" id="authorName">Loading...</h1>
+                    <div class="author-username" id="authorUsername">@username</div>
+                    <p class="author-bio" id="authorBio">Bio will appear here...</p>
+                    
+                    <div class="author-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="piecesCount">0</div>
+                            <div class="stat-label">Pieces</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="mintsCount">0</div>
+                            <div class="stat-label">Mints</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="followersCount">0</div>
+                            <div class="stat-label">Followers</div>
+                        </div>
+                    </div>
+                    
+                    <div class="author-actions">
+                        <button class="follow-btn" id="followBtn">
+                            <i class="fas fa-plus"></i>
+                            Follow
+                        </button>
+                        <button class="message-btn" id="messageBtn">
+                            <i class="fas fa-envelope"></i>
+                            Message
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="author-container">
+        <div class="author-tabs">
+            <button class="tab-btn active" data-tab="pieces">Pieces</button>
+            <button class="tab-btn" data-tab="about">About</button>
+            <button class="tab-btn" data-tab="activity">Activity</button>
+        </div>
+        
+        <!-- Pieces Tab -->
+        <div class="tab-content active" id="piecesTab">
+            <div class="content-grid" id="piecesGrid">
+                <div class="loading-spinner" id="piecesLoading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+            
+            <div class="no-content" id="noPieces" style="display: none;">
+                <i class="fas fa-book-open" style="font-size: 48px; color: var(--text-light); margin-bottom: 16px;"></i>
+                <h3 style="font-size: 18px; font-weight: 600; color: var(--text-dark); margin-bottom: 8px;">No pieces yet</h3>
+                <p style="color: var(--text-light); max-width: 400px; margin: 0 auto 20px;">
+                    This author hasn't published any pieces yet.
+                </p>
+            </div>
+        </div>
+        
+        <!-- About Tab -->
+        <div class="tab-content" id="aboutTab">
+            <div style="background: var(--primary-white); padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <h3 style="font-size: 18px; font-weight: 600; color: var(--text-dark); margin-bottom: 16px;">About</h3>
+                <div id="aboutContent">
+                    <p style="color: var(--text-light);">Loading author information...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Activity Tab -->
+        <div class="tab-content" id="activityTab">
+            <div style="background: var(--primary-white); padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <h3 style="font-size: 18px; font-weight: 600; color: var(--text-dark); margin-bottom: 16px;">Recent Activity</h3>
+                <div id="activityContent">
+                    <p style="color: var(--text-light);">Loading activity...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <a href="mint-stream.html" class="nav-item">
+            <i class="fas fa-home nav-icon"></i>
+            <span class="nav-text">Stream</span>
+        </a>
+        <a href="freshly-minted.html" class="nav-item">
+            <i class="fas fa-fire nav-icon"></i>
+            <span class="nav-text">Fresh</span>
+        </a>
+        <a href="publish.html" class="nav-item">
+            <i class="fas fa-plus-circle nav-icon"></i>
+            <span class="nav-text">Publish</span>
+        </a>
+        <a href="bookmarks.html" class="nav-item">
+            <i class="fas fa-bookmark nav-icon"></i>
+            <span class="nav-text">Saved</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user nav-icon"></i>
+            <span class="nav-text">Profile</span>
+        </a>
+    </nav>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbvCU3-siNbFYoYZ2cax5q0VZh8fzis30",
+            authDomain: "novelmint.firebaseapp.com",
+            projectId: "novelmint",
+            storageBucket: "novelmint.firebasestorage.app",
+            messagingSenderId: "295711653905",
+            appId: "1:295711653905:web:346c9e278d6a2be3d1b1b0",
+            measurementId: "G-30CZHERXYC"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Get author ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const authorId = urlParams.get('id');
+
+        // DOM Elements
+        const backBtn = document.getElementById('backBtn');
+        const authorAvatar = document.getElementById('authorAvatar');
+        const authorName = document.getElementById('authorName');
+        const authorUsername = document.getElementById('authorUsername');
+        const authorBio = document.getElementById('authorBio');
+        const piecesCount = document.getElementById('piecesCount');
+        const mintsCount = document.getElementById('mintsCount');
+        const followersCount = document.getElementById('followersCount');
+        const followBtn = document.getElementById('followBtn');
+        const messageBtn = document.getElementById('messageBtn');
+        
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const piecesGrid = document.getElementById('piecesGrid');
+        const piecesLoading = document.getElementById('piecesLoading');
+        const noPieces = document.getElementById('noPieces');
+        const aboutContent = document.getElementById('aboutContent');
+        const activityContent = document.getElementById('activityContent');
+
+        let currentUser = null;
+        let authorData = null;
+        let authorPieces = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            auth.onAuthStateChanged(user => {
+                currentUser = user;
+                if (!user) {
+                    window.location.href = 'auth.html';
+                } else if (authorId) {
+                    loadAuthorData();
+                    loadAuthorPieces();
+                } else {
+                    window.location.href = 'mint-stream.html';
+                }
+            });
+
+            // Event Listeners
+            backBtn.addEventListener('click', () => {
+                window.history.back();
+            });
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    btn.classList.add('active');
+                    document.getElementById(`${btn.dataset.tab}Tab`).classList.add('active');
+                });
+            });
+
+            followBtn.addEventListener('click', toggleFollow);
+            messageBtn.addEventListener('click', () => {
+                alert('Messaging feature coming soon!');
+            });
+        });
+
+        async function loadAuthorData() {
+            try {
+                // Load author data
+                const authorDoc = await db.collection('users').doc(authorId).get();
+                
+                if (!authorDoc.exists) {
+                    authorName.textContent = 'Author Not Found';
+                    return;
+                }
+                
+                authorData = authorDoc.data();
+                
+                // Update UI
+                authorName.textContent = authorData.displayName || 'Unknown Author';
+                authorUsername.textContent = `@${authorData.username || authorId.substring(0, 8)}`;
+                authorBio.textContent = authorData.bio || 'No bio available.';
+                
+                // Update avatar if available
+                if (authorData.profileImage) {
+                    authorAvatar.innerHTML = `<img src="${authorData.profileImage}" alt="${authorData.displayName}">`;
+                }
+                
+                // Load stats
+                await loadAuthorStats();
+                
+                // Load about content
+                loadAboutContent();
+                
+            } catch (error) {
+                console.error('Error loading author data:', error);
+                authorName.textContent = 'Error loading author';
+            }
+        }
+
+        async function loadAuthorStats() {
+            try {
+                // Count published pieces
+                const piecesSnapshot = await db.collection('pieces')
+                    .where('authorId', '==', authorId)
+                    .where('status', '==', 'published')
+                    .get();
+                
+                piecesCount.textContent = piecesSnapshot.size;
+                
+                // TODO: Calculate total mints
+                mintsCount.textContent = authorData.stats?.totalMints || 0;
+                
+                // TODO: Calculate followers
+                followersCount.textContent = authorData.stats?.followers || 0;
+                
+            } catch (error) {
+                console.error('Error loading author stats:', error);
+            }
+        }
+
+        async function loadAuthorPieces() {
+            try {
+                piecesLoading.style.display = 'block';
+                noPieces.style.display = 'none';
+                
+                const piecesSnapshot = await db.collection('pieces')
+                    .where('authorId', '==', authorId)
+                    .where('status', '==', 'published')
+                    .orderBy('publishedAt', 'desc')
+                    .limit(20)
+                    .get();
+                
+                authorPieces = [];
+                piecesGrid.innerHTML = '';
+                
+                if (piecesSnapshot.empty) {
+                    piecesLoading.style.display = 'none';
+                    noPieces.style.display = 'block';
+                    return;
+                }
+                
+                piecesSnapshot.forEach(doc => {
+                    const piece = {
+                        id: doc.id,
+                        ...doc.data()
+                    };
+                    
+                    if (piece.publishedAt) {
+                        piece.publishedAt = piece.publishedAt.toDate();
+                    }
+                    
+                    authorPieces.push(piece);
+                    
+                    // Create card
+                    const card = createPieceCard(piece);
+                    piecesGrid.appendChild(card);
+                });
+                
+                piecesLoading.style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error loading author pieces:', error);
+                piecesLoading.style.display = 'none';
+                noPieces.style.display = 'block';
+            }
+        }
+
+        function createPieceCard(piece) {
+            const card = document.createElement('div');
+            card.className = 'content-card';
+            card.dataset.pieceId = piece.id;
+            
+            // Format date
+            const dateStr = piece.publishedAt ? 
+                new Date(piece.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 
+                '';
+            
+            // Get excerpt
+            const excerpt = piece.content.length > 100 ? 
+                piece.content.substring(0, 100) + '...' : 
+                piece.content;
+            
+            card.innerHTML = `
+                <div style="padding: 20px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <span style="padding: 4px 10px; background: var(--light-green); color: var(--publish-color); border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase;">
+                            ${piece.contentTypeName || 'Piece'}
+                        </span>
+                        <span style="font-size: 12px; color: var(--text-light);">${dateStr}</span>
+                    </div>
+                    <h3 style="font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 10px; line-height: 1.4;">
+                        ${piece.title}
+                    </h3>
+                    <p style="color: var(--text-medium); font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
+                        ${excerpt}
+                    </p>
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                        <div style="display: flex; gap: 16px;">
+                            <div style="display: flex; align-items: center; gap: 6px; color: #f59e0b; font-size: 13px;">
+                                <i class="fas fa-star" style="font-size: 14px;"></i>
+                                <span>${piece.stats?.mintCount || 0}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px; color: #8b5cf6; font-size: 13px;">
+                                <i class="fas fa-bookmark" style="font-size: 14px;"></i>
+                                <span>${piece.stats?.bookmarkCount || 0}</span>
+                            </div>
+                        </div>
+                        <button onclick="viewPiece('${piece.id}')" style="padding: 6px 14px; background: var(--light-green); color: var(--publish-color); border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: var(--transition); font-size: 13px;">
+                            Read
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('button')) {
+                    viewPiece(piece.id);
+                }
+            });
+            
+            return card;
+        }
+
+        function loadAboutContent() {
+            aboutContent.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h4 style="font-size: 14px; font-weight: 600; color: var(--text-medium); margin-bottom: 8px;">Joined</h4>
+                    <p style="color: var(--text-dark);">
+                        ${authorData.createdAt ? new Date(authorData.createdAt.toDate()).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'Unknown'}
+                    </p>
+                </div>
+                ${authorData.bio ? `
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="font-size: 14px; font-weight: 600; color: var(--text-medium); margin-bottom: 8px;">Bio</h4>
+                        <p style="color: var(--text-dark); line-height: 1.6;">${authorData.bio}</p>
+                    </div>
+                ` : ''}
+                <div>
+                    <h4 style="font-size: 14px; font-weight: 600; color: var(--text-medium); margin-bottom: 8px;">Contact</h4>
+                    <p style="color: var(--text-dark);">
+                        ${authorData.email || 'Email not available'}
+                    </p>
+                </div>
+            `;
+        }
+
+        async function toggleFollow() {
+            if (!currentUser || currentUser.uid === authorId) return;
+            
+            try {
+                // TODO: Implement follow functionality
+                alert('Follow functionality coming soon!');
+                
+            } catch (error) {
+                console.error('Error toggling follow:', error);
+            }
+        }
+
+        function viewPiece(pieceId) {
+            window.location.href = `piece.html?id=${pieceId}`;
+        }
+    </script>
+</body>
+</html>

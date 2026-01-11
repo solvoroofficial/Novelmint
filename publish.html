@@ -1,0 +1,2585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publish - Novel Mint</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RESET & GLOBAL ===== */
+        :root {
+            --primary-white: #ffffff;
+            --light-green: #f0fff4;
+            --soft-green: #e6fff1;
+            --accent-green: #10b981;
+            --dark-green: #047857;
+            --publish-color: #059669;
+            --text-dark: #1f2937;
+            --text-medium: #4b5563;
+            --text-light: #6b7280;
+            --border-color: #d1d5db;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--light-green);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .publish-header {
+            background: var(--primary-white);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: var(--light-green);
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--publish-color);
+            text-align: center;
+            flex: 1;
+        }
+
+        .publish-header-btn {
+            padding: 10px 20px;
+            background: var(--publish-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .publish-header-btn:hover:not(:disabled) {
+            background: var(--dark-green);
+            transform: translateY(-2px);
+        }
+
+        .publish-header-btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .publish-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 80px; /* Space for mobile nav */
+        }
+
+        /* Content Type Section */
+        .content-type-section {
+            background: var(--primary-white);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .content-type-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .content-type-card {
+            padding: 20px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--primary-white);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .content-type-card:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        .content-type-card.selected {
+            border-color: var(--publish-color);
+            background: var(--light-green);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.15);
+        }
+
+        .content-type-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .content-type-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1.3;
+        }
+
+        .content-type-card.selected .content-type-name {
+            color: var(--publish-color);
+        }
+
+        /* Category Section */
+        .category-section {
+            background: var(--primary-white);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .category-search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .category-search {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            color: var(--text-dark);
+            background: var(--primary-white);
+            transition: var(--transition);
+        }
+
+        .category-search:focus {
+            outline: none;
+            border-color: var(--publish-color);
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 18px;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .category-card {
+            padding: 14px 10px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--primary-white);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .category-card:hover {
+            border-color: var(--accent-green);
+            transform: translateY(-1px);
+        }
+
+        .category-card.selected {
+            border-color: var(--publish-color);
+            background: var(--light-green);
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
+        }
+
+        .category-icon {
+            font-size: 20px;
+            color: var(--text-medium);
+        }
+
+        .category-card.selected .category-icon {
+            color: var(--publish-color);
+        }
+
+        .category-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .category-card.selected .category-name {
+            color: var(--publish-color);
+        }
+
+        .category-count {
+            font-size: 10px;
+            color: var(--text-light);
+            background: var(--light-green);
+            padding: 2px 6px;
+            border-radius: 8px;
+        }
+
+        .new-category-container {
+            background: var(--light-green);
+            border: 2px dashed var(--accent-green);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .new-category-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark-green);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .new-category-input {
+            width: 100%;
+            max-width: 250px;
+            padding: 10px 14px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .new-category-input:focus {
+            outline: none;
+            border-color: var(--publish-color);
+        }
+
+        .add-category-btn {
+            padding: 8px 16px;
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .add-category-btn:hover {
+            background: var(--dark-green);
+        }
+
+        .category-note {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+
+        /* Image Upload Section */
+        .image-upload-section {
+            background: var(--primary-white);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .image-upload-container {
+            text-align: center;
+            padding: 20px;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--light-green);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-upload-container:hover {
+            border-color: var(--accent-green);
+            background: var(--soft-green);
+        }
+
+        .image-upload-icon {
+            font-size: 48px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .image-upload-text {
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .image-upload-subtext {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        #imageFile {
+            display: none;
+        }
+
+        .image-preview-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .image-preview {
+            width: 100%;
+            max-width: 300px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            margin: 0 auto;
+            display: block;
+            border: 2px solid var(--border-color);
+        }
+
+        .remove-image-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .remove-image-btn:hover {
+            background: #fecaca;
+        }
+
+        /* Content Form */
+        .content-form {
+            background: var(--primary-white);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: #dc2626;
+            margin-left: 4px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            color: var(--text-dark);
+            background: var(--primary-white);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--publish-color);
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+        }
+
+        .form-input.error {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            color: var(--text-dark);
+            background: var(--primary-white);
+            transition: var(--transition);
+            resize: vertical;
+            min-height: 300px;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--publish-color);
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+        }
+
+        .form-textarea.error {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 6px;
+        }
+
+        .char-count {
+            font-size: 12px;
+            color: var(--text-light);
+            text-align: right;
+            margin-top: 6px;
+        }
+
+        .char-count.near-limit {
+            color: #f59e0b;
+        }
+
+        .char-count.over-limit {
+            color: #dc2626;
+        }
+
+        /* Publish Options */
+        .publish-options {
+            background: var(--light-green);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .options-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+        }
+
+        .option-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .option-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--publish-color);
+        }
+
+        .option-label {
+            font-size: 14px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .option-help {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-left: 32px;
+            margin-top: -12px;
+            margin-bottom: 16px;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .cancel-btn {
+            flex: 1;
+            padding: 14px;
+            background: var(--primary-white);
+            color: var(--text-dark);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .cancel-btn:hover {
+            background: var(--light-green);
+            border-color: var(--accent-green);
+        }
+
+        .submit-btn {
+            flex: 1;
+            padding: 14px;
+            background: var(--publish-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: var(--dark-green);
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading .spinner {
+            display: block;
+        }
+
+        .loading .btn-text {
+            display: none;
+        }
+
+        /* Image Upload Spinner */
+        .upload-spinner {
+            display: none;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(5, 150, 105, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--publish-color);
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        .uploading .upload-spinner {
+            display: block;
+        }
+
+        .uploading .image-upload-text {
+            display: none;
+        }
+
+        /* Error Message */
+        .error-message {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #dc2626;
+            animation: slideIn 0.3s ease;
+        }
+
+        .error-message.show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Success Message */
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--publish-color);
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            display: none;
+            max-width: 300px;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* ===== MOBILE NAVIGATION ===== */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary-white);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-medium);
+            transition: var(--transition);
+            padding: 8px;
+            width: 60px;
+        }
+
+        .nav-item.active {
+            color: var(--publish-color);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .nav-text {
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* ===== DESKTOP LAYOUT ===== */
+        .desktop-container {
+            display: none;
+            min-height: 100vh;
+        }
+
+        /* Desktop Sidebar */
+        .desktop-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 260px;
+            background: var(--primary-white);
+            border-right: 1px solid var(--border-color);
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Logo Section */
+        .sidebar-logo-section {
+            padding: 0 24px 24px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--dark-green);
+            letter-spacing: -0.5px;
+        }
+
+        /* Navigation Sections */
+        .sidebar-section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-title-sidebar {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            padding: 0 8px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-medium);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        .sidebar-link:hover {
+            background: var(--light-green);
+            color: var(--dark-green);
+        }
+
+        .sidebar-link.active {
+            background: var(--soft-green);
+            color: var(--publish-color);
+            font-weight: 600;
+        }
+
+        .sidebar-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Sidebar Footer */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-medium);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: #fee2e2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        /* Desktop Main Content */
+        .desktop-main {
+            margin-left: 260px;
+            padding: 32px;
+            max-width: 1200px;
+        }
+
+        /* Desktop specific styles */
+        .desktop-content-type-grid {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .desktop-categories-grid {
+            grid-template-columns: repeat(4, 1fr);
+            max-height: 250px;
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .mobile-container {
+                display: block;
+            }
+            
+            .desktop-container {
+                display: none;
+            }
+            
+            .content-type-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-container {
+                display: none;
+            }
+            
+            .desktop-container {
+                display: block;
+            }
+            
+            .publish-container {
+                padding-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .publish-header {
+                padding: 12px 16px;
+            }
+
+            .page-title {
+                font-size: 16px;
+            }
+
+            .publish-header-btn {
+                padding: 8px 16px;
+                min-width: 80px;
+                font-size: 14px;
+            }
+
+            .publish-container {
+                padding: 16px;
+                padding-bottom: 70px;
+            }
+
+            .category-section,
+            .content-form {
+                padding: 20px;
+            }
+
+            .content-type-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .cancel-btn,
+            .submit-btn {
+                width: 100%;
+            }
+        }
+
+        /* ===== CONTENT TYPE ICONS ===== */
+        .content-type-icon.poem { color: #8b5cf6; }
+        .content-type-icon.story { color: #3b82f6; }
+        .content-type-icon.article { color: #10b981; }
+        .content-type-icon.thought { color: #f59e0b; }
+        .content-type-icon.fiction { color: #ec4899; }
+        .content-type-icon.nonfiction { color: #6366f1; }
+        .content-type-card.selected .content-type-icon.poem { color: #7c3aed; }
+        .content-type-card.selected .content-type-icon.story { color: #1d4ed8; }
+        .content-type-card.selected .content-type-icon.article { color: #047857; }
+        .content-type-card.selected .content-type-icon.thought { color: #d97706; }
+        .content-type-card.selected .content-type-icon.fiction { color: #db2777; }
+        .content-type-card.selected .content-type-icon.nonfiction { color: #4f46e5; }
+
+        /* ===== CATEGORY ICONS ===== */
+        .category-icon.fantasy { color: #d946ef; }
+        .category-icon.sci-fi { color: #06b6d4; }
+        .category-icon.mystery { color: #7c3aed; }
+        .category-icon.romance { color: #ef4444; }
+        .category-icon.horror { color: #dc2626; }
+        .category-icon.humor { color: #f97316; }
+        .category-icon.drama { color: #0ea5e9; }
+        .category-icon.adventure { color: #22c55e; }
+        .category-icon.history { color: #a16207; }
+        .category-icon.biography { color: #7c3aed; }
+
+        .category-card.selected .category-icon.fantasy { color: #c026d3; }
+        .category-card.selected .category-icon.sci-fi { color: #0891b2; }
+        .category-card.selected .category-icon.mystery { color: #6d28d9; }
+        .category-card.selected .category-icon.romance { color: #b91c1c; }
+        .category-card.selected .category-icon.horror { color: #b91c1c; }
+        .category-card.selected .category-icon.humor { color: #ea580c; }
+        .category-card.selected .category-icon.drama { color: #0284c7; }
+        .category-card.selected .category-icon.adventure { color: #16a34a; }
+        .category-card.selected .category-icon.history { color: #92400e; }
+        .category-card.selected .category-icon.biography { color: #6d28d9; }
+    </style>
+</head>
+<body>
+    <!-- ===== MOBILE VIEW ===== -->
+    <div class="mobile-container">
+        <!-- Header -->
+        <header class="publish-header">
+            <div class="header-content">
+                <button class="back-btn" id="backButton">
+                    <i class="fas fa-arrow-left"></i>
+                    Back
+                </button>
+                <h1 class="page-title">Publish</h1>
+                <button class="publish-header-btn" id="publishHeaderBtn" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                    Publish
+                </button>
+            </div>
+        </header>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText">Please select a content type and fill all required fields</span>
+        </div>
+
+        <!-- Main Content -->
+        <main class="publish-container">
+            <!-- Content Type Section -->
+            <section class="content-type-section">
+                <h2 class="section-title">
+                    <span>Content Type</span>
+                    <span id="selectedContentTypeText" style="color: var(--publish-color); font-size: 14px;"></span>
+                </h2>
+                
+                <div class="content-type-grid" id="contentTypeGrid">
+                    <!-- Content types will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Category Section -->
+            <section class="category-section">
+                <h2 class="section-title">
+                    <span>Select Genre</span>
+                    <span id="selectedCategoryText" style="color: var(--publish-color); font-size: 14px;"></span>
+                </h2>
+                
+                <div class="category-search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        id="categorySearch" 
+                        class="category-search" 
+                        placeholder="Search or add new genre..."
+                    >
+                </div>
+
+                <div class="categories-grid" id="categoriesGrid">
+                    <!-- Popular genres will be loaded here -->
+                </div>
+
+                <div class="new-category-container" id="newCategoryContainer" style="display: none;">
+                    <div class="new-category-title">
+                        <i class="fas fa-plus-circle"></i>
+                        Add New Genre
+                    </div>
+                    <input 
+                        type="text" 
+                        id="newCategoryInput" 
+                        class="new-category-input" 
+                        placeholder="Enter new genre name"
+                        maxlength="30"
+                    >
+                    <button class="add-category-btn" id="addCategoryBtn" disabled>
+                        <i class="fas fa-plus"></i>
+                        Add Genre
+                    </button>
+                    <p class="category-note">
+                        <i class="fas fa-info-circle"></i>
+                        New genres become available for all authors
+                    </p>
+                </div>
+            </section>
+
+            <!-- Image Upload Section -->
+            <section class="image-upload-section">
+                <h2 class="section-title">
+                    <span>Cover Image (Optional)</span>
+                </h2>
+                
+                <div class="image-upload-container" id="imageUploadContainer">
+                    <div class="upload-spinner"></div>
+                    <i class="fas fa-cloud-upload-alt image-upload-icon"></i>
+                    <div class="image-upload-text">Click to upload cover image</div>
+                    <div class="image-upload-subtext">JPG, PNG or WebP (Max 2MB)</div>
+                    <input type="file" id="imageFile" accept="image/*">
+                </div>
+
+                <div class="image-preview-container" id="imagePreviewContainer">
+                    <img src="" alt="Image Preview" class="image-preview" id="imagePreview">
+                    <button class="remove-image-btn" id="removeImageBtn">
+                        <i class="fas fa-trash"></i>
+                        Remove Image
+                    </button>
+                </div>
+            </section>
+
+            <!-- Content Form -->
+            <section class="content-form">
+                <div class="form-group">
+                    <label class="form-label" for="pieceTitle">
+                        Title
+                        <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="pieceTitle" 
+                        class="form-input" 
+                        placeholder="Give your piece a compelling title"
+                        maxlength="200"
+                    >
+                    <div class="char-count" id="titleCount">0/200</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="pieceContent">
+                        Content
+                        <span class="required">*</span>
+                    </label>
+                    <textarea 
+                        id="pieceContent" 
+                        class="form-textarea" 
+                        placeholder="Write your story, poem, or article here..."
+                        maxlength="10000"
+                    ></textarea>
+                    <div class="char-count" id="contentCount">0/10000</div>
+                    <div class="form-help">
+                        <i class="fas fa-lightbulb"></i>
+                        Tip: Use markdown for formatting (e.g., **bold**, *italic*, # headings). Minimum 10 characters required.
+                    </div>
+                </div>
+
+                <!-- Publish Options -->
+                <div class="publish-options">
+                    <h3 class="options-title">Publish Options</h3>
+                    
+                    <div class="option-group">
+                        <input type="checkbox" id="saveDraft" class="option-checkbox">
+                        <label for="saveDraft" class="option-label">Save as Draft</label>
+                    </div>
+                    <p class="option-help">
+                        Drafts are private and can be published later from your profile
+                    </p>
+
+                    <div class="option-group">
+                        <input type="checkbox" id="allowComments" class="option-checkbox" checked disabled>
+                        <label for="allowComments" class="option-label">Allow Mints & Bookmarks</label>
+                    </div>
+                    <p class="option-help">
+                        Readers can mint (like) and bookmark your piece
+                    </p>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button class="cancel-btn" id="cancelButton">
+                        Cancel
+                    </button>
+                    <button class="submit-btn" id="submitButton" disabled>
+                        <div class="spinner"></div>
+                        <span class="btn-text">
+                            <i class="fas fa-paper-plane"></i>
+                            Publish Now
+                        </span>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Mobile Navigation -->
+        <nav class="mobile-nav">
+            <a href="mint-stream.html" class="nav-item">
+                <i class="fas fa-home nav-icon"></i>
+                <span class="nav-text">Stream</span>
+            </a>
+            <a href="freshly-minted.html" class="nav-item">
+                <i class="fas fa-fire nav-icon"></i>
+                <span class="nav-text">Fresh</span>
+            </a>
+            <a href="publish.html" class="nav-item active">
+                <i class="fas fa-plus-circle nav-icon"></i>
+                <span class="nav-text">Publish</span>
+            </a>
+            <a href="bookmarks.html" class="nav-item">
+                <i class="fas fa-bookmark nav-icon"></i>
+                <span class="nav-text">Saved</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i class="fas fa-user nav-icon"></i>
+                <span class="nav-text">Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- ===== DESKTOP VIEW ===== -->
+    <div class="desktop-container">
+        <!-- Desktop Sidebar -->
+        <div class="desktop-sidebar">
+            <!-- Logo Section -->
+            <div class="sidebar-logo-section">
+                <img src="https://i.imgur.com/8J2mW5m.png" alt="Novel Mint Logo" class="logo-image">
+                <div class="logo-text">NovelMint</div>
+            </div>
+            
+            <!-- Primary Links -->
+            <div class="sidebar-section">
+                <div class="section-title-sidebar">Navigation</div>
+                <a href="mint-stream.html" class="sidebar-link">
+                    <i class="fas fa-home sidebar-icon"></i>
+                    <span>Stream</span>
+                </a>
+                <a href="freshly-minted.html" class="sidebar-link">
+                    <i class="fas fa-fire sidebar-icon"></i>
+                    <span>Freshly Minted</span>
+                </a>
+                <a href="publish.html" class="sidebar-link active">
+                    <i class="fas fa-plus-circle sidebar-icon"></i>
+                    <span>Publish</span>
+                </a>
+                <a href="bookmarks.html" class="sidebar-link">
+                    <i class="fas fa-bookmark sidebar-icon"></i>
+                    <span>Bookmarks</span>
+                </a>
+            </div>
+            
+            <!-- Account Section -->
+            <div class="sidebar-section">
+                <div class="section-title-sidebar">Account</div>
+                <a href="profile.html" class="sidebar-link">
+                    <i class="fas fa-user sidebar-icon"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="dashboard.html" class="sidebar-link">
+                    <i class="fas fa-chart-line sidebar-icon"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="edit-profile.html" class="sidebar-link">
+                    <i class="fas fa-edit sidebar-icon"></i>
+                    <span>Edit Profile</span>
+                </a>
+                <a href="settings.html" class="sidebar-link">
+                    <i class="fas fa-cog sidebar-icon"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+            
+            <!-- Footer -->
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Desktop Main Content -->
+        <div class="desktop-main">
+            <!-- Header -->
+            <header class="publish-header">
+                <div class="header-content">
+                    <button class="back-btn" id="desktopBackButton">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Profile
+                    </button>
+                    <h1 class="page-title">Publish New Piece</h1>
+                    <button class="publish-header-btn" id="desktopPublishHeaderBtn" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                        Publish
+                    </button>
+                </div>
+            </header>
+
+            <!-- Error Message -->
+            <div class="error-message" id="desktopErrorMessage">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="desktopErrorText">Please select a content type and fill all required fields</span>
+            </div>
+
+            <!-- Main Content -->
+            <div class="publish-container" style="max-width: 100%; padding: 0;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+                    <!-- Left Column: Content Type & Genre -->
+                    <div>
+                        <!-- Content Type Section -->
+                        <section class="content-type-section">
+                            <h2 class="section-title">
+                                <span>Content Type</span>
+                                <span id="desktopSelectedContentTypeText" style="color: var(--publish-color); font-size: 14px;"></span>
+                            </h2>
+                            
+                            <div class="content-type-grid desktop-content-type-grid" id="desktopContentTypeGrid">
+                                <!-- Content types will be loaded here -->
+                            </div>
+                        </section>
+
+                        <!-- Category Section -->
+                        <section class="category-section">
+                            <h2 class="section-title">
+                                <span>Select Genre</span>
+                                <span id="desktopSelectedCategoryText" style="color: var(--publish-color); font-size: 14px;"></span>
+                            </h2>
+                            
+                            <div class="category-search-container">
+                                <i class="fas fa-search search-icon"></i>
+                                <input 
+                                    type="text" 
+                                    id="desktopCategorySearch" 
+                                    class="category-search" 
+                                    placeholder="Search or add new genre..."
+                                >
+                            </div>
+
+                            <div class="categories-grid desktop-categories-grid" id="desktopCategoriesGrid">
+                                <!-- Popular genres will be loaded here -->
+                            </div>
+
+                            <div class="new-category-container" id="desktopNewCategoryContainer" style="display: none;">
+                                <div class="new-category-title">
+                                    <i class="fas fa-plus-circle"></i>
+                                    Add New Genre
+                                </div>
+                                <input 
+                                    type="text" 
+                                    id="desktopNewCategoryInput" 
+                                    class="new-category-input" 
+                                    placeholder="Enter new genre name"
+                                    maxlength="30"
+                                >
+                                <button class="add-category-btn" id="desktopAddCategoryBtn" disabled>
+                                    <i class="fas fa-plus"></i>
+                                    Add Genre
+                                </button>
+                                <p class="category-note">
+                                    <i class="fas fa-info-circle"></i>
+                                    New genres become available for all authors
+                                </p>
+                            </div>
+                        </section>
+
+                        <!-- Image Upload Section -->
+                        <section class="image-upload-section">
+                            <h2 class="section-title">
+                                <span>Cover Image (Optional)</span>
+                            </h2>
+                            
+                            <div class="image-upload-container" id="desktopImageUploadContainer">
+                                <div class="upload-spinner"></div>
+                                <i class="fas fa-cloud-upload-alt image-upload-icon"></i>
+                                <div class="image-upload-text">Click to upload cover image</div>
+                                <div class="image-upload-subtext">JPG, PNG or WebP (Max 2MB)</div>
+                                <input type="file" id="desktopImageFile" accept="image/*">
+                            </div>
+
+                            <div class="image-preview-container" id="desktopImagePreviewContainer">
+                                <img src="" alt="Image Preview" class="image-preview" id="desktopImagePreview">
+                                <button class="remove-image-btn" id="desktopRemoveImageBtn">
+                                    <i class="fas fa-trash"></i>
+                                    Remove Image
+                                </button>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Right Column: Content Form -->
+                    <section class="content-form">
+                        <div class="form-group">
+                            <label class="form-label" for="desktopPieceTitle">
+                                Title
+                                <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="desktopPieceTitle" 
+                                class="form-input" 
+                                placeholder="Give your piece a compelling title"
+                                maxlength="200"
+                            >
+                            <div class="char-count" id="desktopTitleCount">0/200</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="desktopPieceContent">
+                                Content
+                                <span class="required">*</span>
+                            </label>
+                            <textarea 
+                                id="desktopPieceContent" 
+                                class="form-textarea" 
+                                placeholder="Write your story, poem, or article here..."
+                                maxlength="10000"
+                            ></textarea>
+                            <div class="char-count" id="desktopContentCount">0/10000</div>
+                            <div class="form-help">
+                                <i class="fas fa-lightbulb"></i>
+                                Tip: Use markdown for formatting (e.g., **bold**, *italic*, # headings). Minimum 10 characters required.
+                            </div>
+                        </div>
+
+                        <!-- Publish Options -->
+                        <div class="publish-options">
+                            <h3 class="options-title">Publish Options</h3>
+                            
+                            <div class="option-group">
+                                <input type="checkbox" id="desktopSaveDraft" class="option-checkbox">
+                                <label for="desktopSaveDraft" class="option-label">Save as Draft</label>
+                            </div>
+                            <p class="option-help">
+                                Drafts are private and can be published later from your profile
+                            </p>
+
+                            <div class="option-group">
+                                <input type="checkbox" id="desktopAllowComments" class="option-checkbox" checked disabled>
+                                <label for="desktopAllowComments" class="option-label">Allow Mints & Bookmarks</label>
+                            </div>
+                            <p class="option-help">
+                                Readers can mint (like) and bookmark your piece
+                            </p>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button class="cancel-btn" id="desktopCancelButton">
+                                Cancel
+                            </button>
+                            <button class="submit-btn" id="desktopSubmitButton" disabled>
+                                <div class="spinner"></div>
+                                <span class="btn-text">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Publish Now
+                                </span>
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage">
+        <i class="fas fa-check-circle"></i>
+        Piece published successfully!
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    
+    <script>
+        // ===== FIREBASE CONFIGURATION =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbvCU3-siNbFYoYZ2cax5q0VZh8fzis30",
+            authDomain: "novelmint.firebaseapp.com",
+            projectId: "novelmint",
+            storageBucket: "novelmint.firebasestorage.app",
+            messagingSenderId: "295711653905",
+            appId: "1:295711653905:web:346c9e278d6a2be3d1b1b0",
+            measurementId: "G-30CZHERXYC"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // ===== DOM ELEMENTS =====
+        // Mobile elements
+        const backButton = document.getElementById('backButton');
+        const publishHeaderBtn = document.getElementById('publishHeaderBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        
+        // Content Type
+        const contentTypeGrid = document.getElementById('contentTypeGrid');
+        const selectedContentTypeText = document.getElementById('selectedContentTypeText');
+        
+        // Category/Genre
+        const categorySearch = document.getElementById('categorySearch');
+        const categoriesGrid = document.getElementById('categoriesGrid');
+        const newCategoryContainer = document.getElementById('newCategoryContainer');
+        const newCategoryInput = document.getElementById('newCategoryInput');
+        const addCategoryBtn = document.getElementById('addCategoryBtn');
+        const selectedCategoryText = document.getElementById('selectedCategoryText');
+        
+        // Image Upload
+        const imageUploadContainer = document.getElementById('imageUploadContainer');
+        const imageFile = document.getElementById('imageFile');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+        
+        // Form
+        const pieceTitle = document.getElementById('pieceTitle');
+        const pieceContent = document.getElementById('pieceContent');
+        const saveDraft = document.getElementById('saveDraft');
+        const titleCount = document.getElementById('titleCount');
+        const contentCount = document.getElementById('contentCount');
+        const cancelButton = document.getElementById('cancelButton');
+        const submitButton = document.getElementById('submitButton');
+        
+        // Desktop elements
+        const desktopBackButton = document.getElementById('desktopBackButton');
+        const desktopPublishHeaderBtn = document.getElementById('desktopPublishHeaderBtn');
+        const desktopErrorMessage = document.getElementById('desktopErrorMessage');
+        const desktopErrorText = document.getElementById('desktopErrorText');
+        
+        // Desktop Content Type
+        const desktopContentTypeGrid = document.getElementById('desktopContentTypeGrid');
+        const desktopSelectedContentTypeText = document.getElementById('desktopSelectedContentTypeText');
+        
+        // Desktop Category/Genre
+        const desktopCategorySearch = document.getElementById('desktopCategorySearch');
+        const desktopCategoriesGrid = document.getElementById('desktopCategoriesGrid');
+        const desktopNewCategoryContainer = document.getElementById('desktopNewCategoryContainer');
+        const desktopNewCategoryInput = document.getElementById('desktopNewCategoryInput');
+        const desktopAddCategoryBtn = document.getElementById('desktopAddCategoryBtn');
+        const desktopSelectedCategoryText = document.getElementById('desktopSelectedCategoryText');
+        
+        // Desktop Image Upload
+        const desktopImageUploadContainer = document.getElementById('desktopImageUploadContainer');
+        const desktopImageFile = document.getElementById('desktopImageFile');
+        const desktopImagePreviewContainer = document.getElementById('desktopImagePreviewContainer');
+        const desktopImagePreview = document.getElementById('desktopImagePreview');
+        const desktopRemoveImageBtn = document.getElementById('desktopRemoveImageBtn');
+        
+        // Desktop Form
+        const desktopPieceTitle = document.getElementById('desktopPieceTitle');
+        const desktopPieceContent = document.getElementById('desktopPieceContent');
+        const desktopSaveDraft = document.getElementById('desktopSaveDraft');
+        const desktopTitleCount = document.getElementById('desktopTitleCount');
+        const desktopContentCount = document.getElementById('desktopContentCount');
+        const desktopCancelButton = document.getElementById('desktopCancelButton');
+        const desktopSubmitButton = document.getElementById('desktopSubmitButton');
+        
+        const successMessage = document.getElementById('successMessage');
+
+        // ===== STATE MANAGEMENT =====
+        let currentUser = null;
+        let selectedContentType = null;
+        let selectedCategory = null;
+        let selectedImageFile = null;
+        let uploadedImageUrl = null;
+        
+        // Fixed Content Types (cannot be added/deleted)
+        const contentTypes = [
+            { id: 'poem', name: 'Poem', icon: 'fa-feather', description: 'Poetry & verses' },
+            { id: 'story', name: 'Short Story', icon: 'fa-book', description: 'Fictional narratives' },
+            { id: 'article', name: 'Article', icon: 'fa-newspaper', description: 'Informative writing' },
+            { id: 'thought', name: 'Thought', icon: 'fa-lightbulb', description: 'Personal reflections' },
+            { id: 'fiction', name: 'Fiction', icon: 'fa-magic', description: 'Creative storytelling' },
+            { id: 'nonfiction', name: 'Non-Fiction', icon: 'fa-glasses', description: 'Fact-based writing' }
+        ];
+
+        // Popular Genres (initial display)
+        const popularGenres = [
+            { id: 'fantasy', name: 'Fantasy', icon: 'fa-dragon', count: 0 },
+            { id: 'sci-fi', name: 'Sci-Fi', icon: 'fa-rocket', count: 0 },
+            { id: 'mystery', name: 'Mystery', icon: 'fa-search', count: 0 },
+            { id: 'romance', name: 'Romance', icon: 'fa-heart', count: 0 },
+            { id: 'horror', name: 'Horror', icon: 'fa-ghost', count: 0 },
+            { id: 'humor', name: 'Humor', icon: 'fa-laugh', count: 0 },
+            { id: 'drama', name: 'Drama', icon: 'fa-mask', count: 0 },
+            { id: 'adventure', name: 'Adventure', icon: 'fa-mountain', count: 0 }
+        ];
+
+        let allGenres = [];
+        let isUploadingImage = false;
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check authentication
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    console.log('User authenticated:', user.uid);
+                    loadGenres();
+                    renderContentTypes();
+                } else {
+                    window.location.href = 'auth.html';
+                }
+            });
+
+            // Set up event listeners
+            setupEventListeners();
+            setupDesktopEventListeners();
+        });
+
+        // ===== EVENT LISTENERS =====
+        function setupEventListeners() {
+            // Back button
+            backButton.addEventListener('click', () => {
+                if (confirm('Are you sure you want to leave? Any unsaved changes will be lost.')) {
+                    window.location.href = 'profile.html';
+                }
+            });
+
+            // Cancel button
+            cancelButton.addEventListener('click', () => {
+                if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+                    window.location.href = 'profile.html';
+                }
+            });
+
+            // Publish buttons
+            publishHeaderBtn.addEventListener('click', publishPiece);
+            submitButton.addEventListener('click', publishPiece);
+
+            // Content type search
+            categorySearch.addEventListener('input', filterGenres);
+
+            // Add category button
+            addCategoryBtn.addEventListener('click', addNewGenre);
+            newCategoryInput.addEventListener('input', checkNewGenreValidity);
+            newCategoryInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !addCategoryBtn.disabled) addNewGenre();
+            });
+
+            // Image upload
+            imageUploadContainer.addEventListener('click', () => imageFile.click());
+            imageFile.addEventListener('change', handleImageSelect);
+            removeImageBtn.addEventListener('click', removeImage);
+
+            // Form input changes
+            pieceTitle.addEventListener('input', () => {
+                updateCharCount(pieceTitle, titleCount, 200);
+                checkFormValidity();
+            });
+
+            pieceContent.addEventListener('input', () => {
+                updateCharCount(pieceContent, contentCount, 10000);
+                checkFormValidity();
+            });
+
+            // Save draft checkbox
+            saveDraft.addEventListener('change', updatePublishButtonText);
+        }
+
+        function setupDesktopEventListeners() {
+            // Desktop back button
+            desktopBackButton.addEventListener('click', () => {
+                if (confirm('Are you sure you want to leave? Any unsaved changes will be lost.')) {
+                    window.location.href = 'profile.html';
+                }
+            });
+
+            // Desktop cancel button
+            desktopCancelButton.addEventListener('click', () => {
+                if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+                    window.location.href = 'profile.html';
+                }
+            });
+
+            // Desktop publish buttons
+            desktopPublishHeaderBtn.addEventListener('click', publishPieceDesktop);
+            desktopSubmitButton.addEventListener('click', publishPieceDesktop);
+
+            // Desktop content type search
+            desktopCategorySearch.addEventListener('input', filterGenresDesktop);
+
+            // Desktop add category button
+            desktopAddCategoryBtn.addEventListener('click', addNewGenreDesktop);
+            desktopNewCategoryInput.addEventListener('input', checkNewGenreValidityDesktop);
+            desktopNewCategoryInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !desktopAddCategoryBtn.disabled) addNewGenreDesktop();
+            });
+
+            // Desktop image upload
+            desktopImageUploadContainer.addEventListener('click', () => desktopImageFile.click());
+            desktopImageFile.addEventListener('change', handleImageSelectDesktop);
+            desktopRemoveImageBtn.addEventListener('click', removeImageDesktop);
+
+            // Desktop form input changes
+            desktopPieceTitle.addEventListener('input', () => {
+                updateCharCount(desktopPieceTitle, desktopTitleCount, 200);
+                checkFormValidityDesktop();
+            });
+
+            desktopPieceContent.addEventListener('input', () => {
+                updateCharCount(desktopPieceContent, desktopContentCount, 10000);
+                checkFormValidityDesktop();
+            });
+
+            // Desktop save draft checkbox
+            desktopSaveDraft.addEventListener('change', updatePublishButtonTextDesktop);
+        }
+
+        // ===== CONTENT TYPE MANAGEMENT =====
+        function renderContentTypes() {
+            // Mobile
+            contentTypeGrid.innerHTML = '';
+            contentTypes.forEach(type => {
+                const typeCard = createContentTypeCard(type, false);
+                contentTypeGrid.appendChild(typeCard);
+            });
+
+            // Desktop
+            desktopContentTypeGrid.innerHTML = '';
+            contentTypes.forEach(type => {
+                const typeCard = createContentTypeCard(type, true);
+                desktopContentTypeGrid.appendChild(typeCard);
+            });
+        }
+
+        function createContentTypeCard(type, isDesktop) {
+            const card = document.createElement('div');
+            card.className = 'content-type-card';
+            if (selectedContentType && selectedContentType.id === type.id) {
+                card.classList.add('selected');
+            }
+            
+            card.innerHTML = `
+                <i class="fas ${type.icon} content-type-icon ${type.id}"></i>
+                <div class="content-type-name">${type.name}</div>
+            `;
+            
+            card.addEventListener('click', () => {
+                selectContentType(type, isDesktop);
+            });
+            
+            return card;
+        }
+
+        function selectContentType(type, isDesktop) {
+            selectedContentType = type;
+            
+            if (isDesktop) {
+                desktopSelectedContentTypeText.textContent = `Selected: ${type.name}`;
+                renderContentTypes(); // Re-render to update selection
+            } else {
+                selectedContentTypeText.textContent = `Selected: ${type.name}`;
+                renderContentTypes(); // Re-render to update selection
+            }
+            
+            checkFormValidity();
+            checkFormValidityDesktop();
+        }
+
+        // ===== GENRE MANAGEMENT =====
+        async function loadGenres() {
+            try {
+                const genresSnapshot = await db.collection('categories').limit(50).get();
+                
+                if (genresSnapshot.empty) {
+                    // Create popular genres
+                    await createPopularGenres();
+                    allGenres = [...popularGenres];
+                } else {
+                    // Load genres from Firestore
+                    allGenres = [];
+                    genresSnapshot.forEach(doc => {
+                        const genre = doc.data();
+                        allGenres.push({
+                            id: doc.id,
+                            name: genre.name,
+                            icon: genre.icon || 'fa-tag',
+                            count: genre.count || 0
+                        });
+                    });
+                    
+                    // Sort by count (most popular first)
+                    allGenres.sort((a, b) => b.count - a.count);
+                }
+
+                // Update UI
+                renderGenres();
+                renderGenresDesktop();
+            } catch (error) {
+                console.error('Error loading genres:', error);
+                // Use popular genres as fallback
+                allGenres = [...popularGenres];
+                renderGenres();
+                renderGenresDesktop();
+            }
+        }
+
+        async function createPopularGenres() {
+            const batch = db.batch();
+            const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+            popularGenres.forEach(genre => {
+                const genreRef = db.collection('categories').doc(genre.id);
+                batch.set(genreRef, {
+                    name: genre.name,
+                    icon: genre.icon,
+                    count: 0,
+                    createdAt: timestamp,
+                    createdBy: currentUser ? currentUser.uid : 'system',
+                    isPopular: true
+                });
+            });
+
+            try {
+                await batch.commit();
+                console.log('Popular genres created');
+            } catch (error) {
+                console.error('Error creating popular genres:', error);
+            }
+        }
+
+        function renderGenres() {
+            categoriesGrid.innerHTML = '';
+            
+            // Show first 8 popular genres
+            const popularToShow = allGenres.slice(0, 8);
+            
+            popularToShow.forEach(genre => {
+                const genreCard = createGenreCard(genre, false);
+                categoriesGrid.appendChild(genreCard);
+            });
+        }
+
+        function renderGenresDesktop() {
+            desktopCategoriesGrid.innerHTML = '';
+            
+            // Show first 8 popular genres
+            const popularToShow = allGenres.slice(0, 8);
+            
+            popularToShow.forEach(genre => {
+                const genreCard = createGenreCard(genre, true);
+                desktopCategoriesGrid.appendChild(genreCard);
+            });
+        }
+
+        function createGenreCard(genre, isDesktop) {
+            const card = document.createElement('div');
+            card.className = 'category-card';
+            if (selectedCategory && selectedCategory.id === genre.id) {
+                card.classList.add('selected');
+            }
+            
+            card.innerHTML = `
+                <i class="fas ${genre.icon} category-icon ${genre.id}"></i>
+                <div class="category-name">${genre.name}</div>
+                <div class="category-count">${genre.count}</div>
+            `;
+            
+            card.addEventListener('click', () => {
+                if (isDesktop) {
+                    selectGenreDesktop(genre);
+                } else {
+                    selectGenre(genre);
+                }
+            });
+            
+            return card;
+        }
+
+        function selectGenre(genre) {
+            selectedCategory = genre;
+            selectedCategoryText.textContent = `Selected: ${genre.name}`;
+            newCategoryContainer.style.display = 'none';
+            categorySearch.value = '';
+            renderGenres();
+            checkFormValidity();
+        }
+
+        function selectGenreDesktop(genre) {
+            selectedCategory = genre;
+            desktopSelectedCategoryText.textContent = `Selected: ${genre.name}`;
+            desktopNewCategoryContainer.style.display = 'none';
+            desktopCategorySearch.value = '';
+            renderGenresDesktop();
+            checkFormValidityDesktop();
+        }
+
+        function filterGenres() {
+            const searchTerm = categorySearch.value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                newCategoryContainer.style.display = 'none';
+                renderGenres();
+                return;
+            }
+            
+            // Filter genres
+            const filteredGenres = allGenres.filter(genre =>
+                genre.name.toLowerCase().includes(searchTerm)
+            );
+            
+            categoriesGrid.innerHTML = '';
+            
+            if (filteredGenres.length > 0) {
+                filteredGenres.forEach(genre => {
+                    const genreCard = createGenreCard(genre, false);
+                    categoriesGrid.appendChild(genreCard);
+                });
+                newCategoryContainer.style.display = 'none';
+            } else {
+                // Show new genre option
+                newCategoryContainer.style.display = 'block';
+                newCategoryInput.value = searchTerm;
+                checkNewGenreValidity();
+                
+                // Clear selection
+                selectedCategory = null;
+                selectedCategoryText.textContent = '';
+                
+                // Clear any selected cards
+                document.querySelectorAll('.category-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+            }
+        }
+
+        function filterGenresDesktop() {
+            const searchTerm = desktopCategorySearch.value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                desktopNewCategoryContainer.style.display = 'none';
+                renderGenresDesktop();
+                return;
+            }
+            
+            // Filter genres
+            const filteredGenres = allGenres.filter(genre =>
+                genre.name.toLowerCase().includes(searchTerm)
+            );
+            
+            desktopCategoriesGrid.innerHTML = '';
+            
+            if (filteredGenres.length > 0) {
+                filteredGenres.forEach(genre => {
+                    const genreCard = createGenreCard(genre, true);
+                    desktopCategoriesGrid.appendChild(genreCard);
+                });
+                desktopNewCategoryContainer.style.display = 'none';
+            } else {
+                // Show new genre option
+                desktopNewCategoryContainer.style.display = 'block';
+                desktopNewCategoryInput.value = searchTerm;
+                checkNewGenreValidityDesktop();
+                
+                // Clear selection
+                selectedCategory = null;
+                desktopSelectedCategoryText.textContent = '';
+                
+                // Clear any selected cards
+                document.querySelectorAll('.desktop-container .category-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+            }
+        }
+
+        async function addNewGenre() {
+            const newGenreName = newCategoryInput.value.trim();
+            
+            if (!newGenreName || newGenreName.length < 2) {
+                showError('Genre name must be at least 2 characters long');
+                return;
+            }
+            
+            if (newGenreName.length > 30) {
+                showError('Genre name must be less than 30 characters');
+                return;
+            }
+            
+            // Check if genre already exists
+            const existingGenre = allGenres.find(genre => 
+                genre.name.toLowerCase() === newGenreName.toLowerCase()
+            );
+            
+            if (existingGenre) {
+                selectGenre(existingGenre);
+                return;
+            }
+            
+            try {
+                const genreId = newGenreName.toLowerCase().replace(/\s+/g, '-');
+                
+                await db.collection('categories').doc(genreId).set({
+                    name: newGenreName,
+                    icon: 'fa-tag',
+                    count: 0,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    createdBy: currentUser.uid,
+                    isPopular: false
+                });
+                
+                const newGenre = {
+                    id: genreId,
+                    name: newGenreName,
+                    icon: 'fa-tag',
+                    count: 0
+                };
+                
+                allGenres.push(newGenre);
+                selectGenre(newGenre);
+                categorySearch.value = '';
+                newCategoryInput.value = '';
+                addCategoryBtn.disabled = true;
+                
+                showSuccess(`Genre "${newGenreName}" added successfully!`);
+                
+            } catch (error) {
+                console.error('Error adding genre:', error);
+                showError('Failed to add genre. Please try again.');
+            }
+        }
+
+        async function addNewGenreDesktop() {
+            const newGenreName = desktopNewCategoryInput.value.trim();
+            
+            if (!newGenreName || newGenreName.length < 2) {
+                showError('Genre name must be at least 2 characters long');
+                return;
+            }
+            
+            if (newGenreName.length > 30) {
+                showError('Genre name must be less than 30 characters');
+                return;
+            }
+            
+            // Check if genre already exists
+            const existingGenre = allGenres.find(genre => 
+                genre.name.toLowerCase() === newGenreName.toLowerCase()
+            );
+            
+            if (existingGenre) {
+                selectGenreDesktop(existingGenre);
+                return;
+            }
+            
+            try {
+                const genreId = newGenreName.toLowerCase().replace(/\s+/g, '-');
+                
+                await db.collection('categories').doc(genreId).set({
+                    name: newGenreName,
+                    icon: 'fa-tag',
+                    count: 0,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    createdBy: currentUser.uid,
+                    isPopular: false
+                });
+                
+                const newGenre = {
+                    id: genreId,
+                    name: newGenreName,
+                    icon: 'fa-tag',
+                    count: 0
+                };
+                
+                allGenres.push(newGenre);
+                selectGenreDesktop(newGenre);
+                desktopCategorySearch.value = '';
+                desktopNewCategoryInput.value = '';
+                desktopAddCategoryBtn.disabled = true;
+                
+                showSuccess(`Genre "${newGenreName}" added successfully!`);
+                
+            } catch (error) {
+                console.error('Error adding genre:', error);
+                showError('Failed to add genre. Please try again.');
+            }
+        }
+
+        function checkNewGenreValidity() {
+            const newGenreName = newCategoryInput.value.trim();
+            addCategoryBtn.disabled = !newGenreName || newGenreName.length < 2;
+        }
+
+        function checkNewGenreValidityDesktop() {
+            const newGenreName = desktopNewCategoryInput.value.trim();
+            desktopAddCategoryBtn.disabled = !newGenreName || newGenreName.length < 2;
+        }
+
+        // ===== IMAGE UPLOAD =====
+        function handleImageSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Validate file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showError('Image size must be less than 2MB');
+                return;
+            }
+            
+            // Validate file type
+            if (!file.type.match('image.*')) {
+                showError('Please select an image file (JPG, PNG, WebP)');
+                return;
+            }
+            
+            selectedImageFile = file;
+            uploadImage(file, false);
+        }
+
+        function handleImageSelectDesktop(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Validate file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showError('Image size must be less than 2MB');
+                return;
+            }
+            
+            // Validate file type
+            if (!file.type.match('image.*')) {
+                showError('Please select an image file (JPG, PNG, WebP)');
+                return;
+            }
+            
+            selectedImageFile = file;
+            uploadImage(file, true);
+        }
+
+        async function uploadImage(file, isDesktop) {
+            if (isUploadingImage) return;
+            
+            isUploadingImage = true;
+            const uploadContainer = isDesktop ? desktopImageUploadContainer : imageUploadContainer;
+            uploadContainer.classList.add('uploading');
+            
+            try {
+                // Create a unique filename
+                const fileExtension = file.name.split('.').pop();
+                const fileName = `pieces/${currentUser.uid}/${Date.now()}.${fileExtension}`;
+                
+                // Upload to Firebase Storage
+                const storageRef = storage.ref(fileName);
+                const uploadTask = storageRef.put(file);
+                
+                // Wait for upload to complete
+                await uploadTask;
+                
+                // Get download URL
+                uploadedImageUrl = await storageRef.getDownloadURL();
+                
+                // Show preview
+                if (isDesktop) {
+                    desktopImagePreview.src = uploadedImageUrl;
+                    desktopImagePreviewContainer.style.display = 'block';
+                } else {
+                    imagePreview.src = uploadedImageUrl;
+                    imagePreviewContainer.style.display = 'block';
+                }
+                
+                showSuccess('Image uploaded successfully!');
+                
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                showError('Failed to upload image. Please try again.');
+                selectedImageFile = null;
+                uploadedImageUrl = null;
+            } finally {
+                isUploadingImage = false;
+                uploadContainer.classList.remove('uploading');
+                
+                // Reset file input
+                if (isDesktop) {
+                    desktopImageFile.value = '';
+                } else {
+                    imageFile.value = '';
+                }
+            }
+        }
+
+        function removeImage() {
+            selectedImageFile = null;
+            uploadedImageUrl = null;
+            imagePreview.src = '';
+            imagePreviewContainer.style.display = 'none';
+            imageFile.value = '';
+        }
+
+        function removeImageDesktop() {
+            selectedImageFile = null;
+            uploadedImageUrl = null;
+            desktopImagePreview.src = '';
+            desktopImagePreviewContainer.style.display = 'none';
+            desktopImageFile.value = '';
+        }
+
+        // ===== FORM VALIDATION =====
+        function updateCharCount(element, counterElement, maxLength) {
+            const length = element.value.length;
+            counterElement.textContent = `${length}/${maxLength}`;
+        }
+
+        function checkFormValidity() {
+            const isTitleValid = pieceTitle.value.trim().length > 0 && pieceTitle.value.length <= 200;
+            const isContentValid = pieceContent.value.trim().length >= 10 && pieceContent.value.length <= 10000;
+            const isContentTypeSelected = selectedContentType !== null;
+            const isCategorySelected = selectedCategory !== null;
+            
+            const isValid = isTitleValid && isContentValid && isContentTypeSelected && isCategorySelected;
+            
+            publishHeaderBtn.disabled = !isValid;
+            submitButton.disabled = !isValid;
+            
+            return isValid;
+        }
+
+        function checkFormValidityDesktop() {
+            const isTitleValid = desktopPieceTitle.value.trim().length > 0 && desktopPieceTitle.value.length <= 200;
+            const isContentValid = desktopPieceContent.value.trim().length >= 10 && desktopPieceContent.value.length <= 10000;
+            const isContentTypeSelected = selectedContentType !== null;
+            const isCategorySelected = selectedCategory !== null;
+            
+            const isValid = isTitleValid && isContentValid && isContentTypeSelected && isCategorySelected;
+            
+            desktopPublishHeaderBtn.disabled = !isValid;
+            desktopSubmitButton.disabled = !isValid;
+            
+            return isValid;
+        }
+
+        function updatePublishButtonText() {
+            const isDraft = saveDraft.checked;
+            const publishText = isDraft ? 'Save as Draft' : 'Publish Now';
+            
+            publishHeaderBtn.innerHTML = `<i class="fas fa-${isDraft ? 'save' : 'paper-plane'}"></i> ${publishText}`;
+            submitButton.querySelector('.btn-text').innerHTML = `<i class="fas fa-${isDraft ? 'save' : 'paper-plane'}"></i> ${publishText}`;
+        }
+
+        function updatePublishButtonTextDesktop() {
+            const isDraft = desktopSaveDraft.checked;
+            const publishText = isDraft ? 'Save as Draft' : 'Publish Now';
+            
+            desktopPublishHeaderBtn.innerHTML = `<i class="fas fa-${isDraft ? 'save' : 'paper-plane'}"></i> ${publishText}`;
+            desktopSubmitButton.querySelector('.btn-text').innerHTML = `<i class="fas fa-${isDraft ? 'save' : 'paper-plane'}"></i> ${publishText}`;
+        }
+
+        // ===== PUBLISH PIECE =====
+        async function publishPiece() {
+            console.log('Starting publish process...');
+            
+            if (!checkFormValidity()) {
+                showError('Please fill all required fields correctly');
+                return;
+            }
+
+            if (!currentUser) {
+                showError('You must be logged in to publish');
+                return;
+            }
+
+            // Show loading state
+            submitButton.classList.add('loading');
+            publishHeaderBtn.disabled = true;
+            hideError();
+
+            try {
+                const isDraft = saveDraft.checked;
+                const status = isDraft ? 'draft' : 'published';
+                
+                // Create piece data with content type
+                const pieceData = {
+                    title: pieceTitle.value.trim(),
+                    content: pieceContent.value.trim(),
+                    contentType: selectedContentType.id,
+                    contentTypeName: selectedContentType.name,
+                    category: selectedCategory.name,
+                    categoryId: selectedCategory.id,
+                    authorId: currentUser.uid,
+                    authorName: currentUser.displayName || currentUser.email.split('@')[0] || 'Author',
+                    authorUsername: currentUser.email.split('@')[0] || 'author',
+                    status: status,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    stats: {
+                        mintCount: 0,
+                        bookmarkCount: 0,
+                        commentCount: 0,
+                        viewCount: 0
+                    },
+                    preview: pieceContent.value.trim().substring(0, 200) + '...'
+                };
+
+                // Add image URL if uploaded
+                if (uploadedImageUrl) {
+                    pieceData.imageUrl = uploadedImageUrl;
+                    pieceData.hasImage = true;
+                }
+
+                // Add publishedAt if publishing
+                if (!isDraft) {
+                    pieceData.publishedAt = firebase.firestore.FieldValue.serverTimestamp();
+                }
+
+                console.log('Creating piece with data:', pieceData);
+
+                // Create the piece document
+                const docRef = await db.collection('pieces').add(pieceData);
+                console.log('Piece created with ID:', docRef.id);
+
+                // Update genre count (only if publishing, not for drafts)
+                if (!isDraft && selectedCategory) {
+                    try {
+                        await db.collection('categories').doc(selectedCategory.id).update({
+                            count: firebase.firestore.FieldValue.increment(1),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        console.log('Genre count updated');
+                    } catch (error) {
+                        console.error('Error updating genre count:', error);
+                    }
+                }
+
+                // Update user's piece count (only if publishing, not for drafts)
+                if (!isDraft) {
+                    try {
+                        const userRef = db.collection('users').doc(currentUser.uid);
+                        const userDoc = await userRef.get();
+                        
+                        if (userDoc.exists) {
+                            await userRef.update({
+                                'stats.totalPieces': firebase.firestore.FieldValue.increment(1),
+                                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            console.log('User stats updated');
+                        } else {
+                            // Create user document if it doesn't exist
+                            await userRef.set({
+                                uid: currentUser.uid,
+                                email: currentUser.email,
+                                displayName: currentUser.displayName || currentUser.email.split('@')[0],
+                                username: currentUser.email.split('@')[0],
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                stats: {
+                                    totalPieces: 1,
+                                    totalMints: 0,
+                                    totalBookmarks: 0
+                                }
+                            });
+                            console.log('User document created');
+                        }
+                    } catch (error) {
+                        console.error('Error updating user stats:', error);
+                    }
+                }
+
+                // Show success message
+                const successMsg = isDraft 
+                    ? 'Draft saved successfully!' 
+                    : 'Piece published successfully!';
+                showSuccess(successMsg);
+
+                // Reset form after delay
+                setTimeout(() => {
+                    if (isDraft) {
+                        window.location.href = 'profile.html?tab=drafts';
+                    } else {
+                        window.location.href = 'mint-stream.html';
+                    }
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error publishing piece:', error);
+                console.error('Error details:', error.code, error.message);
+                
+                let errorMessage = 'Failed to publish piece. ';
+                
+                if (error.code === 'permission-denied') {
+                    errorMessage += 'Permission denied. Check Firestore rules.';
+                } else {
+                    errorMessage += error.message;
+                }
+                
+                showError(errorMessage);
+                
+                // Reset loading state
+                submitButton.classList.remove('loading');
+                publishHeaderBtn.disabled = false;
+            }
+        }
+
+        async function publishPieceDesktop() {
+            console.log('Starting desktop publish process...');
+            
+            if (!checkFormValidityDesktop()) {
+                showError('Please fill all required fields correctly');
+                return;
+            }
+
+            if (!currentUser) {
+                showError('You must be logged in to publish');
+                return;
+            }
+
+            // Show loading state
+            desktopSubmitButton.classList.add('loading');
+            desktopPublishHeaderBtn.disabled = true;
+            hideError();
+
+            try {
+                const isDraft = desktopSaveDraft.checked;
+                const status = isDraft ? 'draft' : 'published';
+                
+                // Create piece data with content type
+                const pieceData = {
+                    title: desktopPieceTitle.value.trim(),
+                    content: desktopPieceContent.value.trim(),
+                    contentType: selectedContentType.id,
+                    contentTypeName: selectedContentType.name,
+                    category: selectedCategory.name,
+                    categoryId: selectedCategory.id,
+                    authorId: currentUser.uid,
+                    authorName: currentUser.displayName || currentUser.email.split('@')[0] || 'Author',
+                    authorUsername: currentUser.email.split('@')[0] || 'author',
+                    status: status,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    stats: {
+                        mintCount: 0,
+                        bookmarkCount: 0,
+                        commentCount: 0,
+                        viewCount: 0
+                    },
+                    preview: desktopPieceContent.value.trim().substring(0, 200) + '...'
+                };
+
+                // Add image URL if uploaded
+                if (uploadedImageUrl) {
+                    pieceData.imageUrl = uploadedImageUrl;
+                    pieceData.hasImage = true;
+                }
+
+                // Add publishedAt if publishing
+                if (!isDraft) {
+                    pieceData.publishedAt = firebase.firestore.FieldValue.serverTimestamp();
+                }
+
+                console.log('Creating desktop piece with data:', pieceData);
+
+                // Create the piece document
+                const docRef = await db.collection('pieces').add(pieceData);
+                console.log('Desktop piece created with ID:', docRef.id);
+
+                // Update genre count (only if publishing, not for drafts)
+                if (!isDraft && selectedCategory) {
+                    try {
+                        await db.collection('categories').doc(selectedCategory.id).update({
+                            count: firebase.firestore.FieldValue.increment(1),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        console.log('Desktop genre count updated');
+                    } catch (error) {
+                        console.error('Error updating genre count:', error);
+                    }
+                }
+
+                // Update user's piece count (only if publishing, not for drafts)
+                if (!isDraft) {
+                    try {
+                        const userRef = db.collection('users').doc(currentUser.uid);
+                        const userDoc = await userRef.get();
+                        
+                        if (userDoc.exists) {
+                            await userRef.update({
+                                'stats.totalPieces': firebase.firestore.FieldValue.increment(1),
+                                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            console.log('Desktop user stats updated');
+                        } else {
+                            // Create user document if it doesn't exist
+                            await userRef.set({
+                                uid: currentUser.uid,
+                                email: currentUser.email,
+                                displayName: currentUser.displayName || currentUser.email.split('@')[0],
+                                username: currentUser.email.split('@')[0],
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                stats: {
+                                    totalPieces: 1,
+                                    totalMints: 0,
+                                    totalBookmarks: 0
+                                }
+                            });
+                            console.log('Desktop user document created');
+                        }
+                    } catch (error) {
+                        console.error('Error updating user stats:', error);
+                    }
+                }
+
+                // Show success message
+                const successMsg = isDraft 
+                    ? 'Draft saved successfully!' 
+                    : 'Piece published successfully!';
+                showSuccess(successMsg);
+
+                // Reset form after delay
+                setTimeout(() => {
+                    if (isDraft) {
+                        window.location.href = 'profile.html?tab=drafts';
+                    } else {
+                        window.location.href = 'mint-stream.html';
+                    }
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error publishing piece (desktop):', error);
+                console.error('Error details:', error.code, error.message);
+                
+                let errorMessage = 'Failed to publish piece. ';
+                
+                if (error.code === 'permission-denied') {
+                    errorMessage += 'Permission denied. Check Firestore rules.';
+                } else {
+                    errorMessage += error.message;
+                }
+                
+                showError(errorMessage);
+                
+                // Reset loading state
+                desktopSubmitButton.classList.remove('loading');
+                desktopPublishHeaderBtn.disabled = false;
+            }
+        }
+
+        // ===== UI FUNCTIONS =====
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.add('show');
+            
+            desktopErrorText.textContent = message;
+            desktopErrorMessage.classList.add('show');
+            
+            setTimeout(() => {
+                hideError();
+            }, 5000);
+        }
+
+        function hideError() {
+            errorMessage.classList.remove('show');
+            desktopErrorMessage.classList.remove('show');
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            successEl.classList.add('show');
+            
+            setTimeout(() => {
+                successEl.classList.remove('show');
+            }, 3000);
+        }
+
+        function logout() {
+            auth.signOut()
+                .then(() => {
+                    window.location.href = 'auth.html';
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                });
+        }
+
+        // ===== KEYBOARD SHORTCUTS =====
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + Enter to publish
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                if (window.innerWidth <= 768) {
+                    if (!submitButton.disabled) publishPiece();
+                } else {
+                    if (!desktopSubmitButton.disabled) publishPieceDesktop();
+                }
+            }
+        });
+
+        // ===== WINDOW UNLOAD WARNING =====
+        window.addEventListener('beforeunload', (e) => {
+            if (pieceTitle.value.trim().length > 0 || 
+                pieceContent.value.trim().length > 0 || 
+                selectedContentType || 
+                selectedCategory) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+                return e.returnValue;
+            }
+        });
+    </script>
+</body>
+</html>

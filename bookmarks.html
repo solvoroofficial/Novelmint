@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmarks - Novel Mint</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RESET & GLOBAL ===== */
+        :root {
+            --primary-white: #ffffff;
+            --light-green: #f0fff4;
+            --soft-green: #e6fff1;
+            --accent-green: #10b981;
+            --dark-green: #047857;
+            --publish-color: #059669;
+            --text-dark: #1f2937;
+            --text-medium: #4b5563;
+            --text-light: #6b7280;
+            --border-color: #d1d5db;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--light-green);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .stream-header {
+            background: var(--primary-white);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-image {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--dark-green);
+            letter-spacing: -0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: var(--text-medium);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .search-toggle-btn:hover {
+            background: var(--light-green);
+            color: var(--publish-color);
+        }
+
+        /* FIXED: Mobile Personalize Button */
+        .mobile-personalize-btn {
+            background: var(--publish-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 8px 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .mobile-personalize-btn:hover {
+            background: var(--dark-green);
+            transform: translateY(-1px);
+        }
+
+        .mobile-personalize-btn i {
+            font-size: 14px;
+        }
+
+        .profile-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .profile-btn:hover {
+            border-color: var(--publish-color);
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Search Overlay */
+        .search-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .search-overlay.show {
+            display: flex;
+        }
+
+        .search-container {
+            background: var(--primary-white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            width: 100%;
+            max-width: 500px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .search-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .search-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .close-search {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .search-input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            color: var(--text-dark);
+            background: var(--primary-white);
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--publish-color);
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 18px;
+        }
+
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .search-loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+        }
+
+        /* User Result Card */
+        .user-result-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .user-result-card:hover {
+            background: var(--light-green);
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--light-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--publish-color);
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .user-username {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .stream-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title i {
+            color: var(--publish-color);
+        }
+
+        .bookmark-count {
+            font-size: 14px;
+            color: var(--text-light);
+            background: var(--primary-white);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .content-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .content-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Content Card */
+        .content-card {
+            background: var(--primary-white);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .content-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-green);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #f0fff4, #e6fff1);
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .content-type {
+            padding: 4px 10px;
+            background: var(--light-green);
+            color: var(--publish-color);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .content-date {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-excerpt {
+            color: var(--text-medium);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .author-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--light-green);
+        }
+
+        .author-info {
+            flex: 1;
+        }
+
+        .author-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .author-genre {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .card-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        .stat i {
+            font-size: 14px;
+        }
+
+        .stat.mints {
+            color: #f59e0b;
+        }
+
+        .stat.bookmarks {
+            color: #8b5cf6;
+        }
+
+        .read-more-btn {
+            padding: 6px 14px;
+            background: var(--light-green);
+            color: var(--publish-color);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+        }
+
+        .read-more-btn:hover {
+            background: var(--publish-color);
+            color: white;
+        }
+
+        /* Remove Bookmark Button */
+        .remove-bookmark-btn {
+            padding: 6px 12px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .remove-bookmark-btn:hover {
+            background: #fecaca;
+            transform: translateY(-1px);
+        }
+
+        /* No Content Message */
+        .no-content {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--primary-white);
+            border-radius: var(--radius-md);
+            border: 2px dashed var(--border-color);
+        }
+
+        .no-content-icon {
+            font-size: 48px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+
+        .no-content-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .no-content-text {
+            color: var(--text-light);
+            max-width: 400px;
+            margin: 0 auto 20px;
+        }
+
+        .explore-btn {
+            padding: 10px 20px;
+            background: var(--publish-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .explore-btn:hover {
+            background: var(--dark-green);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(5, 150, 105, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--publish-color);
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== READ MODAL STYLES ===== */
+        .read-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .read-modal.show {
+            display: flex;
+        }
+
+        .read-modal-content {
+            background: var(--primary-white);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            position: sticky;
+            top: 0;
+            background: var(--primary-white);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .modal-close-btn {
+            background: var(--light-green);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-dark);
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .modal-close-btn:hover {
+            background: var(--publish-color);
+            color: white;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-action-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--border-color);
+            background: var(--primary-white);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .modal-action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .mint-btn:hover {
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        .mint-btn.active {
+            background: #f59e0b;
+            color: white;
+            border-color: #f59e0b;
+        }
+
+        .bookmark-btn:hover {
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+        }
+
+        .bookmark-btn.active {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+        }
+
+        .profile-btn-modal:hover {
+            border-color: var(--publish-color);
+            color: var(--publish-color);
+        }
+
+        .modal-body {
+            padding: 0 24px 24px;
+        }
+
+        .modal-author-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--light-green);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-author-section:hover {
+            background: var(--soft-green);
+            transform: translateY(-2px);
+        }
+
+        .author-info-modal {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .author-avatar-modal {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--publish-color);
+        }
+
+        .author-name-modal {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .author-username-modal {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+
+        .modal-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-type {
+            padding: 6px 12px;
+            background: var(--light-green);
+            color: var(--publish-color);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .modal-date {
+            color: var(--text-light);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .modal-content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-dark);
+            margin-bottom: 24px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-line;
+        }
+
+        .modal-content p {
+            margin-bottom: 16px;
+            text-align: justify;
+            word-break: break-word;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            border-radius: var(--radius-md);
+            margin: 16px 0;
+        }
+
+        .modal-stats {
+            display: flex;
+            gap: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stat-modal {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-medium);
+            font-size: 15px;
+        }
+
+        .stat-modal i {
+            font-size: 18px;
+        }
+
+        .stat-modal:nth-child(1) i {
+            color: #f59e0b;
+        }
+
+        .stat-modal:nth-child(2) i {
+            color: #8b5cf6;
+        }
+
+        @media (max-width: 768px) {
+            .read-modal-content {
+                max-height: 100vh;
+                border-radius: 0;
+            }
+            
+            .modal-header {
+                padding: 16px;
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+            
+            .modal-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .modal-action-btn {
+                flex: 1;
+                justify-content: center;
+            }
+            
+            .modal-body {
+                padding: 0 16px 16px;
+            }
+            
+            .modal-title {
+                font-size: 24px;
+            }
+            
+            .modal-author-section {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+        }
+
+        /* ===== MOBILE NAVIGATION ===== */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary-white);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-medium);
+            transition: var(--transition);
+            padding: 8px;
+            width: 60px;
+        }
+
+        .nav-item.active {
+            color: var(--publish-color);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .nav-text {
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* ===== DESKTOP LAYOUT ===== */
+        .desktop-container {
+            display: none;
+            min-height: 100vh;
+        }
+
+        /* Desktop Sidebar - EXACT SAME AS PROFILE PAGE */
+        .desktop-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 260px;
+            background: var(--primary-white);
+            border-right: 1px solid var(--border-color);
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Logo Section */
+        .sidebar-logo-section {
+            padding: 0 24px 24px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Navigation Sections */
+        .sidebar-section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-title-sidebar {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            padding: 0 8px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-medium);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        .sidebar-link:hover {
+            background: var(--light-green);
+            color: var(--dark-green);
+        }
+
+        .sidebar-link.active {
+            background: var(--soft-green);
+            color: var(--publish-color);
+            font-weight: 600;
+        }
+
+        /* Sidebar Footer */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-medium);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: #fee2e2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        /* Desktop Main Content */
+        .desktop-main {
+            margin-left: 260px;
+            padding: 0;
+        }
+
+        .desktop-header {
+            background: var(--primary-white);
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .desktop-header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .desktop-search-container {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .desktop-search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            color: var(--text-dark);
+            background: var(--primary-white);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .desktop-search-input:focus {
+            outline: none;
+            border-color: var(--publish-color);
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+        }
+
+        .desktop-search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 16px;
+        }
+
+        .desktop-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .desktop-personalize-btn {
+            padding: 10px 20px;
+            background: var(--publish-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .desktop-personalize-btn:hover {
+            background: var(--dark-green);
+        }
+
+        .desktop-profile-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .desktop-profile-btn:hover {
+            border-color: var(--publish-color);
+        }
+
+        /* Desktop Content */
+        .desktop-content {
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .desktop-content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .mobile-container {
+                display: block;
+            }
+            
+            .desktop-container {
+                display: none;
+            }
+            
+            .stream-container {
+                padding: 16px;
+                padding-bottom: 70px;
+            }
+            
+            .page-title {
+                font-size: 20px;
+            }
+            
+            .content-grid {
+                gap: 16px;
+            }
+
+            /* FIXED: Better mobile personalize button */
+            .mobile-personalize-btn {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+
+            .mobile-personalize-btn i {
+                font-size: 13px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-container {
+                display: none;
+            }
+            
+            .desktop-container {
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stream-header {
+                padding: 12px 16px;
+            }
+            
+            .logo-text {
+                font-size: 18px;
+            }
+            
+            .content-grid {
+                gap: 16px;
+            }
+            
+            .card-content {
+                padding: 16px;
+            }
+            
+            .card-title {
+                font-size: 16px;
+            }
+
+            /* FIXED: Even better mobile personalize button for very small screens */
+            .mobile-personalize-btn {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+
+            .mobile-personalize-btn i {
+                font-size: 12px;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== MOBILE VIEW ===== -->
+    <div class="mobile-container">
+        <!-- Header -->
+        <header class="stream-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="https://i.imgur.com/8J2mW5m.png" alt="Novel Mint Logo" class="logo-image">
+                    <div class="logo-text">NovelMint</div>
+                </div>
+                <div class="header-actions">
+                    <button class="search-toggle-btn" id="searchToggleBtn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <div class="profile-btn" id="profileBtn">
+                        <img src="https://i.pravatar.cc/150?img=1" alt="Profile" class="profile-img">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search Overlay -->
+        <div class="search-overlay" id="searchOverlay">
+            <div class="search-container">
+                <div class="search-header">
+                    <h3 class="search-title">Search Authors</h3>
+                    <button class="close-search" id="closeSearch">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="search-input-group">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        class="search-input" 
+                        placeholder="Search by name or username..."
+                        autocomplete="off"
+                    >
+                </div>
+                <div class="search-results" id="searchResults">
+                    <div class="no-results">
+                        <p>Search for authors by name or username</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="stream-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-bookmark"></i>
+                    My Bookmarks
+                </h1>
+                <div class="bookmark-count" id="bookmarkCount">
+                    <span id="bookmarkCountText">0</span> saved
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid" id="contentGrid">
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+
+            <!-- No Bookmarks Message -->
+            <div class="no-content" id="noContent" style="display: none;">
+                <i class="fas fa-bookmark no-content-icon"></i>
+                <h3 class="no-content-title">No bookmarks yet</h3>
+                <p class="no-content-text">
+                    Start bookmarking your favorite pieces to find them easily later.
+                </p>
+                <button class="explore-btn" onclick="window.location.href='mint-stream.html'">
+                    <i class="fas fa-compass"></i>
+                    Explore Content
+                </button>
+            </div>
+        </main>
+
+        <!-- Mobile Navigation -->
+        <nav class="mobile-nav">
+            <a href="mint-stream.html" class="nav-item">
+                <i class="fas fa-home nav-icon"></i>
+                <span class="nav-text">Stream</span>
+            </a>
+            <a href="freshly-minted.html" class="nav-item">
+                <i class="fas fa-fire nav-icon"></i>
+                <span class="nav-text">Fresh</span>
+            </a>
+            <a href="publish.html" class="nav-item">
+                <i class="fas fa-plus-circle nav-icon"></i>
+                <span class="nav-text">Publish</span>
+            </a>
+            <a href="bookmarks.html" class="nav-item active">
+                <i class="fas fa-bookmark nav-icon"></i>
+                <span class="nav-text">Bookmarks</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i class="fas fa-user nav-icon"></i>
+                <span class="nav-text">Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- ===== DESKTOP VIEW ===== -->
+    <div class="desktop-container">
+        <!-- Desktop Sidebar - EXACT SAME AS PROFILE PAGE -->
+        <div class="desktop-sidebar">
+            <!-- Logo Section -->
+            <div class="sidebar-logo-section">
+                <img src="https://i.imgur.com/8J2mW5m.png" alt="Novel Mint Logo" class="logo-image">
+                <div class="logo-text">NovelMint</div>
+            </div>
+            
+            <!-- Primary Links -->
+            <div class="sidebar-section">
+                <div class="section-title-sidebar">Navigation</div>
+                <a href="mint-stream.html" class="sidebar-link">
+                    <i class="fas fa-home sidebar-icon"></i>
+                    <span>Stream</span>
+                </a>
+                <a href="freshly-minted.html" class="sidebar-link">
+                    <i class="fas fa-fire sidebar-icon"></i>
+                    <span>Freshly Minted</span>
+                </a>
+                <a href="publish.html" class="sidebar-link">
+                    <i class="fas fa-plus-circle sidebar-icon"></i>
+                    <span>Publish</span>
+                </a>
+                <a href="bookmarks.html" class="sidebar-link active">
+                    <i class="fas fa-bookmark sidebar-icon"></i>
+                    <span>Bookmarks</span>
+                </a>
+            </div>
+            
+            <!-- Account Section -->
+            <div class="sidebar-section">
+                <div class="section-title-sidebar">Account</div>
+                <a href="profile.html" class="sidebar-link">
+                    <i class="fas fa-user sidebar-icon"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="dashboard.html" class="sidebar-link">
+                    <i class="fas fa-chart-line sidebar-icon"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="edit-profile.html" class="sidebar-link">
+                    <i class="fas fa-edit sidebar-icon"></i>
+                    <span>Edit Profile</span>
+                </a>
+                <a href="settings.html" class="sidebar-link">
+                    <i class="fas fa-cog sidebar-icon"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+            
+            <!-- Footer -->
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Desktop Main Content -->
+        <div class="desktop-main">
+            <!-- Header -->
+            <header class="desktop-header">
+                <div class="desktop-header-content">
+                    <div class="desktop-search-container">
+                        <i class="fas fa-search desktop-search-icon"></i>
+                        <input 
+                            type="text" 
+                            id="desktopSearchInput" 
+                            class="desktop-search-input" 
+                            placeholder="Search authors..."
+                            onclick="openSearchOverlay()"
+                        >
+                    </div>
+                    <div class="desktop-header-actions">
+                        <div class="desktop-profile-btn" id="desktopProfileBtn">
+                            <img src="https://i.pravatar.cc/150?img=1" alt="Profile" class="profile-img">
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="desktop-content">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-bookmark"></i>
+                        My Bookmarks
+                    </h1>
+                    <div class="bookmark-count" id="desktopBookmarkCount">
+                        <span id="desktopBookmarkCountText">0</span> saved
+                    </div>
+                </div>
+
+                <!-- Content Grid -->
+                <div class="desktop-content-grid" id="desktopContentGrid">
+                    <div class="loading-spinner" id="desktopLoadingSpinner">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- No Bookmarks Message -->
+                <div class="no-content" id="desktopNoContent" style="display: none;">
+                    <i class="fas fa-bookmark no-content-icon"></i>
+                    <h3 class="no-content-title">No bookmarks yet</h3>
+                    <p class="no-content-text">
+                        Start bookmarking your favorite pieces to find them easily later.
+                    </p>
+                    <button class="explore-btn" onclick="window.location.href='mint-stream.html'">
+                        <i class="fas fa-compass"></i>
+                        Explore Content
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== READ MODAL ===== -->
+    <div class="read-modal" id="readModal">
+        <div class="read-modal-content">
+            <div class="modal-header">
+                <button class="modal-close-btn" id="closeReadModal">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="modal-actions">
+                    <button class="modal-action-btn mint-btn" id="modalMintBtn">
+                        <i class="far fa-star"></i>
+                        <span class="action-text">Mint</span>
+                    </button>
+                    <button class="modal-action-btn bookmark-btn" id="modalBookmarkBtn">
+                        <i class="far fa-bookmark"></i>
+                        <span class="action-text">Bookmark</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-author-section" id="modalAuthorSection">
+                    <div class="author-info-modal">
+                        <img class="author-avatar-modal" id="modalAuthorAvatar" src="" alt="Author">
+                        <div>
+                            <h4 class="author-name-modal" id="modalAuthorName"></h4>
+                            <p class="author-username-modal" id="modalAuthorUsername"></p>
+                        </div>
+                    </div>
+                </div>
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <div class="modal-meta">
+                    <span class="modal-type" id="modalType"></span>
+                    <span class="modal-date" id="modalDate"></span>
+                </div>
+                <div class="modal-content" id="modalContent">
+                    <!-- Content will be inserted here -->
+                </div>
+                <div class="modal-stats">
+                    <div class="stat-modal">
+                        <i class="fas fa-star"></i>
+                        <span id="modalMintCount">0</span> Mints
+                    </div>
+                    <div class="stat-modal">
+                        <i class="fas fa-bookmark"></i>
+                        <span id="modalBookmarkCount">0</span> Bookmarks
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    
+    <script>
+        // ===== FIREBASE CONFIGURATION =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbvCU3-siNbFYoYZ2cax5q0VZh8fzis30",
+            authDomain: "novelmint.firebaseapp.com",
+            projectId: "novelmint",
+            storageBucket: "novelmint.firebasestorage.app",
+            messagingSenderId: "295711653905",
+            appId: "1:295711653905:web:346c9e278d6a2be3d1b1b0",
+            measurementId: "G-30CZHERXYC"
+        };
+
+        // Initialize Firebase
+        let auth, db, storage;
+        try {
+            const app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+            storage = firebase.storage();
+            console.log("Firebase initialized successfully");
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+        }
+
+        // ===== DOM ELEMENTS =====
+        // Mobile elements
+        const searchToggleBtn = document.getElementById('searchToggleBtn');
+        const searchOverlay = document.getElementById('searchOverlay');
+        const closeSearch = document.getElementById('closeSearch');
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        
+        const contentGrid = document.getElementById('contentGrid');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const noContent = document.getElementById('noContent');
+        const bookmarkCountText = document.getElementById('bookmarkCountText');
+        
+        const profileBtn = document.getElementById('profileBtn');
+        
+        // Desktop elements
+        const desktopSearchInput = document.getElementById('desktopSearchInput');
+        const desktopProfileBtn = document.getElementById('desktopProfileBtn');
+        
+        const desktopContentGrid = document.getElementById('desktopContentGrid');
+        const desktopLoadingSpinner = document.getElementById('desktopLoadingSpinner');
+        const desktopNoContent = document.getElementById('desktopNoContent');
+        const desktopBookmarkCountText = document.getElementById('desktopBookmarkCountText');
+
+        // Read Modal elements
+        const readModal = document.getElementById('readModal');
+        const closeReadModal = document.getElementById('closeReadModal');
+        const modalMintBtn = document.getElementById('modalMintBtn');
+        const modalBookmarkBtn = document.getElementById('modalBookmarkBtn');
+        const modalAuthorSection = document.getElementById('modalAuthorSection');
+        const modalAuthorAvatar = document.getElementById('modalAuthorAvatar');
+        const modalAuthorName = document.getElementById('modalAuthorName');
+        const modalAuthorUsername = document.getElementById('modalAuthorUsername');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalType = document.getElementById('modalType');
+        const modalDate = document.getElementById('modalDate');
+        const modalContent = document.getElementById('modalContent');
+        const modalMintCount = document.getElementById('modalMintCount');
+        const modalBookmarkCount = document.getElementById('modalBookmarkCount');
+
+        // ===== STATE MANAGEMENT =====
+        let currentUser = null;
+        let userData = null;
+        let bookmarkedPieces = [];
+        let searchTimeout = null;
+        
+        // Read Modal State
+        let currentModalPiece = null;
+        let isMinted = false;
+        let isBookmarked = false;
+
+        // Content types (fixed)
+        const fixedContentTypes = [
+            { id: 'poem', name: 'Poem', icon: 'fa-feather' },
+            { id: 'story', name: 'Story', icon: 'fa-book' },
+            { id: 'article', name: 'Article', icon: 'fa-newspaper' },
+            { id: 'thought', name: 'Thought', icon: 'fa-lightbulb' },
+            { id: 'fiction', name: 'Fiction', icon: 'fa-magic' },
+            { id: 'nonfiction', name: 'Non-Fiction', icon: 'fa-glasses' }
+        ];
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check authentication
+            if (!auth) {
+                console.error("Firebase auth not available");
+                showNoContentMessage();
+                return;
+            }
+            
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    console.log('User authenticated:', user.uid);
+                    loadUserData();
+                    loadBookmarks();
+                    setupEventListeners();
+                    initReadModal();
+                } else {
+                    console.log('User not authenticated, redirecting to login');
+                    window.location.href = 'auth.html';
+                }
+            });
+        });
+
+        // ===== EVENT LISTENERS =====
+        function setupEventListeners() {
+            // Mobile search
+            if (searchToggleBtn) {
+                searchToggleBtn.addEventListener('click', () => {
+                    openSearchOverlay();
+                });
+            }
+
+            if (closeSearch) {
+                closeSearch.addEventListener('click', () => {
+                    closeSearchOverlay();
+                });
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', handleSearch);
+            }
+
+            // Desktop search
+            if (desktopSearchInput) {
+                desktopSearchInput.addEventListener('click', openSearchOverlay);
+            }
+
+            // Profile buttons
+            if (profileBtn) {
+                profileBtn.addEventListener('click', () => {
+                    window.location.href = 'profile.html';
+                });
+            }
+
+            if (desktopProfileBtn) {
+                desktopProfileBtn.addEventListener('click', () => {
+                    window.location.href = 'profile.html';
+                });
+            }
+
+            // Close modals on overlay click
+            if (searchOverlay) {
+                searchOverlay.addEventListener('click', (e) => {
+                    if (e.target === searchOverlay) {
+                        closeSearchOverlay();
+                    }
+                });
+            }
+        }
+
+        // ===== SEARCH OVERLAY FUNCTIONS =====
+        function openSearchOverlay() {
+            searchOverlay.classList.add('show');
+            searchInput.focus();
+            searchInput.value = '';
+            searchResults.innerHTML = '<div class="no-results"><p>Search for authors by name or username</p></div>';
+        }
+
+        function closeSearchOverlay() {
+            searchOverlay.classList.remove('show');
+            searchInput.value = '';
+            searchResults.innerHTML = '<div class="no-results"><p>Search for authors by name or username</p></div>';
+        }
+
+        // ===== READ MODAL FUNCTIONS =====
+        function initReadModal() {
+            // Close modal
+            if (closeReadModal) {
+                closeReadModal.addEventListener('click', () => {
+                    readModal.classList.remove('show');
+                });
+            }
+
+            // Close on overlay click
+            if (readModal) {
+                readModal.addEventListener('click', (e) => {
+                    if (e.target === readModal) {
+                        readModal.classList.remove('show');
+                    }
+                });
+            }
+
+            // Mint button
+            if (modalMintBtn) {
+                modalMintBtn.addEventListener('click', async () => {
+                    if (!currentUser || !currentModalPiece) {
+                        alert('Please login to mint content');
+                        return;
+                    }
+                    
+                    try {
+                        const mintRef = db.collection('mints').doc(`${currentUser.uid}_${currentModalPiece.id}`);
+                        
+                        if (isMinted) {
+                            // Unmint
+                            await mintRef.delete();
+                            modalMintBtn.innerHTML = '<i class="far fa-star"></i><span class="action-text">Mint</span>';
+                            modalMintBtn.classList.remove('active');
+                            currentModalPiece.stats.mintCount = (currentModalPiece.stats.mintCount || 1) - 1;
+                        } else {
+                            // Mint
+                            await mintRef.set({
+                                userId: currentUser.uid,
+                                pieceId: currentModalPiece.id,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            modalMintBtn.innerHTML = '<i class="fas fa-star"></i><span class="action-text">Minted</span>';
+                            modalMintBtn.classList.add('active');
+                            currentModalPiece.stats.mintCount = (currentModalPiece.stats.mintCount || 0) + 1;
+                        }
+                        
+                        isMinted = !isMinted;
+                        modalMintCount.textContent = currentModalPiece.stats.mintCount || 0;
+                        
+                        // Update piece stats in Firestore
+                        if (db && currentModalPiece.id) {
+                            await db.collection('pieces').doc(currentModalPiece.id).update({
+                                'stats.mintCount': firebase.firestore.FieldValue.increment(isMinted ? 1 : -1)
+                            });
+                        }
+                        
+                    } catch (error) {
+                        console.error('Error toggling mint:', error);
+                        alert('Error minting content. Please try again.');
+                    }
+                });
+            }
+
+            // Bookmark button
+            if (modalBookmarkBtn) {
+                modalBookmarkBtn.addEventListener('click', async () => {
+                    if (!currentUser || !currentModalPiece) {
+                        alert('Please login to bookmark content');
+                        return;
+                    }
+                    
+                    try {
+                        const bookmarkRef = db.collection('bookmarks').doc(`${currentUser.uid}_${currentModalPiece.id}`);
+                        
+                        if (isBookmarked) {
+                            // Remove bookmark
+                            await bookmarkRef.delete();
+                            modalBookmarkBtn.innerHTML = '<i class="far fa-bookmark"></i><span class="action-text">Bookmark</span>';
+                            modalBookmarkBtn.classList.remove('active');
+                            currentModalPiece.stats.bookmarkCount = (currentModalPiece.stats.bookmarkCount || 1) - 1;
+                            
+                            // Remove from bookmarkedPieces array
+                            const index = bookmarkedPieces.findIndex(p => p.id === currentModalPiece.id);
+                            if (index !== -1) {
+                                bookmarkedPieces.splice(index, 1);
+                                updateBookmarkCount();
+                                renderContent();
+                            }
+                        } else {
+                            // Add bookmark
+                            await bookmarkRef.set({
+                                userId: currentUser.uid,
+                                pieceId: currentModalPiece.id,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            modalBookmarkBtn.innerHTML = '<i class="fas fa-bookmark"></i><span class="action-text">Bookmarked</span>';
+                            modalBookmarkBtn.classList.add('active');
+                            currentModalPiece.stats.bookmarkCount = (currentModalPiece.stats.bookmarkCount || 0) + 1;
+                        }
+                        
+                        isBookmarked = !isBookmarked;
+                        modalBookmarkCount.textContent = currentModalPiece.stats.bookmarkCount || 0;
+                        
+                        // Update piece stats in Firestore
+                        if (db && currentModalPiece.id) {
+                            await db.collection('pieces').doc(currentModalPiece.id).update({
+                                'stats.bookmarkCount': firebase.firestore.FieldValue.increment(isBookmarked ? 1 : -1)
+                            });
+                        }
+                        
+                    } catch (error) {
+                        console.error('Error toggling bookmark:', error);
+                        alert('Error bookmarking content. Please try again.');
+                    }
+                });
+            }
+
+            // Author profile click
+            if (modalAuthorSection) {
+                modalAuthorSection.addEventListener('click', () => {
+                    if (currentModalPiece && currentModalPiece.authorId) {
+                        window.location.href = `author.html?id=${currentModalPiece.authorId}`;
+                    } else if (currentModalPiece && currentModalPiece.authorUsername) {
+                        window.location.href = `author.html?username=${currentModalPiece.authorUsername}`;
+                    }
+                });
+            }
+        }
+
+        // Global function to show read modal (accessible from HTML onclick)
+        window.showReadModal = async function(pieceId) {
+            try {
+                if (!pieceId) {
+                    console.error('No piece ID provided');
+                    return;
+                }
+
+                // Show loading state
+                readModal.classList.add('show');
+                modalContent.innerHTML = '<p style="text-align: center; padding: 40px;">Loading content...</p>';
+                
+                // Get piece data from bookmarked pieces
+                let piece = bookmarkedPieces.find(p => p.id === pieceId);
+                
+                if (!piece) {
+                    // If not in bookmarked pieces, try to load from Firestore
+                    if (db) {
+                        try {
+                            const pieceDoc = await db.collection('pieces').doc(pieceId).get();
+                            if (pieceDoc.exists) {
+                                piece = { id: pieceDoc.id, ...pieceDoc.data() };
+                                
+                                // Convert Firestore timestamps
+                                if (piece.publishedAt && piece.publishedAt.toDate) {
+                                    piece.publishedAt = piece.publishedAt.toDate();
+                                }
+                                if (piece.createdAt && piece.createdAt.toDate) {
+                                    piece.createdAt = piece.createdAt.toDate();
+                                }
+                            }
+                        } catch (dbError) {
+                            console.error('Error fetching from Firestore:', dbError);
+                        }
+                    }
+                }
+                
+                if (!piece) {
+                    alert('Content not found');
+                    readModal.classList.remove('show');
+                    return;
+                }
+                
+                currentModalPiece = piece;
+                
+                // Check if user has minted/bookmarked
+                if (currentUser && db) {
+                    try {
+                        // Check mint
+                        const mintDoc = await db.collection('mints').doc(`${currentUser.uid}_${piece.id}`).get();
+                        isMinted = mintDoc.exists;
+                        
+                        // Check bookmark
+                        const bookmarkDoc = await db.collection('bookmarks').doc(`${currentUser.uid}_${piece.id}`).get();
+                        isBookmarked = bookmarkDoc.exists;
+                    } catch (error) {
+                        console.error('Error checking user interactions:', error);
+                    }
+                }
+                
+                // Update modal UI
+                if (modalAuthorAvatar) {
+                    modalAuthorAvatar.src = piece.authorImageUrl || piece.author?.profileImage || 'https://i.pravatar.cc/150?img=1';
+                }
+                if (modalAuthorName) {
+                    modalAuthorName.textContent = piece.authorName || piece.author?.displayName || 'Anonymous';
+                }
+                if (modalAuthorUsername) {
+                    modalAuthorUsername.textContent = `@${piece.authorUsername || piece.author?.username || 'user'}`;
+                }
+                if (modalTitle) {
+                    modalTitle.textContent = piece.title || 'Untitled';
+                }
+                if (modalType) {
+                    modalType.textContent = piece.contentTypeName || piece.contentType || 'Content';
+                }
+                if (modalDate) {
+                    modalDate.textContent = formatDate(piece.publishedAt || piece.createdAt || new Date());
+                }
+                if (modalContent) {
+                    let contentHTML = '';
+                    if (piece.content) {
+                        contentHTML = piece.content;
+                    } else {
+                        contentHTML = 'No content available';
+                    }
+                    modalContent.innerHTML = contentHTML;
+                }
+                
+                if (modalMintCount) {
+                    modalMintCount.textContent = piece.stats?.mintCount || 0;
+                }
+                if (modalBookmarkCount) {
+                    modalBookmarkCount.textContent = piece.stats?.bookmarkCount || 0;
+                }
+                
+                // Update button states
+                if (modalMintBtn) {
+                    modalMintBtn.innerHTML = isMinted ? 
+                        '<i class="fas fa-star"></i><span class="action-text">Minted</span>' : 
+                        '<i class="far fa-star"></i><span class="action-text">Mint</span>';
+                    modalMintBtn.classList.toggle('active', isMinted);
+                }
+                
+                if (modalBookmarkBtn) {
+                    modalBookmarkBtn.innerHTML = isBookmarked ? 
+                        '<i class="fas fa-bookmark"></i><span class="action-text">Bookmarked</span>' : 
+                        '<i class="far fa-bookmark"></i><span class="action-text">Bookmark</span>';
+                    modalBookmarkBtn.classList.toggle('active', isBookmarked);
+                }
+                
+            } catch (error) {
+                console.error('Error showing read modal:', error);
+                alert('Error loading content. Please try again.');
+                readModal.classList.remove('show');
+            }
+        };
+
+        // ===== USER DATA =====
+        async function loadUserData() {
+            if (!db || !currentUser) return;
+            
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                    
+                    // Update profile image if available
+                    if (userData.profileImage) {
+                        document.querySelectorAll('.profile-img').forEach(img => {
+                            img.src = userData.profileImage;
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // ===== BOOKMARKS LOADING =====
+        async function loadBookmarks() {
+            try {
+                // Show loading
+                if (loadingSpinner) loadingSpinner.style.display = 'block';
+                if (desktopLoadingSpinner) desktopLoadingSpinner.style.display = 'block';
+                if (noContent) noContent.style.display = 'none';
+                if (desktopNoContent) desktopNoContent.style.display = 'none';
+                
+                console.log('Loading bookmarks...');
+                
+                // Load bookmarks from Firebase
+                if (db && currentUser) {
+                    try {
+                        // Get all bookmarks for current user
+                        const bookmarksSnapshot = await db.collection('bookmarks')
+                            .where('userId', '==', currentUser.uid)
+                            .orderBy('createdAt', 'desc')
+                            .get();
+                        
+                        bookmarkedPieces = [];
+                        
+                        // Get piece details for each bookmark
+                        for (const bookmarkDoc of bookmarksSnapshot.docs) {
+                            const bookmark = bookmarkDoc.data();
+                            const pieceId = bookmark.pieceId;
+                            
+                            try {
+                                const pieceDoc = await db.collection('pieces').doc(pieceId).get();
+                                
+                                if (pieceDoc.exists) {
+                                    const piece = {
+                                        id: pieceDoc.id,
+                                        ...pieceDoc.data()
+                                    };
+                                    
+                                    // Convert Firestore timestamps
+                                    if (piece.publishedAt && piece.publishedAt.toDate) {
+                                        piece.publishedAt = piece.publishedAt.toDate();
+                                    }
+                                    if (piece.createdAt && piece.createdAt.toDate) {
+                                        piece.createdAt = piece.createdAt.toDate();
+                                    }
+                                    
+                                    // If author data is stored separately, fetch it
+                                    if (piece.authorId && !piece.authorName) {
+                                        try {
+                                            const authorDoc = await db.collection('users').doc(piece.authorId).get();
+                                            if (authorDoc.exists) {
+                                                const authorData = authorDoc.data();
+                                                piece.author = {
+                                                    id: authorDoc.id,
+                                                    ...authorData
+                                                };
+                                                piece.authorName = authorData.displayName || authorData.username;
+                                                piece.authorUsername = authorData.username;
+                                                piece.authorImageUrl = authorData.profileImage;
+                                            }
+                                        } catch (authorError) {
+                                            console.error('Error fetching author:', authorError);
+                                        }
+                                    }
+                                    
+                                    bookmarkedPieces.push(piece);
+                                }
+                            } catch (pieceError) {
+                                console.error('Error fetching piece:', pieceError);
+                            }
+                        }
+                        
+                        console.log('Loaded', bookmarkedPieces.length, 'bookmarked pieces');
+                        
+                        // Update UI
+                        updateBookmarkCount();
+                        renderContent();
+                        
+                        if (bookmarkedPieces.length === 0) {
+                            showNoContentMessage();
+                        }
+                        
+                    } catch (firebaseError) {
+                        console.error('Firebase loading error:', firebaseError);
+                        showNoContentMessage();
+                    }
+                } else {
+                    showNoContentMessage();
+                }
+                
+            } catch (error) {
+                console.error('Error loading bookmarks:', error);
+                showNoContentMessage();
+            } finally {
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
+                if (desktopLoadingSpinner) desktopLoadingSpinner.style.display = 'none';
+            }
+        }
+
+        function updateBookmarkCount() {
+            const count = bookmarkedPieces.length;
+            if (bookmarkCountText) bookmarkCountText.textContent = count;
+            if (desktopBookmarkCountText) desktopBookmarkCountText.textContent = count;
+        }
+
+        // ===== CONTENT RENDERING =====
+        function renderContent() {
+            // Clear existing content
+            if (contentGrid) contentGrid.innerHTML = '';
+            if (desktopContentGrid) desktopContentGrid.innerHTML = '';
+            
+            if (bookmarkedPieces.length === 0) {
+                showNoContentMessage();
+                return;
+            }
+            
+            // Hide no content message
+            if (noContent) noContent.style.display = 'none';
+            if (desktopNoContent) desktopNoContent.style.display = 'none';
+            
+            // Create cards for each piece
+            bookmarkedPieces.forEach(piece => {
+                const mobileCard = createBookmarkCard(piece, false);
+                const desktopCard = createBookmarkCard(piece, true);
+                
+                if (contentGrid) contentGrid.appendChild(mobileCard);
+                if (desktopContentGrid) desktopContentGrid.appendChild(desktopCard);
+            });
+        }
+
+        function createBookmarkCard(piece, isDesktop) {
+            const card = document.createElement('div');
+            card.className = 'content-card';
+            card.dataset.pieceId = piece.id;
+            
+            // Format date
+            let dateStr = 'Recently';
+            if (piece.publishedAt) {
+                dateStr = formatDate(piece.publishedAt);
+            } else if (piece.createdAt) {
+                dateStr = formatDate(piece.createdAt);
+            }
+            
+            // Get excerpt (first 150 chars)
+            const excerpt = piece.content && piece.content.length > 150 ? 
+                piece.content.substring(0, 150) + '...' : 
+                (piece.content || 'No content');
+            
+            // Get content type display name
+            const contentTypeData = fixedContentTypes.find(t => t.id === piece.contentType);
+            const contentTypeName = contentTypeData?.name || piece.contentTypeName || 'Piece';
+            const contentTypeIcon = contentTypeData?.icon || 'fa-file-alt';
+            
+            // Get stats
+            const mintCount = piece.stats?.mintCount || 0;
+            const bookmarkCount = piece.stats?.bookmarkCount || 0;
+            
+            // Author info
+            const authorName = piece.authorName || piece.author?.displayName || 'Anonymous';
+            const authorUsername = piece.authorUsername || piece.author?.username || '';
+            
+            card.innerHTML = `
+                ${piece.imageUrl ? `
+                    <img src="${piece.imageUrl}" alt="${piece.title}" class="card-image">
+                ` : `
+                    <div class="card-image" style="background: linear-gradient(135deg, #f0fff4, #e6fff1); display: flex; align-items: center; justify-content: center;">
+                        <i class="fas ${contentTypeIcon}" style="font-size: 48px; color: #059669;"></i>
+                    </div>
+                `}
+                <div class="card-content">
+                    <div class="card-header">
+                        <span class="content-type">${contentTypeName}</span>
+                        <span class="content-date">${dateStr}</span>
+                    </div>
+                    <h3 class="card-title">${piece.title || 'Untitled'}</h3>
+                    <p class="card-excerpt">${excerpt}</p>
+                    <div class="card-author">
+                        <div class="author-avatar">
+                            ${piece.authorImageUrl || piece.author?.profileImage ? 
+                                `<img src="${piece.authorImageUrl || piece.author?.profileImage}" alt="${authorName}" style="width: 100%; height: 100%; border-radius: 50%;">` :
+                                `<i class="fas fa-user" style="color: #059669;"></i>`
+                            }
+                        </div>
+                        <div class="author-info">
+                            <div class="author-name">${authorName}</div>
+                            <div class="author-genre">${piece.category || piece.genre || 'General'}</div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-stats">
+                            <div class="stat mints">
+                                <i class="fas fa-star"></i>
+                                <span>${mintCount}</span>
+                            </div>
+                            <div class="stat bookmarks">
+                                <i class="fas fa-bookmark"></i>
+                                <span>${bookmarkCount}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="remove-bookmark-btn" onclick="removeBookmark('${piece.id}', this)">
+                                <i class="fas fa-trash-alt"></i>
+                                Remove
+                            </button>
+                            <button class="read-more-btn" onclick="showReadModal('${piece.id}')">
+                                Read
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add click event to view piece
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('.read-more-btn') && !e.target.closest('.card-stats') && !e.target.closest('.remove-bookmark-btn')) {
+                    showReadModal(piece.id);
+                }
+            });
+            
+            return card;
+        }
+
+        async function removeBookmark(pieceId, button) {
+            if (!currentUser || !pieceId) {
+                alert('Please login to remove bookmark');
+                return;
+            }
+            
+            if (!confirm('Remove this bookmark?')) {
+                return;
+            }
+            
+            try {
+                // Stop event propagation
+                if (button) {
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Removing...';
+                }
+                
+                // Remove from Firestore
+                if (db) {
+                    await db.collection('bookmarks').doc(`${currentUser.uid}_${pieceId}`).delete();
+                    
+                    // Update piece stats
+                    await db.collection('pieces').doc(pieceId).update({
+                        'stats.bookmarkCount': firebase.firestore.FieldValue.increment(-1)
+                    });
+                    
+                    // Remove from local array
+                    const index = bookmarkedPieces.findIndex(p => p.id === pieceId);
+                    if (index !== -1) {
+                        bookmarkedPieces.splice(index, 1);
+                        updateBookmarkCount();
+                        renderContent();
+                        
+                        if (bookmarkedPieces.length === 0) {
+                            showNoContentMessage();
+                        }
+                    }
+                    
+                    console.log('Bookmark removed:', pieceId);
+                }
+            } catch (error) {
+                console.error('Error removing bookmark:', error);
+                alert('Error removing bookmark. Please try again.');
+                
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-trash-alt"></i> Remove';
+                }
+            }
+        }
+
+        function showNoContentMessage() {
+            if (contentGrid) contentGrid.innerHTML = '';
+            if (desktopContentGrid) desktopContentGrid.innerHTML = '';
+            
+            if (noContent) noContent.style.display = 'block';
+            if (desktopNoContent) desktopNoContent.style.display = 'block';
+        }
+
+        // ===== SEARCH FUNCTIONALITY =====
+        async function handleSearch(e) {
+            const searchTerm = e.target.value.trim().toLowerCase();
+            
+            // Clear previous timeout
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+            
+            if (!searchTerm) {
+                if (searchResults) {
+                    searchResults.innerHTML = '<div class="no-results"><p>Search for authors by name or username</p></div>';
+                }
+                return;
+            }
+            
+            // Show loading
+            if (searchResults) {
+                searchResults.innerHTML = '<div class="search-loading"><div class="spinner" style="width: 20px; height: 20px;"></div></div>';
+            }
+            
+            // Debounce search
+            searchTimeout = setTimeout(async () => {
+                await performSearch(searchTerm);
+            }, 500);
+        }
+
+        async function performSearch(searchTerm) {
+            if (!db) {
+                if (searchResults) {
+                    searchResults.innerHTML = '<div class="no-results"><p>Search functionality requires Firebase connection</p></div>';
+                }
+                return;
+            }
+            
+            try {
+                // Search users by username or display name
+                const usersSnapshot = await db.collection('users').get();
+                
+                const users = [];
+                usersSnapshot.forEach(doc => {
+                    const user = doc.data();
+                    const username = (user.username || '').toLowerCase();
+                    const displayName = (user.displayName || '').toLowerCase();
+                    const email = (user.email || '').toLowerCase();
+                    
+                    // Check if search term matches username, display name, or email
+                    if (username.includes(searchTerm) || 
+                        displayName.includes(searchTerm) || 
+                        email.includes(searchTerm)) {
+                        users.push({
+                            id: doc.id,
+                            ...user
+                        });
+                    }
+                });
+                
+                displaySearchResults(users);
+            } catch (error) {
+                console.error('Error performing search:', error);
+                if (searchResults) {
+                    searchResults.innerHTML = '<div class="no-results"><p>Error searching. Please try again.</p></div>';
+                }
+            }
+        }
+
+        function displaySearchResults(users) {
+            if (!searchResults) return;
+            
+            if (users.length === 0) {
+                searchResults.innerHTML = '<div class="no-results"><p>No authors found. Try a different search term.</p></div>';
+                return;
+            }
+            
+            searchResults.innerHTML = '';
+            
+            users.forEach(user => {
+                const userCard = document.createElement('a');
+                userCard.href = `author.html?id=${user.id}`;
+                userCard.className = 'user-result-card';
+                
+                userCard.innerHTML = `
+                    <div class="user-avatar">
+                        ${user.profileImage ? 
+                            `<img src="${user.profileImage}" alt="${user.displayName}" style="width: 100%; height: 100%; border-radius: 50%;">` :
+                            `<i class="fas fa-user"></i>`
+                        }
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">${user.displayName || 'User'}</div>
+                        <div class="user-username">@${user.username || user.id.substring(0, 8)}</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: var(--text-light);"></i>
+                `;
+                
+                searchResults.appendChild(userCard);
+            });
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function formatDate(date) {
+            if (!date) return '';
+            
+            try {
+                const now = new Date();
+                const dateObj = date instanceof Date ? date : new Date(date);
+                
+                // Check if date is valid
+                if (isNaN(dateObj.getTime())) {
+                    return 'Recently';
+                }
+                
+                const diffMs = now - dateObj;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+                
+                if (diffMins < 60) {
+                    return `${diffMins}m ago`;
+                } else if (diffHours < 24) {
+                    return `${diffHours}h ago`;
+                } else if (diffDays < 7) {
+                    return `${diffDays}d ago`;
+                } else {
+                    return dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }
+            } catch (error) {
+                console.error('Error formatting date:', error);
+                return 'Recently';
+            }
+        }
+
+        // ===== LOGOUT FUNCTION =====
+        function logout() {
+            if (auth) {
+                auth.signOut()
+                    .then(() => {
+                        window.location.href = 'auth.html';
+                    })
+                    .catch(error => {
+                        console.error('Logout error:', error);
+                        alert('Failed to logout');
+                    });
+            } else {
+                window.location.href = 'auth.html';
+            }
+        }
+
+        // Refresh bookmarks
+        window.refreshBookmarks = function() {
+            loadBookmarks();
+        };
+    </script>
+</body>
+</html>

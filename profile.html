@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Novel Mint</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RESET & GLOBAL ===== */
+        :root {
+            --primary-white: #ffffff;
+            --light-green: #f0fff4;
+            --soft-green: #e6fff1;
+            --accent-green: #10b981;
+            --dark-green: #047857;
+            --text-dark: #1f2937;
+            --text-medium: #4b5563;
+            --text-light: #6b7280;
+            --border-color: #d1d5db;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--light-green);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* ===== COMMON COMPONENTS ===== */
+        .btn {
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 15px;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--dark-green) 0%, var(--accent-green) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-secondary {
+            background: var(--primary-white);
+            color: var(--dark-green);
+            border: 2px solid var(--accent-green);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-green);
+            transform: translateY(-1px);
+        }
+
+        /* ===== MOBILE LAYOUT ===== */
+        .mobile-container {
+            display: block;
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: var(--primary-white);
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .profile-header-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .profile-image-container {
+            flex-shrink: 0;
+        }
+
+        .profile-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-green);
+            background: var(--soft-green);
+        }
+
+        .profile-basic-info {
+            flex: 1;
+            min-width: 0; /* Prevents text overflow */
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+            word-wrap: break-word;
+        }
+
+        .profile-username {
+            font-size: 14px;
+            color: var(--text-medium);
+            margin-bottom: 12px;
+            word-wrap: break-word;
+        }
+
+        .profile-bio {
+            font-size: 14px;
+            color: var(--text-dark);
+            line-height: 1.5;
+            margin-bottom: 16px;
+            word-wrap: break-word;
+        }
+
+        /* Action Buttons Grid */
+        .profile-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .profile-action-btn {
+            padding: 12px;
+            background: var(--primary-white);
+            color: var(--dark-green);
+            border: 2px solid var(--accent-green);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 100%;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .profile-action-btn:hover {
+            background: var(--light-green);
+            transform: translateY(-2px);
+        }
+
+        .profile-action-btn i {
+            font-size: 18px;
+        }
+
+        .profile-action-btn span {
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: var(--primary-white);
+            padding: 20px;
+            margin-top: 1px;
+        }
+
+        .stats-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-dark);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 16px 12px;
+            background: var(--light-green);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--dark-green);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Content Section */
+        .content-section {
+            background: var(--primary-white);
+            margin-top: 1px;
+            padding-top: 20px;
+        }
+
+        .content-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 14px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-medium);
+            cursor: pointer;
+            position: relative;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            color: var(--dark-green);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .tab-content {
+            padding: 20px;
+        }
+
+        /* Pieces List */
+        .pieces-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .piece-item {
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--primary-white);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .piece-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-green);
+        }
+
+        .piece-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .piece-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            width: 100%;
+        }
+
+        .piece-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .piece-category {
+            display: inline-block;
+            padding: 4px 10px;
+            background: var(--soft-green);
+            color: var(--dark-green);
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .piece-date {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .piece-preview {
+            font-size: 14px;
+            color: var(--text-medium);
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .piece-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .piece-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .draft-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: #fee2e2;
+            color: #dc2626;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Mint Stats for Minted Pieces Tab */
+        .mint-info {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .mint-count {
+            font-size: 14px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 4px;
+        }
+
+        .mint-description {
+            font-size: 12px;
+            color: #92400e;
+            opacity: 0.8;
+        }
+
+        .mint-user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #fef3c7;
+        }
+
+        .mint-user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--soft-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--dark-green);
+        }
+
+        .mint-user-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary-white);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-medium);
+            transition: var(--transition);
+            padding: 8px;
+            width: 60px;
+        }
+
+        .nav-item.active {
+            color: var(--dark-green);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .nav-text {
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* ===== DESKTOP LAYOUT ===== */
+        .desktop-container {
+            display: none;
+            min-height: 100vh;
+        }
+
+        /* Desktop Sidebar */
+        .desktop-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 260px;
+            background: var(--primary-white);
+            border-right: 1px solid var(--border-color);
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Logo Section */
+        .sidebar-logo-section {
+            padding: 0 24px 24px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--dark-green);
+            letter-spacing: -0.5px;
+        }
+
+        /* Navigation Sections */
+        .sidebar-section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            padding: 0 8px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-medium);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        .sidebar-link:hover {
+            background: var(--light-green);
+            color: var(--dark-green);
+        }
+
+        .sidebar-link.active {
+            background: var(--soft-green);
+            color: var(--dark-green);
+            font-weight: 600;
+        }
+
+        .sidebar-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Sidebar Footer */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-medium);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: #fee2e2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        /* Desktop Main Content */
+        .desktop-main {
+            margin-left: 260px;
+            padding: 32px;
+            max-width: 1200px;
+        }
+
+        .desktop-profile {
+            background: var(--primary-white);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            border: 1px solid var(--border-color);
+        }
+
+        .desktop-profile-header {
+            display: flex;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .desktop-profile-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .desktop-profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--accent-green);
+            margin-bottom: 20px;
+        }
+
+        .desktop-profile-name {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            word-wrap: break-word;
+        }
+
+        .desktop-profile-username {
+            font-size: 18px;
+            color: var(--text-medium);
+            margin-bottom: 16px;
+            word-wrap: break-word;
+        }
+
+        .desktop-profile-bio {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-dark);
+            margin-bottom: 24px;
+            word-wrap: break-word;
+        }
+
+        .desktop-profile-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .desktop-profile-right {
+            width: 300px;
+            flex-shrink: 0;
+        }
+
+        .desktop-stats-container {
+            background: var(--light-green);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .desktop-stats-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .desktop-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .desktop-stat-card {
+            text-align: center;
+            padding: 16px;
+            background: var(--primary-white);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .desktop-stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--dark-green);
+            margin-bottom: 4px;
+        }
+
+        /* Desktop Content Tabs */
+        .desktop-content-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+
+        .desktop-tab-btn {
+            padding: 16px 24px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-medium);
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .desktop-tab-btn.active {
+            color: var(--dark-green);
+        }
+
+        .desktop-tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Desktop Pieces Grid */
+        .desktop-pieces-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .desktop-piece-item {
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--primary-white);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .desktop-piece-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-green);
+        }
+
+        /* Desktop Mint Info */
+        .desktop-mint-info {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .desktop-mint-count {
+            font-size: 15px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 6px;
+        }
+
+        .desktop-mint-description {
+            font-size: 13px;
+            color: #92400e;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .desktop-mint-user-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .desktop-mint-user {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #fef3c7;
+        }
+
+        .desktop-mint-user-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--soft-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--dark-green);
+        }
+
+        .desktop-mint-user-name {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .mobile-container {
+                display: block;
+            }
+            
+            .desktop-container {
+                display: none;
+            }
+            
+            /* Adjust profile actions for smaller screens */
+            .profile-actions-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .profile-action-btn {
+                flex-direction: row;
+                justify-content: flex-start;
+                padding: 12px 16px;
+                text-align: left;
+            }
+            
+            .profile-action-btn i {
+                font-size: 16px;
+                width: 24px;
+            }
+            
+            .profile-action-btn span {
+                font-size: 14px;
+            }
+
+            .content-tabs {
+                overflow-x: auto;
+            }
+            
+            .tab-btn {
+                min-width: 100px;
+                padding: 12px 8px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-container {
+                display: none;
+            }
+            
+            .desktop-container {
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                gap: 8px;
+            }
+            
+            .stat-card {
+                padding: 12px 8px;
+            }
+            
+            .stat-value {
+                font-size: 18px;
+            }
+
+            .content-tabs {
+                padding: 0 16px;
+            }
+            
+            .tab-btn {
+                min-width: 80px;
+                padding: 12px 4px;
+                font-size: 13px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .desktop-sidebar {
+                width: 220px;
+            }
+            
+            .desktop-main {
+                margin-left: 220px;
+                padding: 24px;
+            }
+            
+            .desktop-pieces-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .desktop-profile-right {
+                width: 280px;
+            }
+        }
+
+        @media (min-width: 1025px) and (max-width: 1200px) {
+            .desktop-main {
+                padding: 32px 24px;
+            }
+        }
+
+        /* ===== LOADING STATES ===== */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-text {
+            height: 16px;
+            margin-bottom: 8px;
+        }
+
+        .skeleton-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+        }
+
+        /* ===== EMPTY STATES ===== */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--border-color);
+        }
+
+        .empty-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .empty-subtext {
+            font-size: 14px;
+        }
+
+        /* ===== UTILITY CLASSES ===== */
+        .hidden {
+            display: none;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .mt-8 {
+            margin-top: 8px;
+        }
+
+        .mt-16 {
+            margin-top: 16px;
+        }
+
+        .mt-24 {
+            margin-top: 24px;
+        }
+
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+
+        .mb-16 {
+            margin-bottom: 16px;
+        }
+
+        .mb-24 {
+            margin-bottom: 24px;
+        }
+
+        .gap-8 {
+            gap: 8px;
+        }
+
+        .gap-12 {
+            gap: 12px;
+        }
+
+        .gap-16 {
+            gap: 16px;
+        }
+
+        .flex-1 {
+            flex: 1;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        /* ===== SCROLLBAR STYLING ===== */
+        .desktop-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .desktop-sidebar::-webkit-scrollbar-track {
+            background: var(--light-green);
+        }
+
+        .desktop-sidebar::-webkit-scrollbar-thumb {
+            background: var(--accent-green);
+            border-radius: 3px;
+        }
+
+        .desktop-sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== MOBILE VIEW ===== -->
+    <div class="mobile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-header-top">
+                <div class="profile-image-container">
+                    <img src="https://via.placeholder.com/80" alt="Profile" class="profile-image" id="mobileProfileImage">
+                </div>
+                <div class="profile-basic-info">
+                    <h1 class="profile-name" id="mobileProfileName">Loading...</h1>
+                    <p class="profile-username" id="mobileProfileUsername">@loading</p>
+                    <p class="profile-bio" id="mobileProfileBio">Loading bio...</p>
+                </div>
+            </div>
+            
+            <!-- Action Buttons Grid -->
+            <div class="profile-actions-grid">
+                <a href="edit-profile.html" class="profile-action-btn">
+                    <i class="fas fa-edit"></i>
+                    <span>Edit Profile</span>
+                </a>
+                <a href="settings.html" class="profile-action-btn">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="dashboard.html" class="profile-action-btn">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <h2 class="stats-title">Your Stats</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="mobilePiecesCount">0</div>
+                    <div class="stat-label">Pieces</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="mobileMintsReceivedCount">0</div>
+                    <div class="stat-label">Mints Received</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="mobileMintsGivenCount">0</div>
+                    <div class="stat-label">Mints Given</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="content-section">
+            <div class="content-tabs">
+                <button class="tab-btn active" onclick="switchMobileTab('published')">
+                    Published
+                </button>
+                <button class="tab-btn" onclick="switchMobileTab('drafts')">
+                    Drafts
+                </button>
+                <button class="tab-btn" onclick="switchMobileTab('minted')">
+                    Mints Received
+                </button>
+            </div>
+            
+            <div class="tab-content">
+                <!-- Published Pieces -->
+                <div id="mobilePublishedTab" class="tab-pane">
+                    <div class="pieces-list" id="mobilePublishedList">
+                        <!-- Content will be loaded from database -->
+                    </div>
+                    
+                    <div class="empty-state hidden" id="mobilePublishedEmpty">
+                        <div class="empty-icon">
+                            <i class="fas fa-feather"></i>
+                        </div>
+                        <p class="empty-text">No published pieces yet</p>
+                        <p class="empty-subtext">Start writing and share your first piece</p>
+                        <button class="btn btn-primary mt-16 w-full" onclick="window.location.href='publish.html'">
+                            <i class="fas fa-plus"></i> Write First Piece
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Drafts -->
+                <div id="mobileDraftsTab" class="tab-pane hidden">
+                    <div class="pieces-list" id="mobileDraftsList">
+                        <!-- Content will be loaded from database -->
+                    </div>
+                    
+                    <div class="empty-state hidden" id="mobileDraftsEmpty">
+                        <div class="empty-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <p class="empty-text">No drafts saved</p>
+                        <p class="empty-subtext">Start writing and save as draft</p>
+                        <button class="btn btn-primary mt-16 w-full" onclick="window.location.href='publish.html'">
+                            <i class="fas fa-pen"></i> Create Draft
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Minted Pieces (Mints Received) -->
+                <div id="mobileMintedTab" class="tab-pane hidden">
+                    <div class="pieces-list" id="mobileMintedList">
+                        <!-- Content will be loaded from database -->
+                    </div>
+                    
+                    <div class="empty-state hidden" id="mobileMintedEmpty">
+                        <div class="empty-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="empty-text">No mints received yet</p>
+                        <p class="empty-subtext">Your pieces haven't been minted by others</p>
+                        <button class="btn btn-primary mt-16 w-full" onclick="window.location.href='mint-stream.html'">
+                            <i class="fas fa-share"></i> Share Your Work
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Bottom Navigation -->
+        <nav class="mobile-nav">
+            <a href="mint-stream.html" class="nav-item">
+                <i class="fas fa-home nav-icon"></i>
+                <span class="nav-text">Stream</span>
+            </a>
+            <a href="freshly-minted.html" class="nav-item">
+                <i class="fas fa-fire nav-icon"></i>
+                <span class="nav-text">Fresh</span>
+            </a>
+            <a href="publish.html" class="nav-item">
+                <i class="fas fa-plus-circle nav-icon"></i>
+                <span class="nav-text">Publish</span>
+            </a>
+            <a href="bookmarks.html" class="nav-item">
+                <i class="fas fa-bookmark nav-icon"></i>
+                <span class="nav-text">Saved</span>
+            </a>
+            <a href="profile.html" class="nav-item active">
+                <i class="fas fa-user nav-icon"></i>
+                <span class="nav-text">Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- ===== DESKTOP VIEW ===== -->
+    <div class="desktop-container">
+        <!-- Desktop Sidebar -->
+        <div class="desktop-sidebar">
+            <!-- Logo Section -->
+            <div class="sidebar-logo-section">
+                <img src="https://i.imgur.com/8J2mW5m.png" alt="Novel Mint Logo" class="logo-image">
+                <div class="logo-text">NovelMint</div>
+            </div>
+            
+            <!-- Primary Links -->
+            <div class="sidebar-section">
+                <div class="section-title">Navigation</div>
+                <a href="mint-stream.html" class="sidebar-link">
+                    <i class="fas fa-home sidebar-icon"></i>
+                    <span>Stream</span>
+                </a>
+                <a href="freshly-minted.html" class="sidebar-link">
+                    <i class="fas fa-fire sidebar-icon"></i>
+                    <span>Freshly Minted</span>
+                </a>
+                <a href="publish.html" class="sidebar-link">
+                    <i class="fas fa-plus-circle sidebar-icon"></i>
+                    <span>Publish</span>
+                </a>
+                <a href="bookmarks.html" class="sidebar-link">
+                    <i class="fas fa-bookmark sidebar-icon"></i>
+                    <span>Bookmarks</span>
+                </a>
+            </div>
+            
+            <!-- Account Section -->
+            <div class="sidebar-section">
+                <div class="section-title">Account</div>
+                <a href="profile.html" class="sidebar-link active">
+                    <i class="fas fa-user sidebar-icon"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="dashboard.html" class="sidebar-link">
+                    <i class="fas fa-chart-line sidebar-icon"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="edit-profile.html" class="sidebar-link">
+                    <i class="fas fa-edit sidebar-icon"></i>
+                    <span>Edit Profile</span>
+                </a>
+                <a href="settings.html" class="sidebar-link">
+                    <i class="fas fa-cog sidebar-icon"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+            
+            <!-- Footer -->
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Desktop Main Content -->
+        <div class="desktop-main">
+            <div class="desktop-profile">
+                <!-- Profile Header -->
+                <div class="desktop-profile-header">
+                    <div class="desktop-profile-left">
+                        <img src="https://via.placeholder.com/120" alt="Profile" class="desktop-profile-image" id="desktopProfileImage">
+                        <h1 class="desktop-profile-name" id="desktopProfileName">Loading...</h1>
+                        <p class="desktop-profile-username" id="desktopProfileUsername">@loading</p>
+                        <p class="desktop-profile-bio" id="desktopProfileBio">Loading bio...</p>
+                        
+                        <!-- Desktop Action Buttons -->
+                        <div class="desktop-profile-actions">
+                            <a href="edit-profile.html" class="btn btn-primary flex-1">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </a>
+                            <a href="settings.html" class="btn btn-secondary flex-1">
+                                <i class="fas fa-cog"></i> Settings
+                            </a>
+                            <a href="dashboard.html" class="btn btn-secondary flex-1">
+                                <i class="fas fa-chart-line"></i> Dashboard
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Sidebar -->
+                    <div class="desktop-profile-right">
+                        <div class="desktop-stats-container">
+                            <h2 class="desktop-stats-title">Your Stats</h2>
+                            <div class="desktop-stats-grid">
+                                <div class="desktop-stat-card">
+                                    <div class="desktop-stat-value" id="desktopPiecesCount">0</div>
+                                    <div class="stat-label">Pieces</div>
+                                </div>
+                                <div class="desktop-stat-card">
+                                    <div class="desktop-stat-value" id="desktopMintsReceivedCount">0</div>
+                                    <div class="stat-label">Mints Received</div>
+                                </div>
+                                <div class="desktop-stat-card">
+                                    <div class="desktop-stat-value" id="desktopMintsGivenCount">0</div>
+                                    <div class="stat-label">Mints Given</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Action -->
+                        <a href="publish.html" class="btn btn-primary w-full">
+                            <i class="fas fa-plus-circle"></i> Create New Piece
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Content Tabs -->
+                <div class="desktop-content-tabs">
+                    <button class="desktop-tab-btn active" onclick="switchDesktopTab('published')">
+                        Published Pieces
+                    </button>
+                    <button class="desktop-tab-btn" onclick="switchDesktopTab('drafts')">
+                        Drafts
+                    </button>
+                    <button class="desktop-tab-btn" onclick="switchDesktopTab('minted')">
+                        Mints Received
+                    </button>
+                </div>
+                
+                <!-- Published Pieces -->
+                <div id="desktopPublishedTab">
+                    <div class="desktop-pieces-grid" id="desktopPublishedList">
+                        <!-- Content will be loaded from database -->
+                    </div>
+                    
+                    <div class="empty-state hidden" id="desktopPublishedEmpty">
+                        <div class="empty-icon">
+                            <i class="fas fa-feather"></i>
+                        </div>
+                        <p class="empty-text">No published pieces yet</p>
+                        <p class="empty-subtext">Start writing and share your first piece</p>
+                        <a href="publish.html" class="btn btn-primary mt-16">
+                            <i class="fas fa-plus"></i> Write First Piece
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Drafts -->
+                <div id="desktopDraftsTab" class="hidden">
+                    <div class="desktop-pieces-grid" id="desktopDraftsList">
+                        <!-- Content will be loaded from database -->
+                    </div>
+                    
+                    <div class="empty-state hidden" id="desktopDraftsEmpty">
+                        <div class="empty-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <p class="empty-text">No drafts saved</p>
+                        <p class="empty-subtext">Start writing and save as draft</p>
+                        <a href="publish.html" class="btn btn-primary mt-16">
+                            <i class="fas fa-pen"></i> Create Draft
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Minted Pieces (Mints Received) -->
+                <div id="desktopMintedTab" class="hidden">
+                    <div class="desktop-pieces-grid" id="desktopMintedList">
+                        <!-- Content will be loaded from database -->
+                    </div>
+                    
+                    <div class="empty-state hidden" id="desktopMintedEmpty">
+                        <div class="empty-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="empty-text">No mints received yet</p>
+                        <p class="empty-subtext">Your pieces haven't been minted by others</p>
+                        <a href="mint-stream.html" class="btn btn-primary mt-16">
+                            <i class="fas fa-share"></i> Share Your Work
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    
+    <script>
+        // ===== FIREBASE CONFIGURATION =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyBbvCU3-siNbFYoYZ2cax5q0VZh8fzis30",
+            authDomain: "novelmint.firebaseapp.com",
+            projectId: "novelmint",
+            storageBucket: "novelmint.firebasestorage.app",
+            messagingSenderId: "295711653905",
+            appId: "1:295711653905:web:346c9e278d6a2be3d1b1b0",
+            measurementId: "G-30CZHERXYC"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // ===== STATE MANAGEMENT =====
+        let currentUser = null;
+        let userData = null;
+        let totalMintsReceived = 0;
+        let totalMintsGiven = 0;
+
+        // ===== TAB MANAGEMENT =====
+        function switchMobileTab(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.mobile-container .tab-btn').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Hide all tab panes
+            document.querySelectorAll('#mobilePublishedTab, #mobileDraftsTab, #mobileMintedTab').forEach(pane => {
+                pane.classList.add('hidden');
+            });
+            
+            // Show selected tab
+            document.getElementById('mobile' + capitalizeFirst(tabName) + 'Tab').classList.remove('hidden');
+            
+            // Add active class to clicked tab
+            document.querySelector(`[onclick="switchMobileTab('${tabName}')"]`).classList.add('active');
+            
+            // Load data for the tab
+            if (tabName === 'published') {
+                loadPublishedPieces('mobile');
+            } else if (tabName === 'drafts') {
+                loadDrafts('mobile');
+            } else if (tabName === 'minted') {
+                loadMintedPieces('mobile');
+            }
+        }
+
+        function switchDesktopTab(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.desktop-tab-btn').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Hide all tab panes
+            document.querySelectorAll('#desktopPublishedTab, #desktopDraftsTab, #desktopMintedTab').forEach(pane => {
+                pane.classList.add('hidden');
+            });
+            
+            // Show selected tab
+            document.getElementById('desktop' + capitalizeFirst(tabName) + 'Tab').classList.remove('hidden');
+            
+            // Add active class to clicked tab
+            document.querySelector(`[onclick="switchDesktopTab('${tabName}')"]`).classList.add('active');
+            
+            // Load data for the tab
+            if (tabName === 'published') {
+                loadPublishedPieces('desktop');
+            } else if (tabName === 'drafts') {
+                loadDrafts('desktop');
+            } else if (tabName === 'minted') {
+                loadMintedPieces('desktop');
+            }
+        }
+
+        // ===== USER PROFILE MANAGEMENT =====
+        async function loadUserProfile() {
+            const user = auth.currentUser;
+            if (!user) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            currentUser = user;
+
+            try {
+                // Get user data from Firestore
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                    
+                    // Update mobile view
+                    updateProfileUI('mobile', userData);
+                    
+                    // Update desktop view
+                    updateProfileUI('desktop', userData);
+                    
+                    // Load profile image
+                    if (userData.profileImageUrl) {
+                        loadProfileImage(userData.profileImageUrl);
+                    }
+                    
+                    // Calculate mints received and given
+                    await calculateMintStats();
+                    
+                    // Update mint stats
+                    updateMintStats();
+                    
+                    // Load initial content
+                    loadPublishedPieces('mobile');
+                    loadPublishedPieces('desktop');
+                } else {
+                    // If user document doesn't exist, create it
+                    await createUserDocument(user);
+                    loadUserProfile(); // Reload after creation
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+                showError('Failed to load profile data');
+            }
+        }
+
+        async function calculateMintStats() {
+            if (!currentUser) return;
+
+            try {
+                // Calculate mints received (mints on user's pieces)
+                const piecesSnapshot = await db.collection('pieces')
+                    .where('authorId', '==', currentUser.uid)
+                    .get();
+                
+                totalMintsReceived = 0;
+                piecesSnapshot.forEach(doc => {
+                    const piece = doc.data();
+                    totalMintsReceived += (piece.stats?.mintCount || 0);
+                });
+
+                // Calculate mints given (mints by the user)
+                const mintsGivenSnapshot = await db.collection('mints')
+                    .where('userId', '==', currentUser.uid)
+                    .get();
+                
+                totalMintsGiven = mintsGivenSnapshot.size;
+
+            } catch (error) {
+                console.error('Error calculating mint stats:', error);
+            }
+        }
+
+        function updateMintStats() {
+            // Update mobile stats
+            document.getElementById('mobileMintsReceivedCount').textContent = totalMintsReceived;
+            document.getElementById('mobileMintsGivenCount').textContent = totalMintsGiven;
+            
+            // Update desktop stats
+            document.getElementById('desktopMintsReceivedCount').textContent = totalMintsReceived;
+            document.getElementById('desktopMintsGivenCount').textContent = totalMintsGiven;
+        }
+
+        function updateProfileUI(device, data) {
+            const prefix = device === 'mobile' ? 'mobile' : 'desktop';
+            
+            // Update basic info
+            document.getElementById(prefix + 'ProfileName').textContent = data.displayName || 'User';
+            document.getElementById(prefix + 'ProfileUsername').textContent = '@' + (data.username || 'username');
+            document.getElementById(prefix + 'ProfileBio').textContent = data.bio || 'No bio yet';
+            
+            // Update pieces count
+            document.getElementById(prefix + 'PiecesCount').textContent = data.stats?.totalPieces || 0;
+        }
+
+        async function createUserDocument(user) {
+            try {
+                const userData = {
+                    userId: user.uid,
+                    username: user.email.split('@')[0],
+                    email: user.email,
+                    displayName: user.displayName || user.email.split('@')[0],
+                    bio: '',
+                    profileImageUrl: null,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    stats: {
+                        totalPieces: 0,
+                        totalMintsReceived: 0,
+                        totalMintsGiven: 0
+                    },
+                    settings: {
+                        emailNotifications: true,
+                        privacy: 'public',
+                        theme: 'light'
+                    }
+                };
+                
+                await db.collection('users').doc(user.uid).set(userData);
+                console.log('User document created');
+            } catch (error) {
+                console.error('Error creating user document:', error);
+                throw error;
+            }
+        }
+
+        function loadProfileImage(imageUrl) {
+            // Update mobile image
+            const mobileImage = document.getElementById('mobileProfileImage');
+            if (mobileImage) mobileImage.src = imageUrl;
+            
+            // Update desktop image
+            const desktopImage = document.getElementById('desktopProfileImage');
+            if (desktopImage) desktopImage.src = imageUrl;
+        }
+
+        // ===== CONTENT MANAGEMENT =====
+        async function loadPublishedPieces(device) {
+            if (!currentUser) return;
+
+            const prefix = device === 'mobile' ? 'mobile' : 'desktop';
+            const listElement = device === 'desktop' ? 
+                document.getElementById('desktopPublishedList') : 
+                document.getElementById('mobilePublishedList');
+            const emptyElement = document.getElementById(prefix + 'PublishedEmpty');
+
+            try {
+                // Show loading state
+                showLoadingState(listElement, device === 'desktop' ? 'grid' : 'list');
+
+                // Query published pieces
+                const snapshot = await db.collection('pieces')
+                    .where('authorId', '==', currentUser.uid)
+                    .where('status', '==', 'published')
+                    .orderBy('publishedAt', 'desc')
+                    .limit(20)
+                    .get();
+
+                // Clear loading state
+                listElement.innerHTML = '';
+
+                if (snapshot.empty) {
+                    emptyElement.classList.remove('hidden');
+                    return;
+                }
+
+                emptyElement.classList.add('hidden');
+
+                // Render pieces
+                snapshot.forEach(doc => {
+                    const piece = doc.data();
+                    const pieceElement = createPieceElement(piece, device);
+                    listElement.appendChild(pieceElement);
+                });
+            } catch (error) {
+                console.error('Error loading published pieces:', error);
+                listElement.innerHTML = '<div class="empty-state"><p>Error loading pieces</p></div>';
+                emptyElement.classList.remove('hidden');
+            }
+        }
+
+        async function loadDrafts(device) {
+            if (!currentUser) return;
+
+            const prefix = device === 'mobile' ? 'mobile' : 'desktop';
+            const listElement = device === 'desktop' ? 
+                document.getElementById('desktopDraftsList') : 
+                document.getElementById('mobileDraftsList');
+            const emptyElement = document.getElementById(prefix + 'DraftsEmpty');
+
+            try {
+                // Show loading state
+                showLoadingState(listElement, device === 'desktop' ? 'grid' : 'list');
+
+                // Query drafts
+                const snapshot = await db.collection('pieces')
+                    .where('authorId', '==', currentUser.uid)
+                    .where('status', '==', 'draft')
+                    .orderBy('updatedAt', 'desc')
+                    .limit(20)
+                    .get();
+
+                // Clear loading state
+                listElement.innerHTML = '';
+
+                if (snapshot.empty) {
+                    emptyElement.classList.remove('hidden');
+                    return;
+                }
+
+                emptyElement.classList.add('hidden');
+
+                // Render drafts
+                snapshot.forEach(doc => {
+                    const piece = doc.data();
+                    const pieceElement = createDraftElement(piece, doc.id, device);
+                    listElement.appendChild(pieceElement);
+                });
+            } catch (error) {
+                console.error('Error loading drafts:', error);
+                listElement.innerHTML = '<div class="empty-state"><p>Error loading drafts</p></div>';
+                emptyElement.classList.remove('hidden');
+            }
+        }
+
+        async function loadMintedPieces(device) {
+            if (!currentUser) return;
+
+            const prefix = device === 'mobile' ? 'mobile' : 'desktop';
+            const listElement = device === 'desktop' ? 
+                document.getElementById('desktopMintedList') : 
+                document.getElementById('mobileMintedList');
+            const emptyElement = document.getElementById(prefix + 'MintedEmpty');
+
+            try {
+                // Show loading state
+                showLoadingState(listElement, device === 'desktop' ? 'grid' : 'list');
+
+                // First get all mints on user's pieces
+                const piecesSnapshot = await db.collection('pieces')
+                    .where('authorId', '==', currentUser.uid)
+                    .where('status', '==', 'published')
+                    .get();
+
+                // Get pieces that have mints
+                const piecesWithMints = [];
+                
+                for (const doc of piecesSnapshot.docs) {
+                    const piece = doc.data();
+                    piece.id = doc.id;
+                    
+                    // Get mints for this piece
+                    const mintsSnapshot = await db.collection('mints')
+                        .where('pieceId', '==', doc.id)
+                        .get();
+                    
+                    if (!mintsSnapshot.empty) {
+                        // Get user info for each mint
+                        const mintUsers = [];
+                        for (const mintDoc of mintsSnapshot.docs) {
+                            const mintData = mintDoc.data();
+                            const userDoc = await db.collection('users').doc(mintData.userId).get();
+                            if (userDoc.exists) {
+                                mintUsers.push({
+                                    userId: mintData.userId,
+                                    displayName: userDoc.data().displayName || 'User',
+                                    username: userDoc.data().username || 'user',
+                                    profileImageUrl: userDoc.data().profileImageUrl
+                                });
+                            }
+                        }
+                        
+                        piece.mintUsers = mintUsers;
+                        piece.mintCount = mintsSnapshot.size;
+                        piecesWithMints.push(piece);
+                    }
+                }
+
+                // Clear loading state
+                listElement.innerHTML = '';
+
+                if (piecesWithMints.length === 0) {
+                    emptyElement.classList.remove('hidden');
+                    return;
+                }
+
+                emptyElement.classList.add('hidden');
+
+                // Sort by mint count (most mints first)
+                piecesWithMints.sort((a, b) => b.mintCount - a.mintCount);
+
+                // Render minted pieces
+                piecesWithMints.forEach(piece => {
+                    const pieceElement = createMintedPieceElement(piece, device);
+                    listElement.appendChild(pieceElement);
+                });
+
+            } catch (error) {
+                console.error('Error loading minted pieces:', error);
+                listElement.innerHTML = '<div class="empty-state"><p>Error loading mints</p></div>';
+                emptyElement.classList.remove('hidden');
+            }
+        }
+
+        function createPieceElement(piece, device) {
+            const isDesktop = device === 'desktop';
+            const element = document.createElement('div');
+            element.className = isDesktop ? 'desktop-piece-item' : 'piece-item';
+            element.onclick = () => window.showReadModal ? window.showReadModal(piece.id) : viewPiece(piece.id);
+            
+            const date = piece.publishedAt ? formatDate(piece.publishedAt.toDate()) : 'No date';
+            
+            element.innerHTML = `
+                <div class="piece-header">
+                    <h3 class="piece-title">${piece.title || 'Untitled'}</h3>
+                    <div class="piece-meta">
+                        <span class="piece-category">${piece.category || 'Uncategorized'}</span>
+                        <span class="piece-date">${date}</span>
+                    </div>
+                </div>
+                <p class="piece-preview">${piece.preview || (piece.content ? piece.content.substring(0, 150) + '...' : 'No content')}</p>
+                <div class="piece-stats">
+                    <div class="piece-stat">
+                        <i class="fas fa-star" style="color: #f59e0b;"></i>
+                        <span>${piece.stats?.mintCount || 0} Mints</span>
+                    </div>
+                    <div class="piece-stat">
+                        <i class="fas fa-bookmark" style="color: #8b5cf6;"></i>
+                        <span>${piece.stats?.bookmarkCount || 0} Bookmarks</span>
+                    </div>
+                </div>
+            `;
+            
+            return element;
+        }
+
+        function createDraftElement(piece, pieceId, device) {
+            const isDesktop = device === 'desktop';
+            const element = document.createElement('div');
+            element.className = isDesktop ? 'desktop-piece-item' : 'piece-item';
+            
+            const date = piece.updatedAt ? formatDate(piece.updatedAt.toDate()) : 'No date';
+            
+            element.innerHTML = `
+                <div class="piece-header">
+                    <h3 class="piece-title">${piece.title || 'Untitled Draft'}</h3>
+                    <div class="piece-meta">
+                        <span class="piece-category">${piece.category || 'Uncategorized'}</span>
+                        <span class="draft-label">
+                            <i class="fas fa-pencil-alt"></i>
+                            Draft
+                        </span>
+                    </div>
+                </div>
+                <p class="piece-preview">${piece.content ? piece.content.substring(0, 150) + '...' : 'No content yet'}</p>
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <button onclick="event.stopPropagation(); editDraft('${pieceId}')" class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button onclick="event.stopPropagation(); publishDraft('${pieceId}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 13px;">
+                        <i class="fas fa-paper-plane"></i> Publish
+                    </button>
+                </div>
+            `;
+            
+            return element;
+        }
+
+        function createMintedPieceElement(piece, device) {
+            const isDesktop = device === 'desktop';
+            const element = document.createElement('div');
+            element.className = isDesktop ? 'desktop-piece-item' : 'piece-item';
+            element.onclick = () => window.showReadModal ? window.showReadModal(piece.id) : viewPiece(piece.id);
+            
+            const date = piece.publishedAt ? formatDate(piece.publishedAt.toDate()) : 'No date';
+            const mintCount = piece.mintCount || piece.stats?.mintCount || 0;
+            const mintUsers = piece.mintUsers || [];
+            
+            // Get first 3 mint users for preview
+            const previewUsers = mintUsers.slice(0, 3);
+            
+            if (isDesktop) {
+                element.innerHTML = `
+                    <div class="desktop-mint-info">
+                        <div class="desktop-mint-count">${mintCount} ${mintCount === 1 ? 'Mint' : 'Mints'} Received</div>
+                        <div class="desktop-mint-description">People loved this piece</div>
+                        ${mintUsers.length > 0 ? `
+                            <div class="desktop-mint-user-list">
+                                ${previewUsers.map(user => `
+                                    <div class="desktop-mint-user">
+                                        <div class="desktop-mint-user-avatar">
+                                            ${user.profileImageUrl ? 
+                                                `<img src="${user.profileImageUrl}" alt="${user.displayName}" style="width: 100%; height: 100%; border-radius: 50%;">` :
+                                                `<i class="fas fa-user"></i>`
+                                            }
+                                        </div>
+                                        <span class="desktop-mint-user-name">${user.displayName}</span>
+                                    </div>
+                                `).join('')}
+                                ${mintUsers.length > 3 ? `<div class="desktop-mint-user">+${mintUsers.length - 3} more</div>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="piece-header">
+                        <h3 class="piece-title">${piece.title || 'Untitled'}</h3>
+                        <div class="piece-meta">
+                            <span class="piece-category">${piece.category || 'Uncategorized'}</span>
+                            <span class="piece-date">${date}</span>
+                        </div>
+                    </div>
+                    <p class="piece-preview">${piece.preview || (piece.content ? piece.content.substring(0, 150) + '...' : 'No content')}</p>
+                `;
+            } else {
+                element.innerHTML = `
+                    <div class="mint-info">
+                        <div class="mint-count">${mintCount} ${mintCount === 1 ? 'Mint' : 'Mints'} Received</div>
+                        <div class="mint-description">People loved this piece</div>
+                        ${previewUsers.length > 0 ? `
+                            <div class="mint-user-info">
+                                <div class="mint-user-avatar">
+                                    ${previewUsers[0].profileImageUrl ? 
+                                        `<img src="${previewUsers[0].profileImageUrl}" alt="${previewUsers[0].displayName}" style="width: 100%; height: 100%; border-radius: 50%;">` :
+                                        `<i class="fas fa-user"></i>`
+                                    }
+                                </div>
+                                <span class="mint-user-name">${previewUsers[0].displayName}</span>
+                                ${mintUsers.length > 1 ? `<span style="font-size: 11px; color: var(--text-light); margin-left: auto;">+${mintUsers.length - 1} more</span>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="piece-header">
+                        <h3 class="piece-title">${piece.title || 'Untitled'}</h3>
+                        <div class="piece-meta">
+                            <span class="piece-category">${piece.category || 'Uncategorized'}</span>
+                            <span class="piece-date">${date}</span>
+                        </div>
+                    </div>
+                    <p class="piece-preview">${piece.preview || (piece.content ? piece.content.substring(0, 150) + '...' : 'No content')}</p>
+                `;
+            }
+            
+            return element;
+        }
+
+        function showLoadingState(element, type = 'list') {
+            if (type === 'grid') {
+                // Grid loading state for desktop
+                element.innerHTML = `
+                    <div class="desktop-piece-item">
+                        <div class="skeleton skeleton-text" style="width: 60%; margin-bottom: 12px;"></div>
+                        <div class="skeleton skeleton-text" style="width: 40%; margin-bottom: 16px;"></div>
+                        <div class="skeleton skeleton-text" style="margin-bottom: 8px;"></div>
+                        <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                    </div>
+                    <div class="desktop-piece-item">
+                        <div class="skeleton skeleton-text" style="width: 60%; margin-bottom: 12px;"></div>
+                        <div class="skeleton skeleton-text" style="width: 40%; margin-bottom: 16px;"></div>
+                        <div class="skeleton skeleton-text" style="margin-bottom: 8px;"></div>
+                        <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                    </div>
+                `;
+            } else {
+                // List loading state for mobile
+                element.innerHTML = `
+                    <div class="piece-item">
+                        <div class="piece-header">
+                            <div class="skeleton skeleton-text" style="width: 60%; margin-bottom: 8px;"></div>
+                            <div class="skeleton skeleton-text" style="width: 40%;"></div>
+                        </div>
+                        <div class="skeleton skeleton-text" style="margin-bottom: 8px;"></div>
+                        <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                    </div>
+                `;
+            }
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function formatDate(date) {
+            if (!date) return 'No date';
+            
+            try {
+                const now = new Date();
+                const dateObj = date instanceof Date ? date : new Date(date);
+                
+                if (isNaN(dateObj.getTime())) {
+                    return 'Recently';
+                }
+                
+                const diffMs = now - dateObj;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+                
+                if (diffMins < 60) {
+                    return `${diffMins}m ago`;
+                } else if (diffHours < 24) {
+                    return `${diffHours}h ago`;
+                } else if (diffDays < 7) {
+                    return `${diffDays}d ago`;
+                } else {
+                    return dateObj.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                }
+            } catch (error) {
+                console.error('Error formatting date:', error);
+                return 'Recently';
+            }
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        function capitalizeFirst(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function showError(message) {
+            // Create error toast
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ef4444;
+                color: white;
+                padding: 12px 20px;
+                border-radius: var(--radius-md);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100px)';
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        function logout() {
+            auth.signOut()
+                .then(() => {
+                    window.location.href = 'auth.html';
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    showError('Failed to logout');
+                });
+        }
+
+        function viewPiece(pieceId) {
+            window.location.href = `piece.html?id=${pieceId}`;
+        }
+
+        // ===== DRAFT FUNCTIONS =====
+        function editDraft(pieceId) {
+            window.location.href = `edit-piece.html?id=${pieceId}`;
+        }
+
+        async function publishDraft(pieceId) {
+            try {
+                await db.collection('pieces').doc(pieceId).update({
+                    status: 'published',
+                    publishedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Reload the page to show updated content
+                location.reload();
+            } catch (error) {
+                console.error('Error publishing draft:', error);
+                showError('Failed to publish draft');
+            }
+        }
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check authentication
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    loadUserProfile();
+                } else {
+                    window.location.href = 'auth.html';
+                }
+            });
+        });
+
+        // ===== KEYBOARD SHORTCUTS =====
+        document.addEventListener('keydown', (e) => {
+            // Alt + E for edit profile
+            if (e.altKey && e.key === 'e') {
+                window.location.href = 'edit-profile.html';
+            }
+            
+            // Alt + S for settings
+            if (e.altKey && e.key === 's') {
+                window.location.href = 'settings.html';
+            }
+            
+            // Alt + D for dashboard
+            if (e.altKey && e.key === 'd') {
+                window.location.href = 'dashboard.html';
+            }
+            
+            // Alt + P for publish
+            if (e.altKey && e.key === 'p') {
+                window.location.href = 'publish.html';
+            }
+        });
+    </script>
+</body>
+</html>
